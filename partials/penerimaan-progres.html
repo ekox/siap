@@ -1,0 +1,635 @@
+<!-- Prevent direct access to .html file -->
+<script>
+	if(typeof app === 'undefined'){
+		document.location.href='index.php';
+	}
+</script>
+
+<div class="block-header">
+    <h2><i class="fa fa-table"></i> PENERIMAAN/ PROGRES</h2>
+</div>
+
+<div class="row clearfix" id="div-tabel">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+            	<div class="row clearfix">
+                    <div class="col-xs-12 col-sm-6">
+                        <h2><i class="fa fa-table"></i> DATA</h2>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 align-right">
+                        <button title="Tambah Data" type="button" class="btn btn-xs btn-danger waves-effect" id="tambah">
+							<i class="material-icons">add</i>
+						</button>
+                    </div>
+                </div>
+            </div>
+            <div class="body">
+                <div class="table-responsive">
+                    <table id="tabel-ruh" class="table table-bordered table-striped table-hover">
+                        <thead>
+							<tr>
+								<th>#</th>
+								<th>ID.KSO</th>
+								<th>Kode Teknis</th>
+								<th>Uraian Teknis</th>
+								<th>Bobot</th>
+								<th>Persentase</th>
+								<th>Nilai</th>
+								<th>Tgl.Rekam</th>
+								<th>Status</th>
+								<th>Aksi</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row clearfix" id="div-form" style="min-height:700px;">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <h2><i class="fa fa-pencil"></i> FORM</h2>
+            </div>
+            <div class="body">
+                <form id="form-ruh" name="form-ruh" class="form-horizontal">
+                    <input type="hidden" id="inp-id" name="inp-id">
+					<input type="hidden" id="inp-rekambaru" name="inp-rekambaru">
+					<input type="hidden" id="_token" name="_token">
+                    
+                    <div class="row clearfix">
+                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 form-control-label"><label>Username</label></div>
+                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                            <div class="form-group">
+                                <div class="form-line">
+                                    <input type="text" id="username" name="username" class="form-control" placeholder="ex. johndoe" maxlength="50">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                        	<span id="warning-username" class="label label-warning warning">Required!</span>
+                        </div>
+                    </div>
+
+                    <div class="row clearfix">
+                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 form-control-label"><label>NIP/NRP</label></div>
+                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                            <div class="form-group">
+                                <div class="form-line">
+                                    <input type="text" id="nip" name="nip" class="form-control val_num" placeholder="ex. 198605232006021002" maxlength="18">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                        	<span id="warning-nip" class="label label-warning warning">Required!</span>
+                        </div>
+                    </div>
+
+                    <div class="row clearfix">
+                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 form-control-label"><label>Nama</label></div>
+                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                            <div class="form-group">
+                                <div class="form-line">
+                                    <input type="text" id="nama" name="nama" class="form-control" placeholder="ex. John Doe" maxlength="100">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                        	<span id="warning-nama" class="label label-warning warning">Required!</span>
+                        </div>
+                    </div>
+
+                    <div class="row clearfix">
+                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 form-control-label"><label>Telp</label></div>
+                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                            <div class="form-group">
+                                <div class="form-line">
+                                    <input type="text" id="telp" name="telp" class="form-control" placeholder="02100000" maxlength="15">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                        	<span id="warning-telp" class="label label-warning warning">Required!</span>
+                        </div>
+                    </div>
+
+                    <div class="row clearfix">
+                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 form-control-label"><label>Alamat</label></div>
+                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                            <div class="form-group">
+                                <div class="form-line">
+                                    <input type="text" id="alamat" name="alamat" class="form-control" placeholder="Jakarta" maxlength="100">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                        	<span id="warning-alamat" class="label label-warning warning">Required!</span>
+                        </div>
+                    </div>
+
+                    <div class="row clearfix">
+                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 form-control-label"><label>Email</label></div>
+                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                            <div class="form-group">
+                                <div class="form-line">
+                                    <input type="text" id="email" name="email" class="form-control" placeholder="jhondoe@gmail.com" maxlength="50">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                        	<span id="warning-email" class="label label-warning warning">Required!</span>
+                        </div>
+                    </div>
+
+                    <div class="row clearfix">
+                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 form-control-label"><label>Level</label></div>
+                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                            <div class="form-group">
+                                <select id="kdlevel" name="kdlevel" class="form-control chosen" data-placeholder="Pilih Level"></select>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                        	<span id="warning-kdlevel" class="label label-warning warning">Required!</span>
+                        </div>
+                    </div>
+
+                    <div class="row clearfix" id="div-ppk">
+                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 form-control-label"><label>PPK</label></div>
+                        <div class="col-lg-5 col-md-5 col-sm-5 col-xs-5">
+                            <div class="form-group">
+                                <select id="kdppk" name="kdppk" class="form-control chosen" data-placeholder="Pilih PPK"></select>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                        	<span id="warning-kdppk" class="label label-warning warning">Required!</span>
+                        </div>
+                    </div>
+					
+					<div class="row clearfix" id="div-ppk">
+                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 form-control-label"><label>Status</label></div>
+                        <div class="col-lg-5 col-md-5 col-sm-5 col-xs-5">
+                            <div class="form-group">
+                                <select id="aktif" name="aktif" class="form-control chosen">
+									<option value="" style="display:none;">Pilih Data</option>
+									<option value="1">Aktif</option>
+									<option value="0">Tidak Aktif</option>
+								</select>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                        	<span id="warning-aktif" class="label label-warning warning">Required!</span>
+                        </div>
+                    </div>
+					
+					<div class="row clearfix">
+						<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 form-control-label"><label>Surat Ket (max 1MB)</label></div>
+						<div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
+							<div class="form-group">
+								<span class="btn btn-primary fileinput-button">
+									<i class="material-icons">file_upload</i> <span>Attach File</span>
+									<input id="fileupload" type="file" name="file">
+								</span>
+								<div id="files" class="files"></div>
+								<div id="progress" class="progress">
+									<div class="progress-bar progress-bar-danger"></div>
+								</div>
+							</div>
+						</div>
+						<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2" id="nmfile"></div>
+					</div>
+
+                    <div class="row clearfix">
+                        <div class="col-lg-offset-2 col-md-offset-2 col-sm-offset-2 col-xs-offset-2">
+                            <button title="Simpan Data Ini?" id="simpan" type="button" class="btn btn-primary m-t-15 waves-effect">
+                            	<i class="material-icons">save</i> SIMPAN
+                            </button>
+							<button title="Batal" id="batal" type="button" class="btn btn-danger m-t-15 waves-effect">
+								<i class="material-icons">refresh</i> BATAL</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="view-modal" class="modal fade" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Detail Informasi User</h4>
+			</div>
+			<div class="modal-body">
+				<div class="table-responsive">
+					<table class="table table-hover">
+						<thead id="content-view">
+						</thead>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	jQuery(document).ready(function(){
+	
+		jQuery.fn.dataTable.ext.errMode = 'none';
+		
+		//aktivasi chosen
+		jQuery('.chosen').chosen();
+				
+		//ref level user
+		jQuery.get('ref/level/dropdown', function(result){
+			jQuery('#kdlevel').html(result).trigger('chosen:updated');
+		});
+		
+		//ref ppk
+		jQuery.get('ref/ppk/dropdown', function(result){
+			jQuery('#kdppk').html(result).trigger('chosen:updated');
+		});
+		
+		jQuery.extend({
+			getValues: function(url) {
+				var result = null;
+				jQuery.ajax({
+					url: url,
+					type: 'get',
+					async: false,
+					success: function(data) {
+						result = data;
+					}
+				});
+			   return result;
+			}
+		});
+		
+		var token1 = jQuery.getValues('token');
+		
+		jQuery('#fileupload').click(function(){
+			jQuery('#progress .progress-bar').css('width', 0);
+			jQuery('#progress .progress-bar').html('');
+			jQuery('#nmfile').html('');
+		});
+		
+		jQuery('#fileupload').fileupload({
+			url:'ref/user/upload-ket',
+			dataType: 'json',
+			formData: {
+				_token:token1
+			},
+			done: function (e, data) {
+				jQuery('#nmfile').html(data.files[0].name);
+				alertify.log('Upload attachment '+data.files[0].name+' berhasil!');
+			},
+			error: function(error) {
+				alertify.log(error.responseText);
+			},
+			progressall: function (e, data) {
+				var progress = parseInt(data.loaded / data.total * 100, 10);
+				jQuery('#progress .progress-bar').css('width',progress + '%');
+			}
+		}).prop('disabled', !$.support.fileInput)
+		  .parent().addClass($.support.fileInput ? undefined : 'disabled');
+		
+		//tampilan default
+		function form_default() {
+			jQuery('.warning, #div-form').hide();
+			jQuery('#div-ppk').hide();
+			jQuery('#div-tabel').show();
+			jQuery('#simpan').prop('disabled', false);
+		}
+		
+		//aktivasi tampilan default
+		form_default();
+		
+		//klik tambah
+		jQuery('#tambah').click(function(){
+			jQuery('#div-ppk').hide();
+			jQuery('#username').prop('disabled',false);
+			jQuery('#inp-rekambaru').val('1');
+			jQuery('#div-form').show();
+			jQuery('#div-tabel').hide();
+		});
+		
+		//data tabel
+		var table=jQuery('#tabel-ruh').DataTable({
+			bProcessing:true,
+			language:{
+			    "decimal":        "",
+			    "emptyTable":     "Tidak ada data tersedia",
+			    "info":           "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
+			    "infoEmpty":      "Menampilkan 0 sampai 0 dari 0 entri",
+			    "infoFiltered":   "(disaring dari _MAX_ total entri)",
+			    "infoPostFix":    "",
+			    "thousands":      ",",
+			    "lengthMenu":     "Tampilkan _MENU_ entri",
+			    "loadingRecords": "Proses Loading...",
+			    "processing":     "Sedang Proses...",
+			    "search":         "Cari:",
+			    "zeroRecords":    "Tidak ditemukan data yang sesuai",
+			    "paginate": {
+			        "first":      "Awal",
+			        "last":       "Akhir",
+			        "next":       "Sesudah",
+			        "previous":   "Sebelum"
+			    },
+			    "aria": {
+			        "sortAscending":  ": aktifkan untuk mengurutkan kolom (asc)",
+			        "sortDescending": ": aktifkan untuk mengurutkan kolom (desc)"
+			    }
+			},
+			aaSorting: [],
+			bServerSide: true,
+			sAjaxSource: "ref/user"
+		});
+		
+		//validasi isian form
+		function form_valid(str_id){
+			var arr_id = str_id.split(',');
+			var next = true;
+			for(x = 0; x < arr_id.length; x++){
+				if(jQuery('#'+arr_id[x]).val()==''){
+					jQuery('#warning-'+arr_id[x]).show();
+					next = false;
+				}
+			}
+			return next;
+		}
+		
+		//cari data user yang akan di edit berdasarkan id user
+		function cari_data(id){
+			jQuery('.chosen').val('').trigger('chosen:updated');
+			jQuery.getJSON('ref/user/'+id, function(result){
+				if(result) {
+				
+					jQuery('#inp-id').val(id);
+					jQuery('#inp-rekambaru').val('0');
+					jQuery('#username').val(result.username);
+					jQuery('#nama').val(result.nama);
+					jQuery('#nip').val(result.nip);
+					jQuery('#telp').val(result.telp);
+					jQuery('#alamat').val(result.alamat);
+					jQuery('#email').val(result.email);
+					jQuery('#kdlevel').val(result.kdlevel);
+					jQuery('#kdppk').val(result.kdppk);
+					jQuery('#aktif').val(result.aktif);
+					
+					console.log(result.kdppk);
+					
+					jQuery('.chosen').trigger('chosen:updated');
+					jQuery('#username').prop('disabled', true);
+					jQuery('#div-form').show();
+					
+					if(result.kdlevel=='06' || result.kdlevel=='02'){
+						jQuery('#div-ppk').show();
+					}
+					else{
+						jQuery('#div-ppk').hide();
+					}
+				}
+			});
+		}
+		
+		//klik ubah
+		jQuery('body').off('click', '.ubah').on('click', '.ubah', function(){
+			var id = this.id;
+			cari_data(id);
+			jQuery('#div-tabel').hide();
+			jQuery('#inp-id').val(id);
+			jQuery('#inp-rekambaru').val('0');
+		});
+		
+		//filter berdasarkan kewenangan
+		jQuery('#kdlevel').change(function(){
+			var level = jQuery(this).val();
+			if(level=='06' || level=='02'){
+				jQuery('#div-ppk').show();
+			}
+			else{
+				jQuery('#div-ppk').hide();
+			}
+		});
+		
+		//klik batal
+		jQuery('#batal').click(function(){
+			jQuery('#div-form, #div-deputi, #div-asdeputi').hide();
+			jQuery('#div-tabel').show();
+			jQuery('input').val('');
+			jQuery('.chosen').val('').trigger('chosen:updated');
+			jQuery('#simpan').html('<i class="material-icons">save</i> SIMPAN');
+			jQuery('#simpan').prop('disabled',false);
+		});
+		
+		//klik simpan
+		jQuery('#simpan').click(function(){
+			jQuery(this).html('<span class="loading"><i class="fa fa-refresh"></i> Loading.....</span>');
+			jQuery(this).prop('disabled',true);
+			if(jQuery('#kdlevel').val()=='06'){
+				var next = form_valid('username,nip,nama,email,kdlevel,kdppk');
+			}
+			else{
+				var next = form_valid('username,nip,nama,email,kdlevel');
+			}
+			if(next==true){
+				jQuery.get('token', function(token){
+					if(token){
+						jQuery('#_token').val(token);
+						var data = jQuery('#form-ruh').serialize();
+						jQuery.ajax({
+							url: 'ref/user',
+							method: 'POST',
+							data: data,
+							success: function(result){
+								if(result=='success') {
+									jQuery('#simpan').html('<i class="material-icons">save</i> SIMPAN');
+									jQuery('#simpan').prop('disabled',false);
+									alertify.log('Proses simpan berhasil');
+									form_default();
+									table.ajax.reload();
+								} else {
+									jQuery('#simpan').html('<i class="material-icons">save</i> SIMPAN');
+									jQuery('#simpan').prop('disabled',false);
+									alertify.log(result);
+								} 
+							},
+							error: function(result){
+								jQuery('#simpan').html('<i class="material-icons">save</i> SIMPAN');
+								jQuery('#simpan').prop('disabled',false);
+								alertify.log('Data tidak dapat disimpan. Koneksi pada aplikasi/database terputus atau data sudah pernah direkam atau format data salah. Hubungi Administrator.');
+							}
+						})
+					} 
+					else{
+						jQuery('#simpan').html('<i class="material-icons">save</i> SIMPAN');
+						jQuery('#simpan').prop('disabled',false);
+						alertify.log('Sesi telah habis, silahkan refresh browser Anda!');
+					}
+				});
+			}
+			else{
+				jQuery('#simpan').html('<i class="material-icons">save</i> SIMPAN');
+				jQuery('#simpan').prop('disabled',false);
+				alertify.log('Data tidak dapat dikosongkan!');
+			}
+		});
+		
+		//hapus
+		jQuery('body').off('click', '.hapus').on('click', '.hapus', function(){
+			var id = this.id;
+			alertify.confirm('Hapus data ini?', function(c){
+				if(c) {
+					jQuery.get('token', function(token){
+						if(token) {
+							jQuery.ajax({
+								url:'ref/user/hapus',
+								method:'POST',
+								data:{
+									_token:token, 
+									id:id
+								},
+								success:function(result){
+									if(result=='success') {
+										alertify.log('Proses hapus berhasil.');
+										table.ajax.reload();
+									} else {
+										alertify.log(result);
+									} 
+								},
+								error:function(result){
+									alertify.log('Koneksi pada aplikasi/database terputus. Hubungi Administrator.');
+								}
+							});
+						} else {
+							alertify.log('Proses hapus gagal. Silahkan refresh halaman browser anda.');
+						} 
+					});
+				} 
+			});
+		});
+		
+		//reset
+		jQuery('body').off('click', '.reset').on('click', '.reset', function(){
+			var id = this.id;
+			alertify.confirm('Reset data ini?', function(c){
+				if(c) {
+					jQuery.get('token', function(token){
+						if(token) {
+							jQuery.ajax({
+								url:'ref/user/reset',
+								method:'POST',
+								data:{
+									_token:token, 
+									id:id
+								},
+								success:function(result){
+									if(result=='success') {
+										alertify.log('Proses reset berhasil.');
+										table.ajax.reload();
+									} else {
+										alertify.log(result);
+									} 
+								},
+								error:function(result){
+									alertify.log('Koneksi pada aplikasi/database terputus. Hubungi Administrator.');
+								}
+							});
+						} else {
+							alertify.log('Proses reset gagal. Silahkan refresh halaman browser anda.');
+						} 
+					});
+				} 
+			});
+		});
+		
+		jQuery('body').off('click', '.aktif').on('click', '.aktif', function(){
+			var id = this.id;
+			alertify.confirm('Aktifkan data ini?', function(c){
+				if(c) {
+					jQuery.get('token', function(token){
+						if(token) {
+							jQuery.ajax({
+								url:'ref/user/aktif',
+								method:'POST',
+								data:{
+									_token:token, 
+									id:id
+								},
+								success:function(result){
+									if(result=='success') {
+										alertify.log('Proses ubah berhasil.');
+										table.ajax.reload();
+									} else {
+										alertify.log(result);
+									} 
+								},
+								error:function(result){
+									alertify.log('Koneksi pada aplikasi/database terputus. Hubungi Administrator.');
+								}
+							});
+						} else {
+							alertify.log('Proses ubah gagal. Silahkan refresh halaman browser anda.');
+						} 
+					});
+				} 
+			});
+		});
+		
+		jQuery('body').off('click', '.non-aktif').on('click', '.non-aktif', function(){
+			var id = this.id;
+			alertify.confirm('Non-aktifkan data ini?', function(c){
+				if(c) {
+					jQuery.get('token', function(token){
+						if(token) {
+							jQuery.ajax({
+								url:'ref/user/non-aktif',
+								method:'POST',
+								data:{
+									_token:token, 
+									id:id
+								},
+								success:function(result){
+									if(result=='success') {
+										alertify.log('Proses ubah berhasil.');
+										table.ajax.reload();
+									} else {
+										alertify.log(result);
+									} 
+								},
+								error:function(result){
+									alertify.log('Koneksi pada aplikasi/database terputus. Hubungi Administrator.');
+								}
+							});
+						} else {
+							alertify.log('Proses ubah gagal. Silahkan refresh halaman browser anda.');
+						} 
+					});
+				} 
+			});
+		});
+		
+		jQuery('body').off('click', '.lihat').on('click', '.lihat', function(){
+			jQuery('#view-modal').modal();
+			var id = this.id;
+			jQuery.getJSON('view/user/'+id, function(response){
+				jQuery('.trcontent').remove();
+				jQuery.each(response, function(key, value){
+					jQuery('#content-view').append(
+						'<tr class="trcontent">'+
+							'<td class="col-md-3" style="text-align:right;">'+key+'</td>'+
+							'<td class="col-md-6">'+value+'</td>'+
+						'</tr>'
+					);
+				});
+			});
+		});
+		
+	});
+	
+</script>

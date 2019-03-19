@@ -1,0 +1,816 @@
+<!-- Prevent direct access to .html file -->
+<script>
+	if(typeof app === 'undefined'){
+		document.location.href='index.php';
+	}
+</script>
+
+<div class="block-header">
+    <h2><i class="fa fa-table"></i> KSO/ PERJANJIAN KERJA SAMA</h2>
+</div>
+
+<div class="row clearfix" id="div-tabel">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+            	<div class="row clearfix">
+                    <div class="col-xs-12 col-sm-6">
+                        <select id="kso" name="kso" class="form-control chosen">	
+						</select>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 align-right">
+                        <button title="Tambah Data" type="button" class="btn btn-xs btn-danger waves-effect" id="tambah" style="display:none;">
+							<i class="material-icons">add</i>
+						</button>
+                    </div>
+                </div>
+            </div>
+            <div class="body">
+                <div class="table-responsive">
+                    <table id="tabel-ruh" class="table table-bordered table-striped table-hover">
+                        <thead>
+							<tr>
+								<th></th>
+								<th>No</th>
+								<th>Nama KSO</th>
+								<th>Nama Owner</th>
+								<th>Nama Dirut</th>
+								<th>Porsi</th>
+								<th>Nilai Uang</th>
+								<th>Nilai Aset</th>
+								<th>Jml.Struktur</th>
+								<th>Jml.Jadwal</th>
+								<th>Aksi</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row clearfix" id="div-form" style="min-height:700px;" style="display:none;">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <h2><i class="fa fa-pencil"></i> FORM</h2>
+            </div>
+            <div class="body">
+                <form id="form-ruh" name="form-ruh" class="form-horizontal">
+                    <input type="hidden" id="inp-id" name="inp-id">
+					<input type="hidden" id="inp-rekambaru" name="inp-rekambaru">
+					<input type="hidden" id="id_kso" name="id_kso">
+					<input type="hidden" id="_token" name="_token">
+                    
+                    <div class="row clearfix">
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 form-control-label"><label>KSO</label></div>
+                        <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
+                            <div class="form-group">
+                                <div class="form-line ">
+                                    <input type="text" id="id_kso1" name="id_kso1" class="form-control" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                        	<span id="warning-id_kso1" class="label label-warning warning">Required!</span>
+                        </div>
+                    </div>
+					
+					<div class="row clearfix">
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 form-control-label"><label>Owner</label></div>
+                        <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
+                            <div class="form-group">
+                                <div class="form-line ">
+                                    <select id="id_owner" name="id_owner" class="form-control chosen">	
+									</select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                        	<span id="warning-id_owner" class="label label-warning warning">Required!</span>
+                        </div>
+                    </div>
+
+                    <div class="row clearfix">
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 form-control-label"><label>Porsi</label></div>
+                        <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
+                            <div class="form-group">
+                                <div class="form-line ">
+                                    <input type="text" id="porsi" name="porsi" class="form-control val_num uang" style="text-align:right;">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                        	<span id="warning-porsi" class="label label-warning warning">Required!</span>
+                        </div>
+                    </div>
+					
+					<div class="row clearfix">
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 form-control-label"><label>Nilai Uang</label></div>
+                        <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
+                            <div class="form-group">
+                                <div class="form-line ">
+                                    <input type="text" id="nilai_uang" name="nilai_uang" class="form-control val_num uang" style="text-align:right;">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                        	<span id="warning-nilai_uang" class="label label-warning warning">Required!</span>
+                        </div>
+                    </div>
+					
+					<div class="row clearfix">
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 form-control-label"><label>Nilai Aset</label></div>
+                        <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
+                            <div class="form-group">
+                                <div class="form-line ">
+                                    <input type="text" id="nilai_aset" name="nilai_aset" class="form-control val_num uang" style="text-align:right;">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                        	<span id="warning-nilai_aset" class="label label-warning warning">Required!</span>
+                        </div>
+                    </div>
+
+                    <div class="row clearfix">
+                        <div class="col-lg-offset-3 col-md-offset-3 col-sm-offset-3 col-xs-offset-3">
+                            <button title="Simpan Data Ini?" id="simpan" type="button" class="btn btn-primary m-t-15 waves-effect">
+                            	<i class="material-icons">save</i> SIMPAN
+                            </button>
+							<button title="Batal" id="batal" type="button" class="btn btn-danger m-t-15 waves-effect batal">
+								<i class="material-icons">refresh</i> BATAL
+							</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row clearfix" id="div-form1" style="min-height:700px;" style="display:none;">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <h2><i class="fa fa-pencil"></i> FORM DETIL STRUKTUR</h2>
+            </div>
+            <div class="body">
+                <form id="form-ruh1" name="form-ruh" class="form-horizontal">
+                    <input type="hidden" id="inp-id1" name="inp-id">
+					<input type="hidden" id="inp-rekambaru1" name="inp-rekambaru">
+					<input type="hidden" id="id_kso_pks1" name="id_kso_pks">
+					<input type="hidden" id="_token1" name="_token">
+					
+					<div class="row clearfix">
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 form-control-label"><label>Jabatan</label></div>
+                        <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
+                            <div class="form-group">
+                                <div class="form-line ">
+                                    <select id="kdjab" name="kdjab" class="form-control chosen">	
+									</select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                        	<span id="warning-kdjab" class="label label-warning warning">Required!</span>
+                        </div>
+                    </div>
+					
+					<div class="row clearfix">
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 form-control-label"><label>Nama</label></div>
+                        <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
+                            <div class="form-group">
+                                <div class="form-line ">
+                                    <input type="text" id="nama" name="nama" class="form-control" maxlength="50">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                        	<span id="warning-nama" class="label label-warning warning">Required!</span>
+                        </div>
+                    </div>
+					
+					<div class="row clearfix">
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 form-control-label"><label>NIK</label></div>
+                        <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
+                            <div class="form-group">
+                                <div class="form-line ">
+                                    <input type="text" id="nik" name="nik" class="form-control val_num" maxlength="16">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                        	<span id="warning-nik" class="label label-warning warning">Required!</span>
+                        </div>
+                    </div>
+
+                    <div class="row clearfix">
+                        <div class="col-lg-offset-3 col-md-offset-3 col-sm-offset-3 col-xs-offset-3">
+                            <button title="Simpan Data Ini?" id="simpan1" type="button" class="btn btn-primary m-t-15 waves-effect">
+                            	<i class="material-icons">save</i> SIMPAN
+                            </button>
+							<button title="Batal" id="batal1" type="button" class="btn btn-danger m-t-15 waves-effect batal">
+								<i class="material-icons">refresh</i> BATAL
+							</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row clearfix" id="div-form2" style="min-height:700px;" style="display:none;">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="header">
+                <h2><i class="fa fa-pencil"></i> FORM DETIL JADWAL</h2>
+            </div>
+            <div class="body">
+                <form id="form-ruh2" name="form-ruh" class="form-horizontal">
+                    <input type="hidden" id="inp-id2" name="inp-id">
+					<input type="hidden" id="inp-rekambaru2" name="inp-rekambaru">
+					<input type="hidden" id="id_kso_pks2" name="id_kso_pks">
+					<input type="hidden" id="_token2" name="_token">
+					
+					<div class="row clearfix">
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 form-control-label"><label>Tahap</label></div>
+                        <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
+                            <div class="form-group">
+                                <div class="form-line ">
+                                    <input type="text" id="tahap" name="tahap" class="form-control val_num" style="text-align:right;">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                        	<span id="warning-tahap" class="label label-warning warning">Required!</span>
+                        </div>
+                    </div>
+					
+					<div class="row clearfix">
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 form-control-label"><label>Tahun</label></div>
+                        <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
+                            <div class="form-group">
+                                <div class="form-line ">
+                                    <select id="tahun" name="tahun" class="form-control chosen">
+									</select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                        	<span id="warning-tahun" class="label label-warning warning">Required!</span>
+                        </div>
+                    </div>
+					
+					<div class="row clearfix">
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 form-control-label"><label>Bulan</label></div>
+                        <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
+                            <div class="form-group">
+                                <div class="form-line ">
+                                    <select id="bulan" name="bulan" class="form-control chosen">	
+									</select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                        	<span id="warning-bulan" class="label label-warning warning">Required!</span>
+                        </div>
+                    </div>
+					
+					<div class="row clearfix">
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 form-control-label"><label>Porsi</label></div>
+                        <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
+                            <div class="form-group">
+                                <div class="form-line ">
+                                    <input type="text" id="porsi2" name="porsi" class="form-control val_num" style="text-align:right;">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                        	<span id="warning-porsi2" class="label label-warning warning">Required!</span>
+                        </div>
+                    </div>
+
+                    <div class="row clearfix">
+                        <div class="col-lg-offset-3 col-md-offset-3 col-sm-offset-3 col-xs-offset-3">
+                            <button title="Simpan Data Ini?" id="simpan2" type="button" class="btn btn-primary m-t-15 waves-effect">
+                            	<i class="material-icons">save</i> SIMPAN
+                            </button>
+							<button title="Batal" id="batal2" type="button" class="btn btn-danger m-t-15 waves-effect batal">
+								<i class="material-icons">refresh</i> BATAL
+							</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+	jQuery(document).ready(function(){
+	
+		jQuery.fn.dataTable.ext.errMode = 'none';
+		
+		jQuery('.uang').mask('000,000,000,000,000', {reverse: true});
+		
+		function digit_grouping(nStr){
+			nStr += '';
+			x = nStr.split('.');
+			x1 = x[0];
+			x2 = x.length > 1 ? '.' + x[1] : '';
+			var rgx = /(\d+)(\d{3})/;
+			while (rgx.test(x1)) {
+				x1 = x1.replace(rgx, '$1' + ',' + '$2');
+			}
+			return x1 + x2;
+		}
+		
+		//aktivasi chosen
+		jQuery('.chosen').chosen();
+		
+		jQuery.get('dropdown/kso', function(result){
+			jQuery('#kso').html(result).trigger('chosen:updated');
+		});
+		
+		jQuery.get('dropdown/owner', function(result){
+			jQuery('#id_owner').html(result).trigger('chosen:updated');
+		});
+		
+		jQuery.get('dropdown/jabatan', function(result){
+			jQuery('#kdjab').html(result).trigger('chosen:updated');
+		});
+		
+		jQuery.get('dropdown/tahun', function(result){
+			jQuery('#tahun').html(result).trigger('chosen:updated');
+		});
+		
+		jQuery.get('dropdown/bulan', function(result){
+			jQuery('#bulan').html(result).trigger('chosen:updated');
+		});
+		
+		jQuery('#kso').change(function(){
+			var id_kso = jQuery(this).val();
+			var kso = jQuery( "#kso option:selected" ).text();
+			jQuery('#id_kso').val(id_kso);
+			jQuery('#id_kso1').val(kso);
+			table.ajax.url('kso/pks?id_kso='+id_kso).load();
+		});
+		
+		jQuery.get('cek/level', function(result){
+			if(result=='00'){ //admin
+				jQuery('#tambah').show();
+			}
+		});
+		
+		jQuery.extend({
+			getValues: function(url) {
+				var result = null;
+				jQuery.ajax({
+					url: url,
+					type: 'get',
+					async: false,
+					success: function(data) {
+						result = data;
+					}
+				});
+			   return result;
+			}
+		});
+		
+		//tampilan default
+		function form_default() {
+			jQuery('input,textarea').val('');
+			jQuery('.warning, #div-form, #div-form1,#div-form2').hide();
+			jQuery('#div-tabel').show();
+			jQuery('#id_owner').prop('disabled', false);
+			jQuery('#simpan').prop('disabled', false);
+		}
+		
+		//aktivasi tampilan default
+		form_default();
+		
+		//klik tambah
+		jQuery('#tambah').click(function(){
+			if(jQuery('#kso').val()!==''){
+				
+				var id_kso = jQuery('#kso').val();
+				var kso = jQuery( "#kso option:selected" ).text();
+				jQuery('#id_kso').val(id_kso);
+				jQuery('#id_kso1').val(kso);
+				
+				jQuery('#inp-rekambaru').val('1');
+				jQuery('#div-form').show();
+				jQuery('#div-tabel,#div-form1,#div-form2').hide();
+			}
+			else{
+				alertify.log('Pilih dulu KSO-nya!');
+			}
+		});
+		
+		//data tabel
+		var table=jQuery('#tabel-ruh').DataTable({
+			bProcessing:true,
+			language:{
+			    "decimal":        "",
+			    "emptyTable":     "Tidak ada data tersedia",
+			    "info":           "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
+			    "infoEmpty":      "Menampilkan 0 sampai 0 dari 0 entri",
+			    "infoFiltered":   "(disaring dari _MAX_ total entri)",
+			    "infoPostFix":    "",
+			    "thousands":      ",",
+			    "lengthMenu":     "Tampilkan _MENU_ entri",
+			    "loadingRecords": "Proses Loading...",
+			    "processing":     "Sedang Proses...",
+			    "search":         "Cari:",
+			    "zeroRecords":    "Tidak ditemukan data yang sesuai",
+			    "paginate": {
+			        "first":      "Awal",
+			        "last":       "Akhir",
+			        "next":       "Sesudah",
+			        "previous":   "Sebelum"
+			    },
+			    "aria": {
+			        "sortAscending":  ": aktifkan untuk mengurutkan kolom (asc)",
+			        "sortDescending": ": aktifkan untuk mengurutkan kolom (desc)"
+			    }
+			},
+			"columns": [
+				{
+					"className":      'details-control',
+					"orderable":      false,
+					"data":      null,
+					"defaultContent": ''
+				},
+				{},
+				{},
+				{},
+				{},
+				{},
+				{},
+				{},
+				{},
+				{},
+				{}
+			],
+			aaSorting: [0],
+			bServerSide: true,
+			ajax:{
+				url: "kso/pks", // Change this URL to where your json data comes from
+				type: "GET"
+			},
+			fnCreatedRow: function( nRow, aData, iDataIndex ) {
+				jQuery(nRow).attr('id', aData[0]);
+			}
+		});
+		
+		jQuery('#tabel-ruh').off('click', 'td.details-control').on('click', 'td.details-control', function () {
+			var tr = jQuery(this).closest('tr');
+			var row = table.row( tr );
+	 
+			if ( row.child.isShown() ) {
+				// This row is already open - close it
+				var id=jQuery(this).parent().attr('id');
+				row.child.hide();
+				tr.removeClass('shown');
+			}
+			else {
+				var id=jQuery(this).parent().attr('id');
+				
+				if(id!=''){
+					jQuery.get('kso/pks/detil1/'+id, function(result){
+						if(result){
+							row.child( result).show();
+							tr.addClass('shown');
+						}
+						else{
+							alertify.log('Data detil tidak ditemukan!');
+						}
+					});
+				}
+				else{
+					alertify.log('Tidak ada data detil...');
+				}
+			}
+		});
+		
+		//validasi isian form
+		function form_valid(str_id){
+			var arr_id = str_id.split(',');
+			var next = true;
+			for(x = 0; x < arr_id.length; x++){
+				if(jQuery('#'+arr_id[x]).val()==''){
+					jQuery('#warning-'+arr_id[x]).show();
+					next = false;
+				}
+			}
+			return next;
+		}
+		
+		//cari data user yang akan di edit berdasarkan id user
+		function cari_data(id){
+			jQuery('.chosen').val('').trigger('chosen:updated');
+			jQuery.getJSON('kso/pks/pilih/'+id, function(result){
+				if(result) {
+					jQuery('#inp-id').val(id);
+					jQuery('#inp-rekambaru').val('0');
+					jQuery('#id_kso').val(result.id_kso);
+					jQuery('#id_kso1').val(result.nama+', '+result.nopks);
+					jQuery('#id_owner').val(result.id_owner).prop('disabled', true);
+					jQuery('#porsi').val(digit_grouping(result.porsi));
+					jQuery('#nilai_uang').val(digit_grouping(result.nilai_uang));
+					jQuery('#nilai_aset').val(digit_grouping(result.nilai_aset));
+					jQuery('.chosen').trigger('chosen:updated');
+				}
+			});
+		}
+		
+		//klik ubah
+		jQuery('body').off('click', '.ubah').on('click', '.ubah', function(){
+			var id = this.id;
+			jQuery('#div-tabel').hide();
+			jQuery('#div-form').show();
+			cari_data(id);
+		});
+		
+		//klik batal
+		jQuery('.batal').click(function(){
+			form_default();
+		});
+		
+		//klik simpan
+		jQuery('#simpan').click(function(){
+			jQuery(this).html('<span class="loading"><i class="fa fa-refresh"></i> Loading.....</span>');
+			jQuery(this).prop('disabled',true);
+			var next = form_valid('id_kso,id_owner,porsi,nilai_uang,nilai_aset');
+			if(next==true){
+				jQuery.get('token', function(token){
+					if(token){
+						jQuery('#_token').val(token);
+						var data = jQuery('#form-ruh').serialize();
+						jQuery.ajax({
+							url: 'kso/pks',
+							method: 'POST',
+							data: data,
+							success: function(result){
+								if(result=='success') {
+									jQuery('#simpan').html('<i class="material-icons">save</i> SIMPAN');
+									jQuery('#simpan').prop('disabled',false);
+									alertify.log('Proses simpan berhasil');
+									form_default();
+									table.ajax.reload();
+								} else {
+									jQuery('#simpan').html('<i class="material-icons">save</i> SIMPAN');
+									jQuery('#simpan').prop('disabled',false);
+									alertify.log(result);
+								} 
+							},
+							error: function(result){
+								jQuery('#simpan').html('<i class="material-icons">save</i> SIMPAN');
+								jQuery('#simpan').prop('disabled',false);
+								alertify.log('Data tidak dapat disimpan. Koneksi pada aplikasi/database terputus atau data sudah pernah direkam atau format data salah. Hubungi Administrator.');
+							}
+						})
+					} 
+					else{
+						jQuery('#simpan').html('<i class="material-icons">save</i> SIMPAN');
+						jQuery('#simpan').prop('disabled',false);
+						alertify.log('Sesi telah habis, silahkan refresh browser Anda!');
+					}
+				});
+			}
+			else{
+				jQuery('#simpan').html('<i class="material-icons">save</i> SIMPAN');
+				jQuery('#simpan').prop('disabled',false);
+				alertify.log('Data tidak dapat dikosongkan!');
+			}
+		});
+		
+		//hapus
+		jQuery('body').off('click', '.hapus').on('click', '.hapus', function(){
+			var id = this.id;
+			alertify.confirm('Hapus data ini?', function(c){
+				if(c) {
+					jQuery.get('token', function(token){
+						if(token) {
+							jQuery.ajax({
+								url:'kso/pks/hapus',
+								method:'POST',
+								data:{
+									_token:token, 
+									id:id
+								},
+								success:function(result){
+									if(result=='success') {
+										alertify.log('Proses hapus berhasil.');
+										table.ajax.reload();
+										form_default();
+									} else {
+										alertify.log(result);
+									} 
+								},
+								error:function(result){
+									alertify.log('Koneksi pada aplikasi/database terputus. Hubungi Administrator.');
+								}
+							});
+						} else {
+							alertify.log('Proses hapus gagal. Silahkan refresh halaman browser anda.');
+						} 
+					});
+				} 
+			});
+		});
+		
+		//tambah detil1
+		jQuery('body').off('click', '.tambah1').on('click', '.tambah1', function(){
+			var id = this.id;
+			jQuery('#inp-rekambaru1').val('1');
+			jQuery('#inp-id1').val('');
+			jQuery('#id_kso_pks1').val(id);
+			jQuery('#div-tabel,#div-form,#div-form2').hide();
+			jQuery('#div-form1').show();
+		});
+		
+		//klik simpan1
+		jQuery('#simpan1').click(function(){
+			jQuery(this).html('<span class="loading"><i class="fa fa-refresh"></i> Loading.....</span>');
+			jQuery(this).prop('disabled',true);
+			var next = form_valid('id_kso_pks1,kdjab,nama,nik');
+			if(next==true){
+				jQuery.get('token', function(token){
+					if(token){
+						jQuery('#_token1').val(token);
+						var data = jQuery('#form-ruh1').serialize();
+						jQuery.ajax({
+							url: 'kso/pks/detil1',
+							method: 'POST',
+							data: data,
+							success: function(result){
+								if(result=='success') {
+									jQuery('#simpan1').html('<i class="material-icons">save</i> SIMPAN');
+									jQuery('#simpan1').prop('disabled',false);
+									alertify.log('Proses simpan berhasil');
+									form_default();
+									table.ajax.reload();
+								} else {
+									jQuery('#simpan1').html('<i class="material-icons">save</i> SIMPAN');
+									jQuery('#simpan1').prop('disabled',false);
+									alertify.log(result);
+								} 
+							},
+							error: function(result){
+								jQuery('#simpan1').html('<i class="material-icons">save</i> SIMPAN');
+								jQuery('#simpan1').prop('disabled',false);
+								alertify.log('Data tidak dapat disimpan. Koneksi pada aplikasi/database terputus atau data sudah pernah direkam atau format data salah. Hubungi Administrator.');
+							}
+						})
+					} 
+					else{
+						jQuery('#simpan1').html('<i class="material-icons">save</i> SIMPAN');
+						jQuery('#simpan1').prop('disabled',false);
+						alertify.log('Sesi telah habis, silahkan refresh browser Anda!');
+					}
+				});
+			}
+			else{
+				jQuery('#simpan1').html('<i class="material-icons">save</i> SIMPAN');
+				jQuery('#simpan1').prop('disabled',false);
+				alertify.log('Data tidak dapat dikosongkan!');
+			}
+		});
+		
+		//hapus1
+		jQuery('body').off('click', '.hapus1').on('click', '.hapus1', function(){
+			var id = this.id;
+			alertify.confirm('Hapus data detil ini?', function(c){
+				if(c) {
+					jQuery.get('token', function(token){
+						if(token) {
+							jQuery.ajax({
+								url:'kso/pks/hapus1',
+								method:'POST',
+								data:{
+									_token:token, 
+									id:id
+								},
+								success:function(result){
+									if(result=='success') {
+										alertify.log('Proses hapus berhasil.');
+										table.ajax.reload();
+										form_default();
+									} else {
+										alertify.log(result);
+									} 
+								},
+								error:function(result){
+									alertify.log('Koneksi pada aplikasi/database terputus. Hubungi Administrator.');
+								}
+							});
+						} else {
+							alertify.log('Proses hapus gagal. Silahkan refresh halaman browser anda.');
+						} 
+					});
+				} 
+			});
+		});
+		
+		//tambah detil2
+		jQuery('body').off('click', '.tambah2').on('click', '.tambah2', function(){
+			var id = this.id;
+			jQuery('#inp-rekambaru2').val('1');
+			jQuery('#inp-id2').val('');
+			jQuery('#id_kso_pks2').val(id);
+			jQuery('#div-tabel,#div-form,#div-form2').hide();
+			jQuery('#div-form2').show();
+		});
+		
+		//klik simpan2
+		jQuery('#simpan2').click(function(){
+			jQuery(this).html('<span class="loading"><i class="fa fa-refresh"></i> Loading.....</span>');
+			jQuery(this).prop('disabled',true);
+			var next = form_valid('id_kso_pks2,tahun,bulan,tahap,porsi2');
+			if(next==true){
+				jQuery.get('token', function(token){
+					if(token){
+						jQuery('#_token2').val(token);
+						var data = jQuery('#form-ruh2').serialize();
+						jQuery.ajax({
+							url: 'kso/pks/detil2',
+							method: 'POST',
+							data: data,
+							success: function(result){
+								if(result=='success') {
+									jQuery('#simpan2').html('<i class="material-icons">save</i> SIMPAN');
+									jQuery('#simpan2').prop('disabled',false);
+									alertify.log('Proses simpan berhasil');
+									form_default();
+									table.ajax.reload();
+								} else {
+									jQuery('#simpan2').html('<i class="material-icons">save</i> SIMPAN');
+									jQuery('#simpan2').prop('disabled',false);
+									alertify.log(result);
+								} 
+							},
+							error: function(result){
+								jQuery('#simpan2').html('<i class="material-icons">save</i> SIMPAN');
+								jQuery('#simpan2').prop('disabled',false);
+								alertify.log('Data tidak dapat disimpan. Koneksi pada aplikasi/database terputus atau data sudah pernah direkam atau format data salah. Hubungi Administrator.');
+							}
+						})
+					} 
+					else{
+						jQuery('#simpan2').html('<i class="material-icons">save</i> SIMPAN');
+						jQuery('#simpan2').prop('disabled',false);
+						alertify.log('Sesi telah habis, silahkan refresh browser Anda!');
+					}
+				});
+			}
+			else{
+				jQuery('#simpan2').html('<i class="material-icons">save</i> SIMPAN');
+				jQuery('#simpan2').prop('disabled',false);
+				alertify.log('Data tidak dapat dikosongkan!');
+			}
+		});
+		
+		//hapus2
+		jQuery('body').off('click', '.hapus2').on('click', '.hapus2', function(){
+			var id = this.id;
+			alertify.confirm('Hapus data detil ini?', function(c){
+				if(c) {
+					jQuery.get('token', function(token){
+						if(token) {
+							jQuery.ajax({
+								url:'kso/pks/hapus2',
+								method:'POST',
+								data:{
+									_token:token, 
+									id:id
+								},
+								success:function(result){
+									if(result=='success') {
+										alertify.log('Proses hapus berhasil.');
+										table.ajax.reload();
+										form_default();
+									} else {
+										alertify.log(result);
+									} 
+								},
+								error:function(result){
+									alertify.log('Koneksi pada aplikasi/database terputus. Hubungi Administrator.');
+								}
+							});
+						} else {
+							alertify.log('Proses hapus gagal. Silahkan refresh halaman browser anda.');
+						} 
+					});
+				} 
+			});
+		});
+		
+	});
+	
+</script>
