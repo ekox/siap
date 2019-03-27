@@ -7,7 +7,7 @@
     <meta name="description" content="Apex admin is super flexible, powerful, clean &amp; modern responsive bootstrap 4 admin template with unlimited possibilities.">
     <meta name="keywords" content="admin template, Apex admin template, dashboard template, flat admin template, responsive admin template, web app">
     <meta name="author" content="PIXINVENT">
-    <title>Dashboard1 - Apex responsive bootstrap 4 admin template</title>
+    <title>SIAP SAJA</title>
     <link rel="apple-touch-icon" sizes="60x60" href="{{ asset('template/Apex6/app-assets/img/ico/apple-icon-60.png') }}">
     <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('template/Apex6/app-assets/img/ico/apple-icon-76.png') }}">
     <link rel="apple-touch-icon" sizes="120x120" href="{{ asset('template/Apex6/app-assets/img/ico/apple-icon-120.png') }}">
@@ -25,13 +25,32 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('template/Apex6/app-assets/fonts/font-awesome/css/font-awesome.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('template/Apex6/app-assets/vendors/css/perfect-scrollbar.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('template/Apex6/app-assets/vendors/css/prism.min.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('template/Apex6/app-assets/vendors/css/chartist.min.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ asset('template/Apex6/app-assets/vendors/css/tables/datatable/datatables.min.css') }}">
+	<link href="{{ asset('plugins/chosen/chosen.min.css') }}" rel="stylesheet" >
+	<link href="{{ asset('plugins/alertify/themes/alertify.core.css') }}" rel="stylesheet">
+    <link href="{{ asset('plugins/alertify/themes/alertify.default.css') }}" rel="stylesheet" >
+	<link href="{{ asset('plugins/jquery-file-upload/css/jquery.fileupload.css') }}" rel="stylesheet" />
     <!-- END VENDOR CSS-->
     <!-- BEGIN APEX CSS-->
     <link rel="stylesheet" type="text/css" href="{{ asset('template/Apex6/app-assets/css/app.css') }}">
     <!-- END APEX CSS-->
     <!-- BEGIN Page Level CSS-->
     <!-- END Page Level CSS-->
+	<style>
+		.chosen-container {
+			width: 100% !important;
+		}
+		form .form-body{
+			overflow: visible !important;
+		}
+		td.details-control {
+			background: url('template/img/details_open.png') no-repeat center center;
+			cursor: pointer;
+		}
+		tr.shown td.details-control {
+			background: url('template/img/details_close.png') no-repeat center center;
+		}
+	</style>
   </head>
   <body data-col="2-columns" class=" 2-columns ">
     <!-- ////////////////////////////////////////////////////////////////////////////-->
@@ -86,9 +105,9 @@
 						<p class="d-none">User Settings</p>
 					</a>
                   <div ngbdropdownmenu="" aria-labelledby="dropdownBasic3" class="dropdown-menu text-left dropdown-menu-right">
-					<a href="javascript:;" class="dropdown-item py-1"><i class="ft-edit mr-2"></i><span>Edit Profile</span></a>
+					<a ui-sref="profile" class="dropdown-item py-1"><i class="ft-edit mr-2"></i><span>Edit Profile</span></a>
                     <div class="dropdown-divider"></div>
-					<a href="javascript:;" class="dropdown-item"><i class="ft-power mr-2"></i><span>Logout</span></a>
+					<a href="auth/logout" class="dropdown-item"><i class="ft-power mr-2"></i><span>Logout</span></a>
                   </div>
                 </li>
               </ul>
@@ -195,6 +214,7 @@
     <!-- Theme customizer Ends-->
     <!-- BEGIN VENDOR JS-->
     <script src="{{ asset('template/Apex6/app-assets/vendors/js/core/jquery-3.2.1.min.js') }}" type="text/javascript"></script>
+	<script src="{{ asset('template/Apex6/src/js/jquery-ui.min.js') }}"></script>
 	
 	<!-- load angular -->
     <script src="{{ asset('template/angular/angular.min.js') }}"></script>
@@ -209,18 +229,19 @@
     <script src="{{ asset('template/Apex6/app-assets/vendors/js/jquery.matchHeight-min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('template/Apex6/app-assets/vendors/js/screenfull.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('template/Apex6/app-assets/vendors/js/pace/pace.min.js') }}" type="text/javascript"></script>
+	<script src="{{ asset('template/Apex6/app-assets/vendors/js/datatable/datatables.min.js') }}" type="text/javascript"></script>
+	<script src="{{ asset('plugins/chosen/chosen.jquery.min.js') }}"></script>
+	<script src="{{ asset('plugins/alertify/lib/alertify.min.js') }}"></script>
+	<script src="{{ asset('plugins/jquery-file-upload/js/jquery.fileupload.js') }}"></script>
+	<script src="{{ asset('plugins/jQueryMaskPlugin/src/jquery.mask.js') }}"></script>
     <!-- BEGIN VENDOR JS-->
     <!-- BEGIN PAGE VENDOR JS-->
-    <script src="{{ asset('template/Apex6/app-assets/vendors/js/chartist.min.js') }}" type="text/javascript"></script>
     <!-- END PAGE VENDOR JS-->
     <!-- BEGIN APEX JS-->
     <script src="{{ asset('template/Apex6/app-assets/js/app-sidebar.js') }}" type="text/javascript"></script>
     <script src="{{ asset('template/Apex6/app-assets/js/notification-sidebar.js') }}" type="text/javascript"></script>
     <script src="{{ asset('template/Apex6/app-assets/js/customizer.js') }}" type="text/javascript"></script>
     <!-- END APEX JS-->
-    <!-- BEGIN PAGE LEVEL JS-->
-    <script src="{{ asset('template/Apex6/app-assets/js/dashboard1.js') }}" type="text/javascript"></script>
-    <!-- END PAGE LEVEL JS-->
 	
 	<script>
 		{!! $angular !!}

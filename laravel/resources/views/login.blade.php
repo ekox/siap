@@ -7,7 +7,7 @@
     <meta name="description" content="Apex admin is super flexible, powerful, clean &amp; modern responsive bootstrap 4 admin template with unlimited possibilities.">
     <meta name="keywords" content="admin template, Apex admin template, dashboard template, flat admin template, responsive admin template, web app">
     <meta name="author" content="PIXINVENT">
-    <title>Login Page - Apex responsive bootstrap 4 admin template</title>
+    <title>SIAP SAJA</title>
     <link rel="apple-touch-icon" sizes="60x60" href="{{ asset('template/Apex6/app-assets/img/ico/apple-icon-60.png') }}">
     <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('template/Apex6/app-assets/img/ico/apple-icon-76.png') }}">
     <link rel="apple-touch-icon" sizes="120x120" href="{{ asset('template/Apex6/app-assets/img/ico/apple-icon-120.png') }}">
@@ -73,10 +73,18 @@
 													<input type="password" class="form-control" name="password" id="password" placeholder="Password" required>
 												</div>
 											</div>
+											
+											<div class="form-group">
+												<div class="col-md-12">
+													<select class="form-control" name="tahun" id="tahun" required>
+													{!!$tahun!!}
+													</select>
+												</div>
+											</div>
 
 											<div class="form-group">
 												<div class="col-md-12">
-													<button id="submit" type="submit" class="btn btn-pink btn-block btn-raised">Submit</button>
+													<button id="submit" type="submit" class="btn btn-warning btn-block btn-raised">Submit</button>
 												</div>
 											</div>
 										</form>
@@ -142,6 +150,9 @@
                     lanjut=false;
                 }
                 if(jQuery('#password').val()==''){
+                    lanjut=false;
+                }
+				if(jQuery('#tahun').val()==''){
                     lanjut=false;
                 }
                 if(lanjut==true){

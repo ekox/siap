@@ -35,6 +35,42 @@ Route::group(['middleware' => 'auth'], function(){
 		
 	});
 	
+	//anggaran
+	Route::group(['prefix' => 'anggaran'], function () {
+		
+		Route::group(['prefix' => 'pagu'], function () {
+			
+			Route::group(['prefix' => 'unit'], function () {
+			
+				Route::get('', 'AnggaranPaguUnitController@index');
+				Route::get('/pilih/{param}', 'AnggaranPaguUnitController@pilih')->middleware('role:00');
+				Route::post('', 'AnggaranPaguUnitController@simpan')->middleware('role:00');
+				Route::post('/hapus', 'AnggaranPaguUnitController@hapus')->middleware('role:00');
+				
+			});
+			
+		});
+		
+	});
+	
+	//transaksi
+	Route::group(['prefix' => 'transaksi'], function () {
+		
+		Route::group(['prefix' => 'rekam'], function () {
+			
+			Route::get('', 'TransaksiRekamController@index');
+			Route::get('/pilih/{param}', 'TransaksiRekamController@pilih')->middleware('role:01');
+			Route::get('/nomor', 'TransaksiRekamController@nomor')->middleware('role:01');
+			Route::get('/detil/{param}', 'TransaksiRekamController@detil')->middleware('role:01');
+			Route::get('/download/{param}', 'TransaksiRekamController@download')->middleware('role:01');
+			Route::post('', 'TransaksiRekamController@simpan')->middleware('role:01');
+			Route::post('/hapus', 'TransaksiRekamController@hapus')->middleware('role:01');
+			Route::post('/upload', 'TransaksiRekamController@upload')->middleware('role:01');
+			
+		});
+		
+	});
+	
 	//route KSO
 	Route::group(['prefix' => 'kso'], function () {
 		
@@ -178,23 +214,13 @@ Route::group(['middleware' => 'auth'], function(){
 	//route for Dropdown
 	Route::group(['prefix' => 'dropdown'], function(){
 		
-		Route::get('/kso', 'DropdownController@kso');
-		Route::get('/owner', 'DropdownController@owner');
-		Route::get('/mk', 'DropdownController@mk');
-		Route::get('/qs', 'DropdownController@qs');
-		Route::get('/kon', 'DropdownController@kon');
-		Route::get('/jabatan', 'DropdownController@jabatan');
-		Route::get('/tahun', 'DropdownController@tahun');
-		Route::get('/bulan', 'DropdownController@bulan');
-		Route::get('/user', 'DropdownController@user');
-		Route::get('/satuan', 'DropdownController@satuan');
-		Route::get('/lvl-teknis', 'DropdownController@lvl_teknis');
-		Route::get('/lvl-teknis/{param}', 'DropdownController@lvl_teknis_by_id');
-		Route::get('/dok-teknis/{param}', 'DropdownController@dok_teknis');
-		Route::get('/tagihan', 'DropdownController@tagihan');
-		Route::get('/perusahaan', 'DropdownController@perusahaan');
+		Route::get('/output', 'DropdownController@output');
+		Route::get('/unit/{param}', 'DropdownController@unit');
 		Route::get('/level', 'DropdownController@level');
-		Route::get('/jenis-usaha', 'DropdownController@jenis_usaha');
+		Route::get('/jenis-pagu', 'DropdownController@jenis_pagu');
+		Route::get('/alur', 'DropdownController@alur');
+		Route::get('/penerima', 'DropdownController@penerima');
+		Route::get('/akun/json', 'DropdownController@akun_json');
 		
 	});
 	
@@ -219,13 +245,21 @@ Route::group(['middleware' => 'auth'], function(){
 			
 		});
 		
-		Route::group(['prefix' => 'perusahaan'], function(){
+		Route::group(['prefix' => 'unit'], function(){
 			
-			Route::get('', 'RefPerusahaanController@index');
-			Route::get('/pilih/{param}', 'RefPerusahaanController@pilih');
-			Route::post('', 'RefPerusahaanController@simpan');
-			Route::post('/upload', 'RefPerusahaanController@upload');
-			Route::post('/hapus', 'RefPerusahaanController@hapus');
+			Route::get('', 'RefUnitController@index');
+			Route::get('/pilih/{param}', 'RefUnitController@pilih');
+			Route::post('', 'RefUnitController@simpan');
+			Route::post('/hapus', 'RefUnitController@hapus');
+			
+		});
+		
+		Route::group(['prefix' => 'output'], function(){
+			
+			Route::get('', 'RefOutputController@index');
+			Route::get('/pilih/{param}', 'RefOutputController@pilih');
+			Route::post('', 'RefOutputController@simpan');
+			Route::post('/hapus', 'RefOutputController@hapus');
 			
 		});
 		

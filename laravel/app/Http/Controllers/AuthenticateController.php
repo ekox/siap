@@ -13,16 +13,30 @@ class AuthenticateController extends Controller {
 	{
 		try{
 			$rows = DB::select("
-				select	*
-				from t_app_version
-				where status='1'
+				select	a.versi,a.nama,a.ket,b.tahun,b.aktif
+				from t_app_version a,
+				t_tahun b
+				where a.status='1'
+				order by b.tahun desc
 			");
+			
+			$data = '';
+			foreach($rows as $row){
+				
+				$selected = '';
+				if($row->aktif=='1'){
+					$selected = 'selected';
+				}
+				
+				$data .= '<option value="'.$row->tahun.'" '.$selected.'>TA. '.$row->tahun.'</option>';
+			}
 			
 			return view('login',
 				array(
 					'app_versi'=>$rows[0]->versi,
 					'app_nama'=>$rows[0]->nama,
-					'app_ket'=>$rows[0]->ket
+					'app_ket'=>$rows[0]->ket,
+					'tahun'=>$data
 				)
 			);
 		}
@@ -37,8 +51,9 @@ class AuthenticateController extends Controller {
 		try{
 			$username = $request->input('username');
 			$password = $request->input('password');
+			$tahun = $request->input('tahun');
 			
-			if($username!='' && $password!=''){
+			if($username!=='' && $password!=='' && $tahun!==''){
 				
 				$rows = DB::select("
 					select  a.id,
@@ -49,18 +64,22 @@ class AuthenticateController extends Controller {
 							a.foto,
 							b.kdlevel,
 							c.nmlevel,
-							d.versi as app_versi,
-							d.nama as app_nama,
-							d.ket as app_ket
+							d.kdunit,
+							e.nmunit,
+							f.versi as app_versi,
+							f.nama as app_nama,
+							f.ket as app_ket
 					from t_user a
 					left outer join t_user_level b on(a.id=b.id_user)
-					left outer join t_level c on(b.kdlevel=c.kdlevel),
+					left outer join t_level c on(b.kdlevel=c.kdlevel)
+					left outer join t_user_unit d on(a.id=d.id_user)
+					left outer join t_unit e on(d.kdunit=e.kdunit),
 					(
 						select    *
 						from t_app_version
 						where status='1'
-					) d
-					where a.username=? and b.status='1'
+					) f
+					where a.username=? and b.status='1' and d.status='1'
 				",[
 					$username
 				]);
@@ -80,9 +99,12 @@ class AuthenticateController extends Controller {
 								'foto' => $rows[0]->foto,
 								'kdlevel' => $rows[0]->kdlevel,
 								'nmlevel' => $rows[0]->nmlevel,
+								'kdunit' => $rows[0]->kdunit,
+								'nmunit' => $rows[0]->nmunit,
 								'app_versi' => $rows[0]->app_versi,
 								'app_nama' => $rows[0]->app_nama,
-								'app_ket' => $rows[0]->app_ket
+								'app_ket' => $rows[0]->app_ket,
+								'tahun' => $tahun
 							]);
 
 							return response()->json(['error' => false,'message' => 'Login berhasil!</br>Selamat Datang']);

@@ -5,303 +5,413 @@
 	}
 </script>
 
-<div class="block-header">
-    <h2><i class="fa fa-table"></i> KSO/ PROYEK</h2>
-</div>
-
-<div class="row clearfix" id="div-tabel">
-    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card">
-            <div class="header">
-            	<div class="row clearfix">
-                    <div class="col-xs-12 col-sm-6">
-                        <h2><i class="fa fa-table"></i> DATA</h2>
-                    </div>
-                    <div class="col-xs-12 col-sm-6 align-right">
-                        <button title="Tambah Data" type="button" class="btn btn-xs btn-danger waves-effect" id="tambah" style="display:none;">
-							<i class="material-icons">add</i>
-						</button>
-                    </div>
-                </div>
-            </div>
-            <div class="body">
-                <div class="table-responsive">
-                    <table id="tabel-ruh" class="table table-bordered table-striped table-hover">
-                        <thead>
-							<tr>
-								<th>No</th>
-								<th>Nama</th>
-								<th>NPWP</th>
-								<th>No.PKS</th>
-								<th>Tgl.PKS</th>
-								<th>Waktu</th>
-								<th>Uraian</th>
-								<th>Nilai</th>
-								<th>Aksi</th>
-							</tr>
-						</thead>
-						<tbody>
-						</tbody>
-                    </table>
-                </div>
-            </div>
+<section id="horizontal-form-layouts">
+	<div class="row">
+        <div class="col-sm-12">
+            <div class="content-header">Horizontal Forms</div>
         </div>
     </div>
-</div>
+	<div class="row">
+	    <div class="col-md-12">
+	        <div class="card">
+	            <div class="card-header">
+	                <h4 class="card-title" id="horz-layout-basic">Project Info</h4>
+	                <p class="mb-0">This is the basic horizontal form with labels on left and form controls on right in one line. Add <code>.form-horizontal</code> class to the form tag to have horizontal form styling. To define form sections use <code>form-section</code> class with any heading tags.</p>
+	            </div>
+	            <div class="card-body">
+	                <div class="px-3">
+	                    <form class="form form-horizontal">
+	                    	<div class="form-body">
+	                    		<h4 class="form-section"><i class="ft-user"></i> Personal Info</h4>
+			                    <div class="form-group row">
+	                            	<label class="col-md-3 label-control" for="projectinput1">First Name: </label>
+		                            <div class="col-md-9">
+		                            	<input type="text" id="projectinput1" class="form-control"  name="fname">
+		                            </div>
+		                        </div>
+		                        <div class="form-group row">
+	                            	<label class="col-md-3 label-control" for="projectinput2">Last Name: </label>
+									<div class="col-md-9">
+	                            		<input type="text" id="projectinput2" class="form-control"  name="lname">
+	                            	</div>
+		                        </div>
 
-<div class="row clearfix" id="div-form" style="min-height:700px;" style="display:none;">
-    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="card">
-            <div class="header">
-                <h2><i class="fa fa-pencil"></i> FORM</h2>
-            </div>
-            <div class="body">
-                <form id="form-ruh" name="form-ruh" class="form-horizontal">
-                    <input type="hidden" id="inp-id" name="inp-id">
-					<input type="hidden" id="inp-rekambaru" name="inp-rekambaru">
-					<input type="hidden" id="_token" name="_token">
-                    
-                    <div class="row clearfix">
-                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 form-control-label"><label>Nama</label></div>
-                        <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
-                            <div class="form-group">
-                                <div class="form-line focused">
-                                    <input type="text" id="nama" name="nama" class="form-control" maxlength="100">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
-                        	<span id="warning-nama" class="label label-warning warning">Required!</span>
-                        </div>
-                    </div>
-					
-					<div class="row clearfix">
-                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 form-control-label"><label>NPWP</label></div>
-                        <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
-                            <div class="form-group">
-                                <div class="form-line focused">
-                                    <input type="text" id="npwp" name="npwp" class="form-control val_num" maxlength="15">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
-                        	<span id="warning-npwp" class="label label-warning warning">Required!</span>
-                        </div>
-                    </div>
+		                        <div class="form-group row">
+		                            <label class="col-md-3 label-control" for="projectinput3">E-mail: </label>
+		                            <div class="col-md-9">
+		                            	<input type="text" id="projectinput3" class="form-control"  name="email">
+		                            </div>
+		                        </div>
 
-                    <div class="row clearfix">
-                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 form-control-label"><label>Nomor PKS</label></div>
-                        <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
-                            <div class="form-group">
-                                <div class="form-line focused">
-                                    <input type="text" id="nopks" name="nopks" class="form-control" maxlength="100">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
-                        	<span id="warning-nopks" class="label label-warning warning">Required!</span>
-                        </div>
-                    </div>
-					
-					<div class="row clearfix">
-                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 form-control-label"><label>Tanggal PKS</label></div>
-                        <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
-                            <div class="form-group">
-                                <div class="form-line focused">
-                                    <input type="date" id="tgpks" name="tgpks" class="form-control" maxlength="10">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
-                        	<span id="warning-tgpks" class="label label-warning warning">Required!</span>
-                        </div>
-                    </div>
-					
-					<div class="row clearfix">
-                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 form-control-label"><label>Batas Waktu</label></div>
-                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
-                            <div class="form-group">
-                                <div class="form-line focused">
-                                    <input type="date" id="tgawal" name="tgawal" class="form-control" maxlength="10">
-                                </div>
-                            </div>
-                        </div>
-						<div class="col-lg-1 col-md-1 col-sm-1 col-xs-1"><label>s.d</label></div>
-						<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
-                            <div class="form-group">
-                                <div class="form-line focused">
-                                    <input type="date" id="tgakhir" name="tgakhir" class="form-control" maxlength="10">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
-                        	<span id="warning-tgawal" class="label label-warning warning">Required!</span>
-							<span id="warning-tgakhir" class="label label-warning warning">Required!</span>
-                        </div>
-                    </div>
-					
-					<div class="row clearfix">
-                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 form-control-label"><label>Uraian Pekerjaan</label></div>
-                        <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
-                            <div class="form-group">
-                                <div class="form-line focused">
-                                    <textarea type="uraian" id="uraian" name="uraian" class="form-control" maxlength="4000"></textarea>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
-                        	<span id="warning-uraian" class="label label-warning warning">Required!</span>
-                        </div>
-                    </div>
-					
-					<div class="row clearfix">
-                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 form-control-label"><label>Luas Tanah</label></div>
-                        <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
-                            <div class="form-group">
-                                <div class="form-line">
-                                    <input type="number" id="lt" name="lt" class="form-control val_num">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
-                        	<span id="warning-lt" class="label label-warning warning">Required!</span>
-                        </div>
-                    </div>
-					
-					<div class="row clearfix">
-                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 form-control-label"><label>Luas Bangunan</label></div>
-                        <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
-                            <div class="form-group">
-                                <div class="form-line">
-                                    <input type="number" id="lb" name="lb" class="form-control val_num">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
-                        	<span id="warning-lb" class="label label-warning warning">Required!</span>
-                        </div>
-                    </div>
-					
-					<div class="row clearfix">
-                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 form-control-label"><label>Telp</label></div>
-                        <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
-                            <div class="form-group">
-                                <div class="form-line">
-                                    <input type="text" id="telp" name="telp" class="form-control val_num" maxlength="20">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
-                        	<span id="warning-telp" class="label label-warning warning">Required!</span>
-                        </div>
-                    </div>
-					
-					<div class="row clearfix">
-                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 form-control-label"><label>Alamat</label></div>
-                        <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
-                            <div class="form-group">
-                                <div class="form-line">
-                                    <input type="text" id="alamat" name="alamat" class="form-control" maxlength="255">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
-                        	<span id="warning-alamat" class="label label-warning warning">Required!</span>
-                        </div>
-                    </div>
-					
-					<div class="row clearfix">
-                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 form-control-label"><label>Email</label></div>
-                        <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
-                            <div class="form-group">
-                                <div class="form-line">
-                                    <input type="text" id="email" name="email" class="form-control" maxlength="255">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
-                        	<span id="warning-email" class="label label-warning warning">Required!</span>
-                        </div>
-                    </div>
-					
-					<div class="row clearfix">
-                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 form-control-label"><label>Website</label></div>
-                        <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
-                            <div class="form-group">
-                                <div class="form-line">
-                                    <input type="text" id="website" name="website" class="form-control" maxlength="255">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
-                        	<span id="warning-website" class="label label-warning warning">Required!</span>
-                        </div>
-                    </div>
-					
-					<div class="row clearfix">
-						<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 form-control-label"><label>Softcopy PKS (* Max 1MB)</label></div>
-						<div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
-							<div class="form-group">
-								<span class="btn btn-primary fileinput-button">
-									<i class="material-icons">file_upload</i> <span>Upload File</span>
-									<input id="fileupload" type="file" name="file">
-								</span>
-								<div id="files" class="files"></div>
-								<div id="progress" class="progress">
-									<div class="progress-bar progress-bar-danger"></div>
+		                        <div class="form-group row">
+		                            <label class="col-md-3 label-control" for="projectinput4">Contact Number: </label>
+		                            <div class="col-md-9">
+		                            	<input type="text" id="projectinput4" class="form-control"  name="phone">
+		                            </div>
+		                        </div>
+
+								<h4 class="form-section"><i class="ft-file-text"></i> Requirements</h4>
+
+		                        <div class="form-group row">
+									<label class="col-md-3 label-control" for="projectinput5">Company: </label>
+									<div class="col-md-9">
+		                            	<input type="text" id="projectinput5" class="form-control"  name="company">
+		                            </div>
+		                        </div>
+
+		                        <div class="form-group row">
+		                        	<label class="col-md-3 label-control" for="projectinput6">Interested in: </label>
+		                        	<div class="col-md-9">
+			                            <select id="projectinput6" name="interested" class="form-control">
+			                                <option value="none" selected="" disabled="">Interested in</option>
+			                                <option value="design">design</option>
+			                                <option value="development">development</option>
+			                                <option value="illustration">illustration</option>
+			                                <option value="branding">branding</option>
+			                                <option value="video">video</option>
+			                            </select>
+		                            </div>
+		                        </div>
+
+		                        <div class="form-group row">
+		                        	<label class="col-md-3 label-control" for="projectinput7">Budget: </label>
+		                        	<div class="col-md-9">
+			                            <select id="projectinput7" name="budget" class="form-control">
+			                                <option value="0" selected="" disabled="">Budget</option>
+			                                <option value="less than 5000$">less than 5000$</option>
+			                                <option value="5000$ - 10000$">5000$ - 10000$</option>
+			                                <option value="10000$ - 20000$">10000$ - 20000$</option>
+			                                <option value="more than 20000$">more than 20000$</option>
+			                            </select>
+		                            </div>
+		                        </div>
+
+								<div class="form-group row">
+									<label class="col-md-3 label-control">Select File: </label>
+									<div class="col-md-9">
+										<label id="projectinput8" class="file center-block">
+											<input type="file" id="file">
+											<span class="file-custom"></span>
+										: </label>
+									</div>
+								</div>
+
+								<div class="form-group row">
+									<label class="col-md-3 label-control" for="projectinput9">About Project: </label>
+									<div class="col-md-9">
+										<textarea id="projectinput9" rows="5" class="form-control" name="comment" ></textarea>
+									</div>
 								</div>
 							</div>
-						</div>
-						<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2" id="nmfile"></div>
-					</div>
-					
-					<div class="row clearfix">
-                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 form-control-label"><label>Level Dok.Teknis</label></div>
-                        <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
-                            <div class="form-group">
-                                <div class="form-line">
-                                    <select id="lvl" name="lvl" class="form-control chosen">
-									</select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
-                        	<span id="warning-lvl" class="label label-warning warning">Required!</span>
-                        </div>
-                    </div>
-					
-					<div class="row clearfix">
-                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 form-control-label"><label>Status</label></div>
-                        <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
-                            <div class="form-group">
-                                <div class="form-line">
-                                    <select id="aktif" name="aktif" class="form-control chosen">
-										<option value="1">Aktif</option>
-										<option value="0">Tidak Aktif</option>
-									</select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
-                        	<span id="warning-aktif" class="label label-warning warning">Required!</span>
-                        </div>
-                    </div>
 
-                    <div class="row clearfix">
-                        <div class="col-lg-offset-3 col-md-offset-3 col-sm-offset-3 col-xs-offset-3">
-                            <button title="Simpan Data Ini?" id="simpan" type="button" class="btn btn-primary m-t-15 waves-effect">
-                            	<i class="material-icons">save</i> SIMPAN
-                            </button>
-							<button title="Batal" id="batal" type="button" class="btn btn-danger m-t-15 waves-effect batal">
-								<i class="material-icons">refresh</i> BATAL
-							</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+	                        <div class="form-actions">
+	                            <button type="button" class="btn btn-raised btn-warning mr-1">
+	                            	<i class="ft-x"></i> Cancel
+	                            </button>
+	                            <button type="button" class="btn btn-raised btn-primary">
+	                                <i class="fa fa-check-square-o"></i> Save
+	                            </button>
+	                        </div>
+	                    </form>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-12">
+	        <div class="card">
+	            <div class="card-header">
+	                <h4 class="card-title" id="horz-layout-colored-controls">User Profile</h4>
+	                <p class="mb-0">This is 2-columns horizontal form with labels on left and form controls on right in one line. Add <code>.form-horizontal</code> class to the form tag to have horizontal form styling. User can also change the border color and background color of the form control. Add <code>border-*</code> class to change border color and <code>bg-*</code> class to change background color of the form control.</p>
+	            </div>
+	            <div class="card-body">
+	                <div class="px-3">
+					    <form class="form form-horizontal">
+	                    	<div class="form-body">
+	                    		<h4 class="form-section"><i class="ft-info"></i> About User</h4>
+	                    		<div class="row">
+	                    			<div class="col-md-6">
+				                        <div class="form-group row">
+				                        	<label class="col-md-3 label-control" for="userinput1">First Name: </label>
+				                        	<div class="col-md-9">
+				                            	<input type="text" id="userinput1" class="form-control border-primary"  name="firstname">
+				                            </div>
+				                        </div>
+				                    </div>
+				                    <div class="col-md-6">
+				                        <div class="form-group row">
+				                        	<label class="col-md-3 label-control" for="userinput2">Last Name: </label>
+				                        	<div class="col-md-9">
+				                            	<input type="text" id="userinput2" class="form-control border-primary"  name="lastname">
+			                        		</div>
+				                        </div>
+			                        </div>
+		                        </div>
+		                        <div class="row">
+		                        	<div class="col-md-6">
+			                        	<div class="form-group row">
+				                        	<label class="col-md-3 label-control" for="userinput3">Username: </label>
+				                        	<div class="col-md-9">
+				                            	<input type="text" id="userinput3" class="form-control border-primary"  name="username">
+			                        		</div>
+			                       		</div>
+			                       	</div>
+			                       	<div class="col-md-6">
+				                        <div class="form-group row">
+				                        	<label class="col-md-3 label-control" for="userinput4">Nick Name: </label>
+				                        	<div class="col-md-9">
+				                            	<input type="text" id="userinput4" class="form-control border-primary"  name="nickname">
+			                        		</div>
+				                        </div>
+				                    </div>
+		                        </div>
+
+		                        <h4 class="form-section"><i class="ft-mail"></i> Contact Info & Bio</h4>
+
+		                        <div class="row">
+		                        	<div class="col-md-6">
+		                        		<div class="form-group row">
+				                        	<label class="col-md-3 label-control" for="userinput5">Email: </label>
+				                        	<div class="col-md-9">
+												<input class="form-control border-primary" type="email"  id="userinput5">
+				                        	</div>
+					                    </div>
+
+					                    <div class="form-group row">
+				                        	<label class="col-md-3 label-control" for="userinput6">Website: </label>
+				                        	<div class="col-md-9">
+												<input class="form-control border-primary" type="url"  id="userinput6">
+											</div>
+										</div>
+
+										<div class="form-group row">
+				                        	<label class="col-md-3 label-control">Contact Number: </label>
+				                        	<div class="col-md-9">
+												<input class="form-control border-primary" type="tel"  id="userinput7">
+											</div>
+				                        </div>
+		                        	</div>
+		                        	<div class="col-md-6">
+		                        		<div class="form-group row">
+				                        	<label class="col-md-3 label-control" for="userinput8">Bio: </label>
+				                        	<div class="col-md-9">
+				                            	<textarea id="userinput8" rows="6" class="form-control col-md-9 border-primary" name="bio" ></textarea>
+				                           	</div>
+				                        </div>
+		                        	</div>
+		                        </div>
+							</div>
+
+	                        <div class="form-actions right">
+	                            <button type="button" class="btn btn-raised btn-warning mr-1">
+	                            	<i class="ft-x"></i> Cancel
+	                            </button>
+	                            <button type="button" class="btn btn-raised btn-primary">
+	                                <i class="fa fa-check-square-o"></i> Save
+	                            </button>
+	                        </div>
+	                    </form>
+
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-12">
+	        <div class="card">
+	            <div class="card-header">
+	                <h4 class="card-title" id="horz-layout-icons">Timesheet</h4>
+	                <p class="mb-0">Add <code>.form-horizontal</code> class to the form tag to have horizontal form styling. This horizontal form shows the use of icons with form controls. Define the position of the icon using <code>has-icon-left</code> or <code>has-icon-right</code> class. Use <code>icon-*</code> class to define the icon for the form control. See Icons sections for the list of icons you can use. </p>
+	            </div>
+	            <div class="card-body">
+	                <div class="px-3">
+	                    <form class="form form-horizontal">
+	                    	<div class="form-body">
+	                			<div class="form-group row">
+		                            <label class="col-md-3 label-control" for="timesheetinput1">Employee Name: </label>
+		                            <div class="col-md-9">
+			                            <div class="position-relative has-icon-left">
+			                            	<input type="text" id="timesheetinput1" class="form-control"  name="employeename">
+				                            <div class="form-control-position">
+				                                <i class="ft-user"></i>
+				                            </div>
+			                            </div>
+		                            </div>
+		                        </div>
+	                			<div class="form-group row">
+	                            	<label class="col-md-3 label-control" for="timesheetinput2">Project Name: </label>
+	                            	<div class="col-md-9">
+			                            <div class="position-relative has-icon-left">
+			                            	<input type="text" id="timesheetinput2" class="form-control"  name="projectname">
+				                            <div class="form-control-position">
+				                                <i class="fa fa-briefcase"></i>
+				                            </div>
+			                            </div>
+			                    	</div>
+		                        </div>
+
+		                        <div class="form-group row">
+	                        		<label class="col-md-3 label-control" for="timesheetinput3">Date: </label>
+	                        		<div class="col-md-9">
+			                            <div class="position-relative has-icon-left">
+			                            	<input type="date" id="timesheetinput3" class="form-control" name="date">
+				                            <div class="form-control-position">
+				                                <i class="ft-message-square"></i>
+				                            </div>
+			                            </div>
+			                        </div>
+		                        </div>
+
+		                    	<div class="form-group row">
+	                        		<label class="col-md-3 label-control">Rate Per Hour: </label>
+	                        		<div class="col-md-9">
+			                            <div class="input-group">
+											<div class="input-group-prepend">
+                                                <span class="input-group-text">$</span>
+                                            </div>
+											<input type="text" class="form-control"  aria-label="Amount (to the nearest dollar)" name="rateperhour">
+											<div class="input-group-append">
+                                                <span class="input-group-text">.00</span>
+                                            </div>
+										</div>
+									</div>
+		                        </div>
+
+								<div class="form-group row">
+	                            	<label class="col-md-3 label-control" for="timesheetinput5">Start Time: </label>
+	                            	<div class="col-md-9">
+			                            <div class="position-relative has-icon-left">
+			                            	<input type="time" id="timesheetinput5" class="form-control" name="starttime">
+				                            <div class="form-control-position">
+				                                <i class="ft-clock"></i>
+				                            </div>
+			                            </div>
+			                        </div>
+		                        </div>
+
+		                        <div class="form-group row">
+	                            	<label class="col-md-3 label-control" for="timesheetinput6">End Time: </label>
+	                            	<div class="col-md-9">
+			                            <div class="position-relative has-icon-left">
+			                            	<input type="time" id="timesheetinput6" class="form-control" name="endtime">
+				                            <div class="form-control-position">
+				                                <i class="ft-clock"></i>
+				                            </div>
+			                            </div>
+			                        </div>
+		                        </div>
+
+								<div class="form-group row">
+									<label class="col-md-3 label-control" for="timesheetinput7">Notes: </label>
+									<div class="col-md-9">
+										<div class="position-relative has-icon-left">
+			                            	<textarea id="timesheetinput7" rows="5" class="form-control" name="notes" ></textarea>
+				                            <div class="form-control-position">
+				                                <i class="ft-file"></i>
+				                            </div>
+			                            </div>
+			                        </div>
+								</div>
+							</div>
+
+	                        <div class="form-actions right">
+	                            <button type="button" class="btn btn-raised btn-warning mr-1">
+	                            	<i class="ft-x"></i> Cancel
+	                            </button>
+	                            <button type="button" class="btn btn-raised btn-primary">
+	                                <i class="fa fa-check-square-o"></i> Save
+	                            </button>
+	                        </div>
+	                    </form>
+
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+
+	<div class="row justify-content-md-center">
+		<div class="col-md-6">
+	        <div class="card">
+	            <div class="card-header">
+	                <h4 class="card-title" id="horz-layout-card-center">Event Registration</h4>
+	                <p class="mb-0">Add <code>.form-horizontal</code> class to the form tag to have horizontal form styling. This is horizontal form demo with centered card. Here we have used <code>.justify-content-md-center .row</code> classes to center the card as its not full width. User can always change column classes according to his requirements.</p>
+	            </div>
+	            <div class="card-body">
+	                <div class="px-3">
+						<form class="form form-horizontal">
+							<div class="form-body">
+	                			<div class="form-group row">
+	                            	<label class="col-md-3 label-control" for="eventRegInput1">Full Name: </label>
+	                            	<div class="col-md-9">
+	                            		<input type="text" id="eventRegInput1" class="form-control"  name="fullname">
+	                            	</div>
+		                        </div>
+
+	                			<div class="form-group row">
+	                            	<label class="col-md-3 label-control" for="eventRegInput2">Title: </label>
+	                            	<div class="col-md-9">
+	                            		<input type="text" id="eventRegInput2" class="form-control"  name="title">
+	                            	</div>
+		                        </div>
+
+	                			<div class="form-group row">
+	                            	<label class="col-md-3 label-control" for="eventRegInput3">Company: </label>
+	                            	<div class="col-md-9">
+	                            		<input type="text" id="eventRegInput3" class="form-control"  name="company">
+	                            	</div>
+		                        </div>
+
+	                			<div class="form-group row">
+	                            	<label class="col-md-3 label-control" for="eventRegInput4">Email: </label>
+	                            	<div class="col-md-9">
+	                            		<input type="email" id="eventRegInput4" class="form-control"  name="email">
+	                            	</div>
+		                        </div>
+
+		                        <div class="form-group row">
+	                        		<label class="col-md-3 label-control" for="eventRegInput5">Contact Number: </label>
+	                        		<div class="col-md-9">
+	                            		<input type="tel" id="eventRegInput5" class="form-control" name="contact" >
+	                            	</div>
+		                        </div>
+
+		                    	<div class="form-group row">
+	                        		<label class="col-md-3 label-control">Existing Customer: </label>
+	                        		<div class="col-md-9">
+										<div class="input-group col-md-9">
+											<div class="custom-control custom-radio display-inline-block ml-1">
+                                                <input type="radio" id="customRadioInline1" name="customRadioInline1" class="custom-control-input">
+                                                <label class="custom-control-label" for="customRadioInline1">Yes</label>
+                                            </div>
+                                            <div class="custom-control custom-radio display-inline-block">
+                                                <input type="radio" id="customRadioInline2" checked name="customRadioInline1" class="custom-control-input">
+                                                <label class="custom-control-label" for="customRadioInline2">No</label>
+                                            </div>
+										</div>
+									</div>
+		                        </div>
+							</div>
+
+							<div class="form-actions center">
+	                            <button type="button" class="btn btn-raised btn-warning mr-1">
+	                            	<i class="ft-x"></i> Cancel
+	                            </button>
+	                            <button type="button" class="btn btn-raised btn-primary">
+	                                <i class="fa fa-check-square-o"></i> Save
+	                            </button>
+	                        </div>
+						</form>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+</section>
 
 <script>
 	jQuery(document).ready(function(){
