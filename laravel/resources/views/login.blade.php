@@ -17,7 +17,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-touch-fullscreen" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <link href="../../new assets/css/fonts.css" rel="stylesheet">
+    <link href="{{ asset('template/Apex6/new assets/css/fonts.css') }}" rel="stylesheet">
     <!-- BEGIN VENDOR CSS-->
     <!-- font icons-->
     <link rel="stylesheet" type="text/css" href="{{ asset('template/Apex6/app-assets/fonts/feather/style.min.css') }}">
