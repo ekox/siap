@@ -97,12 +97,11 @@
 		                        </div>
 								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="akun">Akun</label>
-									<div class="col-md-9">
+									<div class="col-md-9 table-responsive">
 	                            		<table class="table table-bordered">
 											<thead>
 												<tr>
 													<th style="width:250px;">Akun</th>
-													<th style="width:100px;">D/K</th>
 													<th style="width:200px;">Nilai</th>
 													<th>Aksi</th>
 												</tr>
@@ -281,12 +280,6 @@
 								jQuery('#inp-akun').val()+
 							'</select>'+
 						'</td>'+
-						'<td>'+
-							'<select class="form-control chosen" id="dk-0" name="rincian[0][\'kddk\']">'+
-								'<option value="D">D</option>'+
-								'<option value="K">K</option>'+
-							'</select>'+
-						'</td>'+
 						'<td><input style="text-align:right;" type="text" name="rincian[0][\'nilai\']" class="val_num"></td>'+
 						'<td>'+
 							'<center><a href="javascript:;" id="0" class="btn btn-sm btn-danger hapus-detil"><i class="fa fa-minus"></i></a></center>'+
@@ -306,12 +299,6 @@
 					'<td>'+
 						'<select id="chosen'+x+'" class="form-control akun" name="rincian['+x+'][\'kdakun\']">'+
 							jQuery('#inp-akun').val()+
-						'</select>'+
-					'</td>'+
-					'<td>'+
-						'<select class="form-control chosen" id="dk-'+x+'" name="rincian['+x+'][\'kddk\']">'+
-							'<option value="D">D</option>'+
-							'<option value="K">K</option>'+
 						'</select>'+
 					'</td>'+
 					'<td><input style="text-align:right;" type="text" name="rincian['+x+'][\'nilai\']" class="val_num"></td>'+
@@ -451,12 +438,6 @@
 								'<td>'+
 									'<select id="chosen'+x+'" class="form-control akun" name="rincian['+x+'][\'kdakun\']">'+
 										jQuery('#inp-akun').val()+
-									'</select>'+
-								'</td>'+
-								'<td>'+
-									'<select class="form-control chosen" id="dk-'+x+'" name="rincian['+x+'][\'kddk\']">'+
-										'<option value="D">D</option>'+
-										'<option value="K">K</option>'+
 									'</select>'+
 								'</td>'+
 								'<td><input style="text-align:right;" type="text" name="rincian['+x+'][\'nilai\']" class="val_num" value="'+digit_grouping(row.nilai)+'"></td>'+
