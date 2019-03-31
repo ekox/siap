@@ -5,18 +5,21 @@ use Session;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class RefOutputController extends Controller {
+class RefAkunController extends Controller {
 
 	public function index(Request $request)
 	{
-		$aColumns = array('id','uraian');
+		$aColumns = array('kdakun','nmakun','kddk','nmlap');
 		/* Indexed column (used for fast and accurate table cardinality) */
-		$sIndexColumn = "id";
+		$sIndexColumn = "kdakun";
 		/* DB table to use */
-		$sTable = "select	a.id,
-							a.uraian
-					from t_output a
-					order by a.id desc
+		$sTable = "select  a.kdakun,
+							a.nmakun,
+							a.kddk,
+							b.nmlap
+					from t_akun a
+					left outer join t_lap b on(a.kdlap=b.kdlap)
+					order by to_number(a.kdakun) asc
 				";
 		
 		/*
@@ -26,7 +29,6 @@ class RefOutputController extends Controller {
 		if((isset($_GET['iDisplayStart']))&&(isset($_GET['iDisplayLength']))){
 			$iDisplayStart=$_GET['iDisplayStart']+1;
 			$iDisplayLength=$_GET['iDisplayLength'];
-			$sSearch=$_GET['sSearch'];
 			if ((isset( $iDisplayStart )) &&  ($iDisplayLength != '-1' )) 
 			{
 				$iDisplayEnd=$iDisplayStart+$iDisplayLength-1;
@@ -62,7 +64,9 @@ class RefOutputController extends Controller {
 		if(isset($_GET['sSearch'])){
 			$sSearch=$_GET['sSearch'];
 			if((isset($sSearch))&&($sSearch!='')){
-				$sWhere=" where lower(uraian) like lower('".$sSearch."%') or lower(uraian) like lower('%".$sSearch."%') ";
+				$sWhere=" where lower(kdakun) like lower('".$sSearch."%') or lower(kdakun) like lower('%".$sSearch."%') or
+								lower(nmakun) like lower('".$sSearch."%') or lower(nmakun) like lower('%".$sSearch."%') or
+								lower(nmlap) like lower('".$sSearch."%') or lower(nmlap) like lower('%".$sSearch."%')";
 			}
 		}
 		
@@ -113,15 +117,17 @@ class RefOutputController extends Controller {
 				$aksi='<center>
 							<button type="button" class="btn btn-raised btn-sm btn-icon btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-check"></i></button>
 							<div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
-								<a id="'.$row->id.'" class="dropdown-item ubah" href="javascript:;">Ubah Data</a>
-								<a id="'.$row->id.'" class="dropdown-item hapus" href="javascript:;">Hapus Data</a>
+								<a id="'.$row->kdakun.'" class="dropdown-item ubah" href="javascript:;">Ubah Data</a>
+								<a id="'.$row->kdakun.'" class="dropdown-item hapus" href="javascript:;">Hapus Data</a>
 							</div>
 						</center>';
 			}
 			
 			$output['aaData'][] = array(
-				$row->no,
-				$row->uraian,
+				$row->kdakun,
+				$row->nmakun,
+				$row->kddk,
+				$row->nmlap,
 				$aksi
 			);
 		}
@@ -134,8 +140,8 @@ class RefOutputController extends Controller {
 		try{
 			$rows = DB::select("
 				select  a.*
-				from t_output a
-				where a.id=?
+				from t_akun a
+				where a.kdakun=?
 			",[
 				$id
 			]);
@@ -155,26 +161,48 @@ class RefOutputController extends Controller {
 		try{
 			if($request->input('inp-rekambaru')=='1'){
 				
-				$insert = DB::table('t_output')->insert([
-					'uraian' => $request->input('uraian')
+				$rows = DB::select("
+					select count(*) as jml
+					from t_akun
+					where kdakun=?
+				",[
+					$request->input('kdakun')
 				]);
 				
-				if($insert){
-					return 'success';
+				if($rows[0]->jml==0){
+					
+					$insert = DB::table('t_akun')->insert([
+						'kdakun' => $request->input('kdakun'),
+						'nmakun' => $request->input('nmakun'),
+						'kddk' => $request->input('kddk'),
+						'kdlap' => $request->input('kdlap'),
+					]);
+					
+					if($insert){
+						return 'success';
+					}
+					else{
+						return 'Data gagal disimpan!';
+					}
+					
 				}
 				else{
-					return 'Data gagal disimpan!';
+					return 'Duplikasi kode akun!';
 				}
 				
 			}
 			else{
 				
 				$update = DB::update("
-					update t_output
-					set uraian=?
-					where id=?
+					update t_akun
+					set nmakun=?,
+						kddk=?,
+						kdlap=?
+					where kdakun=?
 				",[
-					$request->input('uraian'),
+					$request->input('nmakun'),
+					$request->input('kddk'),
+					$request->input('kdlap'),
 					$request->input('inp-id')
 				]);
 				
@@ -196,8 +224,8 @@ class RefOutputController extends Controller {
 	{
 		try{
 			$delete = DB::delete("
-				delete from t_output
-				where id=?
+				delete from t_akun
+				where kdakun=?
 			",[
 				$request->input('id')
 			]);

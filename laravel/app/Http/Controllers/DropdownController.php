@@ -11,6 +11,24 @@ class DropdownController extends Controller {
 	{
 	}
 	
+	public function unit_all()
+	{
+		$rows = DB::select("
+			select  kdunit,
+					nmunit
+			from t_unit
+			order by to_number(kdunit) asc
+		");
+		
+		$data = '<option value="">Pilih Data</option>';
+		foreach($rows as $row){
+			$data .= '<option value="'.$row->kdunit.'">'.$row->nmunit.'</option>';
+		}
+		
+		return $data;
+		
+	}
+	
 	public function unit($param)
 	{
 		$rows = DB::select("
@@ -110,6 +128,40 @@ class DropdownController extends Controller {
 		$data = '<option value="" style="display:none;">Pilih Data</option>';
 		foreach($rows as $row){
 			$data .= '<option value="'.$row->id.'"> '.$row->nama.'</option>';
+		}
+		
+		return $data;
+		
+	}
+	
+	public function bank()
+	{
+		$rows = DB::select("
+			select	*
+			from t_bank
+			order by kdbank asc
+		");
+		
+		$data = '<option value="" style="display:none;">Pilih Data</option>';
+		foreach($rows as $row){
+			$data .= '<option value="'.$row->kdbank.'"> '.$row->nmbank.'</option>';
+		}
+		
+		return $data;
+		
+	}
+	
+	public function lap()
+	{
+		$rows = DB::select("
+			select	*
+			from t_lap
+			order by kdlap asc
+		");
+		
+		$data = '<option value="" style="display:none;">Pilih Data</option>';
+		foreach($rows as $row){
+			$data .= '<option value="'.$row->kdlap.'"> '.$row->nmlap.'</option>';
 		}
 		
 		return $data;

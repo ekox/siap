@@ -10,34 +10,23 @@ class RefUserController extends Controller {
 	public function index(Request $request)
 	{
 		try{
-			$aColumns = array('id','username','nama','nik','nmlevel','nmperusahaan','aktif');
+			$aColumns = array('id','username','nama','nik','nmlevel','nmunit','aktif');
 			/* Indexed column (used for fast and accurate table cardinality) */
 			$sIndexColumn = "id";
 			/* DB table to use */
-			$sTable = "SELECT  	a.id,
+			$sTable = "select  a.id,
 								a.username,
 								a.nama,
 								a.nik,
-								b.nmlevel,
-								c.nmperusahaan,
-								decode(a.aktif,'1','Aktif','Tidak Aktif') AS aktif
-						FROM t_user a
-						LEFT OUTER JOIN(
-							select  a.id_user,
-									a.kdlevel,
-									b.nmlevel
-							from t_user_level a
-							left outer join t_level b on(a.kdlevel=b.kdlevel)
-							where a.status='1'
-						) b ON(a.id=b.id_user)
-						LEFT OUTER JOIN(
-							select  a.id_user,
-									c.nama as nmperusahaan 
-							from t_user_usaha a
-							left outer join t_perusahaan c on(a.id_perusahaan=c.id)
-							where a.status='1'
-						) c ON(a.id=c.id_user)
-						ORDER BY a.id DESC";
+								d.nmlevel,
+								e.nmunit,
+								decode(a.aktif,'1','Aktif','Tidak Aktif') as aktif
+						from t_user a
+						left outer join t_user_level b on(a.id=b.id_user and b.status='1')
+						left outer join t_user_unit c on(a.id=c.id_user and c.status='1')
+						left outer join t_level d on(b.kdlevel=d.kdlevel)
+						left outer join t_unit e on(c.kdunit=e.kdunit)
+						order by a.id desc";
 			
 			/*
 			 * Paging
@@ -133,17 +122,13 @@ class RefUserController extends Controller {
 				$aksi='';
 				if(session('kdlevel')=='00'){
 					$aksi='<center>
-								<div class="dropdown pull-right">
-									<button type="button" class="btn btn-success btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-										<i class="material-icons">done</i>
-										<span class="caret"></span>
-									</button>
-									<ul class="dropdown-menu">
-										<li><a id="'.$row->id.'" href="javascript:void(0);" class="ubah">Ubah Data</a></li>
-										<li><a id="'.$row->id.'" href="javascript:void(0);" class="hapus">Hapus Data</a></li>
-									</ul>
-								</div>
-							</center>';
+							<button type="button" class="btn btn-raised btn-sm btn-icon btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-check"></i></button>
+							<div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+								<a id="'.$row->id.'" class="dropdown-item ubah" href="javascript:;">Ubah Data</a>
+								<a id="'.$row->id.'" class="dropdown-item hapus" href="javascript:;">Hapus Data</a>
+								<a id="'.$row->id.'" class="dropdown-item reset" href="javascript:;">Reset</a>
+							</div>
+						</center>';
 				}
 				
 				$output['aaData'][] = array(
@@ -152,7 +137,7 @@ class RefUserController extends Controller {
 					$row->nama,
 					$row->nik,
 					$row->nmlevel,
-					$row->nmperusahaan,
+					$row->nmunit,
 					$row->aktif,
 					$aksi
 				);
@@ -201,23 +186,29 @@ class RefUserController extends Controller {
 				
 				$data['kdlevel'] = implode(",", $arr_level);
 				
+				$data['kdunit'] = '';
+				
 				$rows = DB::select("
 					select	*
-					from t_user_usaha
+					from t_user_unit
 					where id_user=?
 				",[
 					$id
 				]);
 				
-				$arr_usaha = array();
-				foreach($rows as $row){
-					$arr_usaha[] = $row->id_perusahaan;
+				if(count($rows)>0){
+					
+					$arr_usaha = array();
+					foreach($rows as $row){
+						$arr_usaha[] = $row->kdunit;
+					}
+					
+					$data['kdunit'] = implode(",", $arr_usaha);
+					
 				}
 				
-				$data['id_perusahaan'] = implode(",", $arr_usaha);
-				
 				$data['error'] = false;
-				$data['message'] = $rows[0];
+				$data['message'] = '';
 				return response()->json($data);
 				
 			}
@@ -247,9 +238,10 @@ class RefUserController extends Controller {
 					$rows = DB::select("
 						SELECT	count(*) AS jml
 						from t_user
-						where username=?
+						where username=? or nik=?
 					",[
-						$request->input('username')
+						$request->input('username'),
+						$request->input('nik')
 					]);
 					
 					if($rows[0]->jml==0){
@@ -286,9 +278,9 @@ class RefUserController extends Controller {
 							
 							if($insert){
 								
-								if(count($request->input('id_perusahaan'))>0){
+								if($request->input('kdunit')!==null){
 									
-									$arr_perusahaan = $request->input('id_perusahaan');
+									$arr_perusahaan = $request->input('kdunit');
 							
 									$arr_insert1 = array();
 									for($j=0;$j<count($arr_perusahaan);$j++){
@@ -300,7 +292,7 @@ class RefUserController extends Controller {
 									}
 									
 									$insert1 = DB::insert("
-										insert into t_user_usaha(id_user,id_perusahaan,status)
+										insert into t_user_unit(id_user,kdunit,status)
 										".implode(" union all ", $arr_insert1)."
 									");
 									
@@ -309,7 +301,7 @@ class RefUserController extends Controller {
 										return 'success';
 									}
 									else{
-										return 'Perusahaan gagal disimpan!';
+										return 'Unit gagal disimpan!';
 									}
 									
 								}
@@ -338,13 +330,11 @@ class RefUserController extends Controller {
 					
 					$update = DB::update("
 						update t_user
-						set nik=?,
-							nama=?,
+						set nama=?,
 							email=?,
 							aktif=?
 						where id=?
 					",[
-						$request->input('nik'),
 						$request->input('nama'),
 						$request->input('email'),
 						$request->input('aktif'),
@@ -379,9 +369,9 @@ class RefUserController extends Controller {
 						
 						if($insert){
 							
-							if(count($request->input('id_perusahaan'))>0){
+							if($request->input('kdunit')!==null){
 								
-								$arr_perusahaan = $request->input('id_perusahaan');
+								$arr_perusahaan = $request->input('kdunit');
 						
 								$arr_insert1 = array();
 								for($j=0;$j<count($arr_perusahaan);$j++){
@@ -393,14 +383,14 @@ class RefUserController extends Controller {
 								}
 								
 								$delete1 = DB::delete("
-									delete from t_user_usaha
+									delete from t_user_unit
 									where id_user=?
 								",[
 									$id_user
 								]);
 								
 								$insert1 = DB::insert("
-									insert into t_user_usaha(id_user,id_perusahaan,status)
+									insert into t_user_unit(id_user,kdunit,status)
 									".implode(" union all ", $arr_insert1)."
 								");
 								
@@ -409,7 +399,7 @@ class RefUserController extends Controller {
 									return 'success';
 								}
 								else{
-									return 'Perusahaan gagal disimpan!';
+									return 'Unit gagal disimpan!';
 								}
 								
 							}
@@ -447,48 +437,60 @@ class RefUserController extends Controller {
 		try{
 			DB::beginTransaction();
 			
-			$rows = DB::select("
-				select	count(*) as jml
-				from d_kso_user
+			$delete = DB::delete("
+				delete from t_user_level
 				where id_user=?
 			",[
 				$request->input('id')
 			]);
 			
-			if($rows[0]->jml==0){
-				
-				$delete = DB::delete("
-					delete from t_user_level
-					where id_user=?
-				",[
-					$request->input('id')
-				]);
-				
-				$delete = DB::delete("
-					delete from t_user_usaha
-					where id_user=?
-				",[
-					$request->input('id')
-				]);
-				
-				$delete = DB::delete("
-					delete from t_user
-					where id=?
-				",[
-					$request->input('id')
-				]);
-				
-				if($delete==true){
-					DB::commit();
-					return 'success';
-				}
-				else {
-					return 'Proses hapus gagal. Hubungi Administrator.';
-				}
-				
+			$delete = DB::delete("
+				delete from t_user_unit
+				where id_user=?
+			",[
+				$request->input('id')
+			]);
+			
+			$delete = DB::delete("
+				delete from t_user
+				where id=?
+			",[
+				$request->input('id')
+			]);
+			
+			if($delete==true){
+				DB::commit();
+				return 'success';
 			}
-			else{
-				return 'User sudah terdaftar di KSO, data tidak dapat dihapus!';
+			else {
+				return 'Proses hapus gagal. Hubungi Administrator.';
+			}
+			
+		}
+		catch(\Exception $e){
+			return $e;
+		}		
+	}
+	
+	public function reset(Request $request)
+	{
+		try{
+			$password = md5('p4ssw0rd!');
+			
+			$update = DB::update("
+				update t_user
+				set pass=?
+				where id=?
+			",[
+				$password,
+				$request->input('id')
+			]);
+			
+			if($update==true){
+				return 'success';
+			}
+			else {
+				return 'Proses reset gagal. Hubungi Administrator.';
 			}
 			
 		}

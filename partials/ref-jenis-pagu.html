@@ -9,7 +9,7 @@
 	
 	<div class="row">
         <div class="col-sm-12">
-            <div class="content-header">Referensi/ Output</div>
+            <div class="content-header">Referensi/ Penerima</div>
         </div>
     </div>
 	
@@ -26,12 +26,34 @@
 							<input type="hidden" id="inp-id" name="inp-id">
 							<input type="hidden" id="_token" name="_token">
 							<div class="form-body">
-								<div class="form-group row">
-	                            	<label class="col-md-3 label-control" for="uraian">Uraian </label>
+		                        <div class="form-group row">
+	                            	<label class="col-md-3 label-control" for="npwp">NPWP </label>
 									<div class="col-md-7">
-	                            		<textarea type="text" id="uraian" name="uraian" class="form-control" maxlength="255"></textarea>
+	                            		<input type="text" id="npwp" name="npwp" class="form-control val_num" maxlength="15">
 	                            	</div>
-									<label id="warning-uraian" class="col-md-2 label-control label-warning warning">required!</label>
+									<label id="warning-npwp" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-3 label-control" for="nama">Nama </label>
+									<div class="col-md-7">
+	                            		<input type="text" id="nama" name="nama" class="form-control" maxlength="255">
+	                            	</div>
+									<label id="warning-nama" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-3 label-control" for="kdbank">Bank </label>
+									<div class="col-md-7">
+	                            		<select id="kdbank" name="kdbank" class="form-control chosen">
+										</select>
+	                            	</div>
+									<label id="warning-kdbank" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-3 label-control" for="norek">No. Rekening </label>
+									<div class="col-md-7">
+	                            		<input type="text" id="norek" name="norek" class="form-control" maxlength="255">
+	                            	</div>
+									<label id="warning-norek" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 							</div>
 	                        <div class="form-actions">
@@ -71,7 +93,11 @@
                             <thead>
                                 <tr>
 									<th>No</th>
-                                    <th>Uraian</th>
+									<th>Nama</th>
+                                    <th>NPWP</th>
+									<th>Kode Bank</th>
+									<th>Nama Bank</th>
+									<th>Rekening</th>
 									<th>Aksi</th>
                                 </tr>
                             </thead>
@@ -94,8 +120,8 @@
 		//aktivasi chosen
 		jQuery('.chosen').chosen();
 		
-		jQuery.get('dropdown/jenis-pagu', function(result){
-			jQuery('#id_jnspagu').html(result).trigger('chosen:updated');
+		jQuery.get('dropdown/bank', function(result){
+			jQuery('#kdbank').html(result).trigger('chosen:updated');
 		});
 		
 		jQuery.get('cek/level', function(result){
@@ -109,7 +135,7 @@
 			jQuery('input,textarea,select').val('');
 			jQuery('.warning, #div-form').hide();
 			jQuery('#div-tabel').show();
-			jQuery('#simpan').prop('disabled', false);
+			jQuery('#simpan,#npwp').prop('disabled', false);
 			jQuery('.chosen').trigger('chosen:updated');
 		}
 		
@@ -152,7 +178,7 @@
 			},
 			aaSorting: [],
 			bServerSide: true,
-			sAjaxSource: "ref/output"
+			sAjaxSource: "ref/penerima"
 		});
 		
 		//validasi isian form
@@ -171,11 +197,15 @@
 		//cari data user yang akan di edit berdasarkan id user
 		function cari_data(id){
 			jQuery('.chosen').val('').trigger('chosen:updated');
-			jQuery.getJSON('ref/output/pilih/'+id, function(result){
+			jQuery.getJSON('ref/penerima/pilih/'+id, function(result){
 				if(result) {
 					jQuery('#inp-id').val(id);
 					jQuery('#inp-rekambaru').val('0');
-					jQuery('#uraian').val(result.uraian);
+					jQuery('#npwp').val(result.npwp);
+					jQuery('#nama').val(result.nama);
+					jQuery('#kdbank').val(result.kdbank);
+					jQuery('#norek').val(result.norek);
+					jQuery('#npwp').prop('disabled', true);
 					jQuery('.chosen').trigger('chosen:updated');
 				}
 			});
@@ -198,14 +228,14 @@
 		jQuery('#simpan').click(function(){
 			jQuery(this).html('<span class="loading"><i class="fa fa-refresh"></i> Loading.....</span>');
 			jQuery(this).prop('disabled',true);
-			var next = form_valid('uraian');
+			var next = form_valid('nama,npwp,kdbank,norek');
 			if(next==true){
 				jQuery.get('token', function(token){
 					if(token){
 						jQuery('#_token').val(token);
 						var data = jQuery('#form-ruh').serialize();
 						jQuery.ajax({
-							url: 'ref/output',
+							url: 'ref/penerima',
 							method: 'POST',
 							data: data,
 							success: function(result){
@@ -250,7 +280,7 @@
 					jQuery.get('token', function(token){
 						if(token) {
 							jQuery.ajax({
-								url:'ref/output/hapus',
+								url:'ref/penerima/hapus',
 								method:'POST',
 								data:{
 									_token:token, 

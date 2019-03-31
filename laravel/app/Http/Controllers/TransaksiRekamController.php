@@ -9,7 +9,7 @@ class TransaksiRekamController extends Controller {
 
 	public function index(Request $request)
 	{
-		$aColumns = array('id','notrans','nmalur','nama','nobukti','tgbukti','uraian','nilai');
+		$aColumns = array('id','notrans','nmalur','nama','nobukti','uraian','nilai','status');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
 		/* DB table to use */
@@ -23,12 +23,14 @@ class TransaksiRekamController extends Controller {
 							a.nobukti,
 							to_char(a.tgbukti,'dd-mm-yyyy') as tgbukti,
 							a.uraian,
-							nvl(f.nilai,0) as nilai
+							nvl(f.nilai,0) as nilai,
+							g.nmlevel||'<br>'||c.nmstatus as status
 					from d_trans a
 					left outer join t_alur b on(a.id_alur=b.id)
 					left outer join t_alur_status c on(a.id_alur=c.id_alur and a.status=c.status)
 					left outer join t_unit d on(a.kdunit=d.kdunit)
 					left outer join t_penerima e on(a.id_penerima=e.id)
+					left outer join t_level g on(c.kdlevel=g.kdlevel)
 					left outer join(
 						select  id_trans,
 								sum(nilai) as nilai
@@ -47,7 +49,7 @@ class TransaksiRekamController extends Controller {
 			$iDisplayStart=$_GET['iDisplayStart']+1;
 			$iDisplayLength=$_GET['iDisplayLength'];
 			$sSearch=$_GET['sSearch'];
-			if (($sSearch=='') && (isset( $iDisplayStart )) &&  ($iDisplayLength != '-1' )) 
+			if ((isset( $iDisplayStart )) &&  ($iDisplayLength != '-1' )) 
 			{
 				$iDisplayEnd=$iDisplayStart+$iDisplayLength-1;
 				$sLimit = " WHERE NO BETWEEN '$iDisplayStart' AND '$iDisplayEnd'";
@@ -147,9 +149,9 @@ class TransaksiRekamController extends Controller {
 				$row->nmalur,
 				$row->nama,
 				$row->nobukti,
-				$row->tgbukti,
 				$row->uraian,
 				'<div style="text-align:right;">'.number_format($row->nilai).'</div>',
+				$row->status,
 				$aksi
 			);
 		}

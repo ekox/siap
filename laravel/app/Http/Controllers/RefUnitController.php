@@ -5,18 +5,18 @@ use Session;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class RefOutputController extends Controller {
+class RefUnitController extends Controller {
 
 	public function index(Request $request)
 	{
-		$aColumns = array('id','uraian');
+		$aColumns = array('kdunit','nmunit');
 		/* Indexed column (used for fast and accurate table cardinality) */
-		$sIndexColumn = "id";
+		$sIndexColumn = "kdunit";
 		/* DB table to use */
-		$sTable = "select	a.id,
-							a.uraian
-					from t_output a
-					order by a.id desc
+		$sTable = "select	a.kdunit,
+							a.nmunit
+					from t_unit a
+					order by to_number(a.kdunit) asc
 				";
 		
 		/*
@@ -62,7 +62,8 @@ class RefOutputController extends Controller {
 		if(isset($_GET['sSearch'])){
 			$sSearch=$_GET['sSearch'];
 			if((isset($sSearch))&&($sSearch!='')){
-				$sWhere=" where lower(uraian) like lower('".$sSearch."%') or lower(uraian) like lower('%".$sSearch."%') ";
+				$sWhere=" where lower(kdunit) like lower('".$sSearch."%') or lower(kdunit) like lower('%".$sSearch."%') or
+								lower(nmunit) like lower('".$sSearch."%') or lower(nmunit) like lower('%".$sSearch."%') ";
 			}
 		}
 		
@@ -113,15 +114,15 @@ class RefOutputController extends Controller {
 				$aksi='<center>
 							<button type="button" class="btn btn-raised btn-sm btn-icon btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-check"></i></button>
 							<div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
-								<a id="'.$row->id.'" class="dropdown-item ubah" href="javascript:;">Ubah Data</a>
-								<a id="'.$row->id.'" class="dropdown-item hapus" href="javascript:;">Hapus Data</a>
+								<a id="'.$row->kdunit.'" class="dropdown-item ubah" href="javascript:;">Ubah Data</a>
+								<a id="'.$row->kdunit.'" class="dropdown-item hapus" href="javascript:;">Hapus Data</a>
 							</div>
 						</center>';
 			}
 			
 			$output['aaData'][] = array(
-				$row->no,
-				$row->uraian,
+				$row->kdunit,
+				$row->nmunit,
 				$aksi
 			);
 		}
@@ -134,8 +135,8 @@ class RefOutputController extends Controller {
 		try{
 			$rows = DB::select("
 				select  a.*
-				from t_output a
-				where a.id=?
+				from t_unit a
+				where a.kdunit=?
 			",[
 				$id
 			]);
@@ -155,26 +156,42 @@ class RefOutputController extends Controller {
 		try{
 			if($request->input('inp-rekambaru')=='1'){
 				
-				$insert = DB::table('t_output')->insert([
-					'uraian' => $request->input('uraian')
+				$rows = DB::select("
+					select count(*) as jml
+					from t_unit
+					where kdunit=?
+				",[
+					$request->input('kdunit')
 				]);
 				
-				if($insert){
-					return 'success';
+				if($rows[0]->jml==0){
+					
+					$insert = DB::table('t_unit')->insert([
+						'kdunit' => $request->input('kdunit'),
+						'nmunit' => $request->input('nmunit')
+					]);
+					
+					if($insert){
+						return 'success';
+					}
+					else{
+						return 'Data gagal disimpan!';
+					}
+					
 				}
 				else{
-					return 'Data gagal disimpan!';
+					return 'Duplikasi kode unit!';
 				}
 				
 			}
 			else{
 				
 				$update = DB::update("
-					update t_output
-					set uraian=?
-					where id=?
+					update t_unit
+					set nmunit=?
+					where kdunit=?
 				",[
-					$request->input('uraian'),
+					$request->input('nmunit'),
 					$request->input('inp-id')
 				]);
 				
@@ -196,8 +213,8 @@ class RefOutputController extends Controller {
 	{
 		try{
 			$delete = DB::delete("
-				delete from t_output
-				where id=?
+				delete from t_unit
+				where kdunit=?
 			",[
 				$request->input('id')
 			]);

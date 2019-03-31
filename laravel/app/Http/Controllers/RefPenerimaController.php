@@ -5,17 +5,22 @@ use Session;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class RefOutputController extends Controller {
+class RefPenerimaController extends Controller {
 
 	public function index(Request $request)
 	{
-		$aColumns = array('id','uraian');
+		$aColumns = array('id','npwp','nama','kdbank','nmbank','norek');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
 		/* DB table to use */
-		$sTable = "select	a.id,
-							a.uraian
-					from t_output a
+		$sTable = "select  a.id,
+							a.npwp,
+							a.nama,
+							a.kdbank,
+							b.nmbank,
+							a.norek
+					from t_penerima a
+					left outer join t_bank b on(a.kdbank=b.kdbank)
 					order by a.id desc
 				";
 		
@@ -62,7 +67,8 @@ class RefOutputController extends Controller {
 		if(isset($_GET['sSearch'])){
 			$sSearch=$_GET['sSearch'];
 			if((isset($sSearch))&&($sSearch!='')){
-				$sWhere=" where lower(uraian) like lower('".$sSearch."%') or lower(uraian) like lower('%".$sSearch."%') ";
+				$sWhere=" where lower(npwp) like lower('".$sSearch."%') or lower(npwp) like lower('%".$sSearch."%') or
+								where lower(nama) like lower('".$sSearch."%') or lower(nama) like lower('%".$sSearch."%')";
 			}
 		}
 		
@@ -109,7 +115,7 @@ class RefOutputController extends Controller {
 		foreach( $rows as $row )
 		{
 			$aksi='';
-			if(session('kdlevel')=='00'){
+			if(session('kdlevel')=='00' || session('kdlevel')=='01'){
 				$aksi='<center>
 							<button type="button" class="btn btn-raised btn-sm btn-icon btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-check"></i></button>
 							<div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
@@ -121,7 +127,11 @@ class RefOutputController extends Controller {
 			
 			$output['aaData'][] = array(
 				$row->no,
-				$row->uraian,
+				$row->npwp,
+				$row->nama,
+				$row->kdbank,
+				$row->nmbank,
+				$row->norek,
 				$aksi
 			);
 		}
@@ -134,7 +144,7 @@ class RefOutputController extends Controller {
 		try{
 			$rows = DB::select("
 				select  a.*
-				from t_output a
+				from t_penerima a
 				where a.id=?
 			",[
 				$id
@@ -155,26 +165,48 @@ class RefOutputController extends Controller {
 		try{
 			if($request->input('inp-rekambaru')=='1'){
 				
-				$insert = DB::table('t_output')->insert([
-					'uraian' => $request->input('uraian')
+				$rows = DB::select("
+					select	count(rowid) as jml
+					from t_penerima
+					where npwp=?
+				",[
+					$request->input('npwp')
 				]);
 				
-				if($insert){
-					return 'success';
+				if($rows[0]->jml==0){
+					
+					$insert = DB::table('t_penerima')->insert([
+						'npwp' => $request->input('npwp'),
+						'nama' => $request->input('nama'),
+						'kdbank' => $request->input('kdbank'),
+						'norek' => $request->input('norek')
+					]);
+					
+					if($insert){
+						return 'success';
+					}
+					else{
+						return 'Data gagal disimpan!';
+					}
+					
 				}
 				else{
-					return 'Data gagal disimpan!';
+					return 'Duplikasi NPWP!';
 				}
 				
 			}
 			else{
 				
 				$update = DB::update("
-					update t_output
-					set uraian=?
+					update t_penerima
+					set nama=?,
+						kdbank=?,
+						norek=?
 					where id=?
 				",[
-					$request->input('uraian'),
+					$request->input('nama'),
+					$request->input('kdbank'),
+					$request->input('norek'),
 					$request->input('inp-id')
 				]);
 				
@@ -188,6 +220,7 @@ class RefOutputController extends Controller {
 			}			
 		}
 		catch(\Exception $e){
+			return $e;
 			return 'Terdapat kesalahan lainnya, hubungi Administrator!';
 		}		
 	}
@@ -196,7 +229,7 @@ class RefOutputController extends Controller {
 	{
 		try{
 			$delete = DB::delete("
-				delete from t_output
+				delete from t_penerima
 				where id=?
 			",[
 				$request->input('id')
