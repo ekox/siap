@@ -210,7 +210,6 @@ class TransaksiRekamController extends Controller {
 			
 			$rows = DB::select("
 				select	kdakun,
-						kddk,
 						nilai
 				from d_trans_akun
 				where id_trans=?
@@ -243,7 +242,6 @@ class TransaksiRekamController extends Controller {
 		$rows = DB::select("
 			select	a.kdakun,
 					b.nmakun,
-					a.kddk,
 					a.nilai
 			from d_trans_akun a
 			left outer join t_akun b on(a.kdakun=b.kdakun)
@@ -261,7 +259,6 @@ class TransaksiRekamController extends Controller {
 								<th>No</th>
 								<th>Akun</th>
 								<th>Uraian</th>
-								<th>D/K</th>
 								<th>Nilai</th>
 							</tr>
 						</thead>
@@ -272,7 +269,6 @@ class TransaksiRekamController extends Controller {
 								<td>'.$i++.'</td>
 								<td>'.$row->kdakun.'</td>
 								<td>'.$row->nmakun.'</td>
-								<td>'.$row->kddk.'</td>
 								<td style="text-align:right;">'.number_format($row->nilai).'</td>
 						   </tr>';
 			}
@@ -348,7 +344,7 @@ class TransaksiRekamController extends Controller {
 						}
 						
 						foreach($request->input('rincian') as $input){
-							$arr_insert[] = "select ".$id_trans.",'".$input["'kdakun'"]."','".$input["'kddk'"]."',".str_replace(",", "", $input["'nilai'"]).",".session('id_user')." from dual";
+							$arr_insert[] = "select ".$id_trans.",'".$input["'kdakun'"]."',".str_replace(",", "", $input["'nilai'"]).",".session('id_user')." from dual";
 						}
 						
 						$delete = DB::delete("
@@ -359,7 +355,7 @@ class TransaksiRekamController extends Controller {
 						]);
 						
 						$insert = DB::insert("
-							insert into d_trans_akun(id_trans,kdakun,kddk,nilai,id_user)
+							insert into d_trans_akun(id_trans,kdakun,nilai,id_user)
 							".implode(" union all ", $arr_insert)."
 						");
 						
@@ -408,7 +404,7 @@ class TransaksiRekamController extends Controller {
 				]);
 				
 				foreach($request->input('rincian') as $input){
-					$arr_insert[] = "select ".$request->input('inp-id').",'".$input["'kdakun'"]."','".$input["'kddk'"]."',".str_replace(",", "", $input["'nilai'"]).",".session('id_user')." from dual";
+					$arr_insert[] = "select ".$request->input('inp-id').",'".$input["'kdakun'"]."',".str_replace(",", "", $input["'nilai'"]).",".session('id_user')." from dual";
 				}
 				
 				if(session('upload_lampiran')!=='' && session('upload_lampiran')!==null){
@@ -439,7 +435,7 @@ class TransaksiRekamController extends Controller {
 				]);
 				
 				$insert = DB::insert("
-					insert into d_trans_akun(id_trans,kdakun,kddk,nilai,id_user)
+					insert into d_trans_akun(id_trans,kdakun,nilai,id_user)
 					".implode(" union all ", $arr_insert)."
 				");
 				
