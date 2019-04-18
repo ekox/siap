@@ -9,113 +9,158 @@ class ProfileController extends Controller {
 
 	public function index()
 	{
+		$data['error'] = true;
+		$data['message'] = '';
+		
 		$rows = DB::select("
 			select  username,
 					nama,
-					nip,
-					telp,
+					nik,
 					email,
-					alamat,
 					foto
 			from t_user
 			where id=?
 		",
 			[session('id_user')]
 		);
-		return response()->json($rows[0]);
+		
+		if(count($rows)>0){
+			
+			$data['error'] = false;
+			$data['message'] = $rows[0];
+			session(['upload_foto_user' => $rows[0]->foto]);
+			
+			$rows = DB::select("
+				select  a.kdlevel,
+						b.nmlevel,
+						a.status
+				from t_user_level a
+				left outer join t_level b on(a.kdlevel=b.kdlevel)
+				where a.id_user=?
+			",[
+				session('id_user')
+			]);
+			
+			if(count($rows)>0){
+				$kdlevel = '';
+				foreach($rows as $row){
+					$checked = '';
+					if($row->status=='1'){
+						$checked = 'checked';
+					}
+					$kdlevel .= '<option value="'.$row->kdlevel.'" '.$checked.'>'.$row->nmlevel.'</option>';
+				}
+				
+				$data['kdlevel'] = $kdlevel;
+			}
+			else{
+				$data['kdlevel'] = '';
+			}
+			
+			$rows = DB::select("
+				select  a.kdunit,
+                        b.nmunit,
+                        a.status
+                from t_user_unit a
+                left outer join t_unit b on(a.kdunit=b.kdunit)
+                where a.id_user=?
+			",[
+				session('id_user')
+			]);
+			
+			if(count($rows)>0){
+				$kdunit = '';
+				foreach($rows as $row){
+					$checked = '';
+					if($row->status=='1'){
+						$checked = 'checked';
+					}
+					$kdunit .= '<option value="'.$row->kdunit.'" '.$checked.'>'.$row->nmunit.'</option>';
+				}
+				
+				$data['kdunit'] = $kdunit;
+			}
+			else{
+				$data['kdunit'] = '';
+			}
+			
+		}
+		
+		return response()->json($data);
 	}
 	
 	public function ubah(Request $request)
 	{
 		try {
-			if($request->input('p_password_baru')=='' || $request->input('p_password_baru')==false){
+			DB::beginTransaction();
 			
-				if(session('upload_foto_user')=='' || session('upload_foto_user')==false){
-					$update = DB::update("
-						UPDATE t_user
-						SET nama=?, nip=?, telp=?, email=?, alamat=?
-						WHERE id=?
-					", [
-						$request->input('p_nama'),
-						$request->input('p_nip'),
-						$request->input('p_telp'),
-						$request->input('p_email'),
-						$request->input('p_alamat'),
-						session('id_user')
-					]);
-				}
-				else{
-					$update = DB::update("
-						UPDATE t_user
-						SET nama=?, nip=?, telp=?, email=?, alamat=?, foto=?
-						WHERE id=?
-					", [
-						$request->input('p_nama'),
-						$request->input('p_nip'),
-						$request->input('p_telp'),
-						$request->input('p_email'),
-						$request->input('p_alamat'),
-						session('upload_foto_user'),
-						session('id_user')
-					]);
-				}
-			}
-			else{
+			//rekam header user
+			$update1 = DB::update("
+				update t_user
+				set nama=?,
+					nik=?,
+					email=?,
+					foto=?
+				where id=?
+			",[
+				htmlspecialchars($request->input('nama')),
+				htmlspecialchars($request->input('nik')),
+				htmlspecialchars($request->input('email')),
+				session('upload_foto_user'),
+				session('id_user')
+			]);
 			
-				$select = DB::select("SELECT password FROM t_user WHERE id=?", [session('id_user')]);
-				$password_lama=$select[0]->password;
+			$update2 = DB::update("
+				update t_user_level
+				set status=0
+				where id_user=?
+			",[
+				session('id_user')
+			]);
+			
+			$update3 = DB::update("
+				update t_user_level
+				set status=1
+				where id_user=? and kdlevel=?
+			",[
+				session('id_user'),
+				htmlspecialchars($request->input('kdlevel')),
+			]);
+			
+			$update4 = DB::update("
+				update t_user_unit
+				set status=0
+				where id_user=?
+			",[
+				session('id_user')
+			]);
+			
+			$update5 = DB::update("
+				update t_user_unit
+				set status=1
+				where id_user=? and kdunit=?
+			",[
+				session('id_user'),
+				htmlspecialchars($request->input('kdunit')),
+			]);
+			
+			if($update1 || $update2 || $update3 || $update4 || $update5){
 				
-				if(md5($request->input('p_password_lama'))==$password_lama){
-					
-					$password_baru = md5($request->input('p_password_baru'));
-					if(session('upload_foto_user')=='' || session('upload_foto_user')==false){
-						$update = DB::update("
-							UPDATE t_user
-							SET nama=?, nip=?, alamat=?, telp=?, email=?, password=?
-							WHERE id=?
-						", [
-							$request->input('p_nama'),
-							$request->input('p_nip'),
-							$request->input('p_alamat'),
-							$request->input('p_telp'),
-							$request->input('p_email'),
-							$password_baru,
-							session('id_user')
-						]);
-					}
-					else{
-						$update = DB::update("
-							UPDATE t_user
-							SET nama=?, nip=?, alamat=?, telp=?, email=?, foto=?, password=?
-							WHERE id=?
-						", [
-							$request->input('p_nama'),
-							$request->input('p_nip'),
-							$request->input('p_alamat'),
-							$request->input('p_telp'),
-							$request->input('p_email'),
-							session('upload_foto_user'),
-							$password_baru,
-							session('id_user')
-						]);
-					}
-				}
-				else{
-					return 'Password lama tidak sesuai!';
-				}
-			}
-			
-			session(['upload_foto_user'=>null]);
-			
-			if($update==true) {
+				DB::commit();
 				
-				
+				session([
+					'foto' => session('upload_foto_user'),
+					'kdlevel' => $request->input('kdlevel'),
+					'kdunit' => $request->input('kdunit'),
+				]);
 				
 				return 'success';
-			} else {
-				return 'Proses ubah gagal. Hubungi Admin!';
+			}
+			else{
+				return 'Data gagal disimpan!';
 			}
 		} catch (\Exception $e) {
+			return $e;
 			return 'Terjadi kesalahan lain. Hubungi Admin!';
 			//return $e;
 		}

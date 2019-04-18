@@ -5,301 +5,243 @@
 	}
 </script>
 
-<div class="block-header">
-    <h2>PROFIL USER</h2>
-</div>
-
-<div class="row clearfix" id="div-form" style="min-height:700px;">
-    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
-    	<div class="card">
-    		<div class="body">
-    			<center>
-    				<img id="x_foto" class="img-circle" width="180" />
-					<h4 class="card-title" id="x_nama"></h4>
-					<h6 class="card-subtitle" id="x_nip"></h6>
-				</center>
-    		</div>
-    	</div>
-    </div>
-    <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
-        <div class="card">
-            <div class="header">
-                <h2><i class="fa fa-pencil"></i> FORM DATA PROFIL</h2>
-            </div>
-            <div class="body">
-                <form id="form-ruh" name="form-ruh" class="form-horizontal">
-                    <input type="hidden" id="inp-id" name="inp-id">
-					<input type="hidden" id="inp-rekambaru" name="inp-rekambaru">
-					<input type="hidden" id="_token" name="_token">
-                    
-                    <div class="row clearfix">
-                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 form-control-label"><label>Username</label></div>
-                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
-                            <div class="form-group">
-                                <div class="form-line">
-                                    <input type="text" id="p_username" name="p_username" class="form-control" disabled>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row clearfix">
-                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 form-control-label"><label>Nama</label></div>
-                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
-                            <div class="form-group">
-                                <div class="form-line">
-                                    <input type="text" id="p_nama" name="p_nama" class="form-control">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
-                        	<span id="warning-p_nama" class="label label-warning warning">Required!</span>
-                        </div>
-                    </div>
-                    <div class="row clearfix">
-                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 form-control-label"><label>NIP</label></div>
-                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
-                            <div class="form-group">
-                                <div class="form-line">
-                                    <input type="text" id="p_nip" name="p_nip" class="form-control val_num" maxlength="18">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
-                        	<span id="warning-p_nip" class="label label-warning warning">Required!</span>
-                        </div>
-                    </div>
-                    <div class="row clearfix">
-                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 form-control-label"><label>Telepon</label></div>
-                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
-                            <div class="form-group">
-                                <div class="form-line">
-                                    <input type="text" id="p_telp" name="p_telp" class="form-control val_num" maxlength="5">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
-                        	<span id="warning-p_telp" class="label label-warning warning">Required!</span>
-                        </div>
-                    </div>
-                    <div class="row clearfix">
-                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 form-control-label"><label>Email</label></div>
-                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
-                            <div class="form-group">
-                                <div class="form-line">
-                                    <input type="email" id="p_email" name="p_email" class="form-control">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
-                            <span id="warning-p_email" class="label label-warning warning">Required!</span>
-                        </div>
-                    </div>
-                    <div class="row clearfix">
-                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 form-control-label"><label>Alamat</label></div>
-                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
-                            <div class="form-group">
-                            	<div class="form-line">
-                                    <input type="text" id="p_alamat" name="p_alamat" class="form-control">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
-                            <span id="warning-p_alamat" class="label label-warning warning">Required!</span>
-                        </div>
-                    </div>
-                    <div class="row clearfix">
-                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 form-control-label"><label>Password Lama</label></div>
-                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
-                            <div class="form-group">
-                            	<div class="form-line">
-                                    <input type="password" id="p_password_lama" name="p_password_lama" class="form-control">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
-                            <span id="warning-p_password_lama" class="label label-warning warning">Required!</span>
-                        </div>
-                    </div>
-                    <div class="row clearfix">
-                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 form-control-label"><label>Password Baru</label></div>
-                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
-                            <div class="form-group">
-                            	<div class="form-line">
-                                    <input type="password" id="p_password_baru" name="p_password_baru" class="form-control">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
-                            <span id="warning-p_password_baru" class="label label-warning warning">Required!</span>
-                        </div>
-                    </div>
-                    <div class="row clearfix">
-						<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 form-control-label"><label>Foto (max 1MB)</label></div>
-						<div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
-							<div class="form-group">
-								<span class="btn btn-primary fileinput-button">
-									<i class="material-icons">file_upload</i> <span>Attach File</span>
-									<input id="fileupload" type="file" name="file">
-								</span>
-								<div id="files" class="files"></div>
-								<div id="progress" class="progress">
-									<div class="progress-bar progress-bar-danger"></div>
-								</div>
-							</div>
-						</div>
-						<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2" id="nmfile"></div>
-					</div>
-					
-					<div class="row clearfix">
-                        <div class="col-lg-offset-2 col-md-offset-2 col-sm-offset-2 col-xs-offset-2">
-                            <button title="Simpan Data Ini?" id="simpan" type="button" class="btn btn-primary m-t-15 waves-effect">
-                            	<i class="material-icons">save</i> SIMPAN
-                            </button>
-							<button title="Batal" id="batal" type="button" class="btn btn-danger m-t-15 waves-effect">
-								<i class="material-icons">refresh</i> BATAL
-							</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
+<section>
+	
+	<div class="row">
+        <div class="col-sm-12">
+            <div class="content-header">Profil</div>
         </div>
     </div>
-</div>
+	
+	<div class="row" id="div-form">
+	    <div class="col-12">
+	        <div class="card">
+	            <div class="card-header">
+	                <h4 class="card-title mb-0" id="horz-layout-basic">Form</h4>
+	            </div>
+	            <div class="card-body">
+	                <div class="px-3">
+	                    <form id="form-ruh" class="form form-horizontal">
+	                    	<input type="hidden" id="inp-rekambaru" name="inp-rekambaru">
+							<input type="hidden" id="inp-id" name="inp-id">
+							<input type="hidden" id="_token" name="_token">
+
+							<div class="form-body">
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control">Username</label>
+									<div class="col-md-7">
+	                            		<input type="text" id="username" name="username" class="form-control" maxlength="255">
+	                            	</div>
+									<label id="warning-username" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control">Nama</label>
+									<div class="col-md-7">
+	                            		<input type="text" id="nama" name="nama" class="form-control" maxlength="255">
+	                            	</div>
+									<label id="warning-nama" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+		                        <div class="form-group row">
+	                            	<label class="col-md-2 label-control">NIK</label>
+									<div class="col-md-7">
+	                            		<input type="text" id="nik" name="nik" class="form-control val_num" maxlength="18">
+	                            	</div>
+									<label id="warning-nik" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+		                        <div class="form-group row">
+	                            	<label class="col-md-2 label-control">Email</label>
+									<div class="col-md-7">
+	                            		<input type="text" id="email" name="email" class="form-control" maxlength="255">
+	                            	</div>
+									<label id="warning-email" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+		                        <div class="form-group row">
+	                            	<label class="col-md-2 label-control">Level</label>
+									<div class="col-md-7">
+										<select id="kdlevel" name="kdlevel" class="form-control chosen"></select>
+	                            	</div>
+									<label id="warning-kdlevel" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+		                        <div class="form-group row">
+	                            	<label class="col-md-2 label-control">Unit</label>
+									<div class="col-md-7">
+										<select id="kdunit" name="kdunit" class="form-control chosen"></select>
+	                            	</div>
+									<label id="warning-kdunit" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+		                        <div class="form-group row">
+	                            	<label class="col-md-2 label-control">Foto (*png|jpg max 2MB)</label>
+									<div class="col-md-7">
+										<div id="div-image"></div>
+	                            		<span class="btn btn-primary fileinput-button">
+											<i class="fa fa-upload"></i>
+											<span>Browse File</span>
+											<input id="fileupload1" type="file" name="file">
+										</span>
+										<!-- The global progress bar -->
+										<div id="progress1" class="progress">
+											<div class="progress-bar progress-bar-danger"></div>
+										</div>
+										<div id="nmfile1" class="files"></div>
+	                            	</div>
+		                        </div>
+							</div>
+	                        <div class="form-actions">
+	                            <div class="form-group row">
+		                            <label class="col-md-2 label-control"></label>
+		                            <div class="col-md-7">
+		                            	<button type="button" class="btn btn-raised btn-warning mr-1 batal">
+											<i class="ft-x"></i> Batal
+										</button>
+										<button id="simpan" type="button" class="btn btn-raised btn-primary">
+											<i class="fa fa-check-square-o"></i> Simpan
+										</button>
+		                            </div>
+		                        </div>
+	                        </div>
+	                    </form>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	
+</section>
 
 <script>
 	jQuery(document).ready(function(){
-		
-		function form_valid(str_id){
-            var arr_id=str_id.split(',');
-            var lanjut=true;
-            for(x=0;x<arr_id.length;x++){
-                if(jQuery('#'+arr_id[x]).val()==''){
-                    jQuery('#warning-'+arr_id[x]).show();
-                    lanjut=false;
-                }
-            }
-            return lanjut;
-        }
-
+	
+		var route = 'profile';
+	
 		jQuery('.chosen').chosen();
 
-		jQuery.extend({
-			getValues: function(url) {
-				var result = null;
-				jQuery.ajax({
-					url: url,
-					type: 'get',
-					async: false,
-					success: function(data) {
-						result = data;
-					}
-				});
-			   return result;
+		//validasi isian form
+		function form_valid(str_id){
+			var arr_id = str_id.split(',');
+			var next = true;
+			for(x = 0; x < arr_id.length; x++){
+				if(jQuery('#'+arr_id[x]).val()==''){
+					jQuery('#warning-'+arr_id[x]).show();
+					next = false;
+				}
 			}
-		});
+			return next;
+		}
 		
-		var token1 = jQuery.getValues('token');
-
-		jQuery('#fileupload').click(function(){
-			jQuery('#progress .progress-bar').css('width', 0);
-			jQuery('#progress .progress-bar').html('');
-			jQuery('#nmfile').html('');
-		});
-
-		jQuery('#fileupload').fileupload({
-			url:'profile/foto',
-			dataType: 'json',
-			formData: {
-				_token:token1
-			},
-			done: function (e, data) {
-				jQuery('#nmfile').html(data.files[0].name);
-				alertify.log('Upload attachment '+data.files[0].name+' berhasil!');
-			},
-			error: function(error) {
-				alertify.log(error.responseText);
-			},
-			progressall: function (e, data) {
-				var progress = parseInt(data.loaded / data.total * 100, 10);
-				jQuery('#progress .progress-bar').css('width',progress + '%');
-			}
-		}).prop('disabled', !$.support.fileInput)
-		  .parent().addClass($.support.fileInput ? undefined : 'disabled');
-
+		//tampilan default
 		function form_default() {
+			jQuery('input,textarea,select').val('');
 			jQuery('.warning').hide();
-			jQuery('#div-form').show();
-			jQuery.getJSON('profile', function(result){
-				if(result) {
-					jQuery('#x_foto').attr('src', 'data/user/'+result.foto);
-					jQuery('#x_nama').append(result.nama);
-					jQuery('#x_nip').append(result.nip);
-					jQuery('#p_username').val(result.username);
-					jQuery('#p_nama').val(result.nama);
-					jQuery('#p_nip').val(result.nip);
-					jQuery('#p_telp').val(result.telp);
-					jQuery('#p_email').val(result.email);
-					jQuery('#p_alamat').val(result.alamat);
-					jQuery('#p_jabatan').val(result.jabatan);
-					jQuery('#p_password_lama,#p_password_baru').val('');
+			jQuery('#div-tabel').show();
+			jQuery('#simpan,#username').prop('disabled', false);
+			jQuery('.chosen').trigger('chosen:updated');
+			jQuery('#div-image').html('');
+			jQuery.getJSON(route, function(result){
+				if(result.error==false) {
+					$('#username').val(result.message.username);
+					$('#nama').val(result.message.nama);
+					$('#nik').val(result.message.nik);
+					$('#email').val(result.message.email);
+					$('#aktif').val(result.message.aktif);
+					$('#kdlevel').html(result.kdlevel);
+					$('#kdunit').html(result.kdunit);
+					if(result.message.foto){
+                        jQuery('#div-image').html('<p><img src="data/user/'+result.message.foto+'" class="img-rounded img-responsive" style="width:100%;max-width:120px;"></p>');
+                    } else {
+                        jQuery('#div-image').html('-');
+                    }
+					$('.chosen').trigger('chosen:updated');
+					$('#username').prop('disabled', true);
+				}
+				else{
+					alertify.log(result.message);
 				}
 			});
 		}
 		
 		form_default();
 
-		jQuery('#batal').click(function(){
-			form_default();
-			window.location.href='#/';
+		jQuery('#fileupload1').click(function(){
+			jQuery('#progress1 .progress-bar').css('width', 0);
+			jQuery('#progress1 .progress-bar').html('');
+			jQuery('#nmfile1').html('');
+		});
+		
+		jQuery.get('token', function(result){
+			$('#fileupload1').fileupload({
+				url:route+'/upload',
+				dataType: 'json',
+				formData:{
+					_token: result
+				},
+				done: function (e, data) {
+					jQuery('#nmfile1').html(data.files[0].name);
+					alertify.log('Data berhasil diupload!');
+				},
+				error: function(error) {
+					alertify.log(error.responseText);
+				},
+				progressall: function (e, data) {
+					var progress = parseInt(data.loaded / data.total * 100, 10);
+					jQuery('#progress1 .progress-bar').css('width',progress + '%');
+				}
+			}).prop('disabled', !$.support.fileInput)
+			  .parent().addClass($.support.fileInput ? undefined : 'disabled');
 		});
 
-        jQuery('#simpan').click(function(){
-            jQuery('#simpan').html('Loading...');
-            jQuery('#simpan').prop('disabled',true);
-            var lanjut=form_valid('p_nama,p_nip,p_telp,p_email,p_alamat');
-            if(lanjut==true){
-                jQuery.get('token', function(token){
-                    if(token){
-                        jQuery('#_token').val(token);
-                        var data=jQuery('#form-ruh').serialize();
-                        jQuery.ajax({
-                            url:'profile',
-                            method:'POST',
-                            data:data,
-                            success:function(result){
-                                if(result=='success'){
-                                    jQuery('#simpan').html('<i class="material-icons">save</i> SIMPAN');
-                                    jQuery('#simpan').prop('disabled',false);
-                                    alertify.log('Proses simpan berhasil.');
-                                    form_default();
-                                    window.location.href='#/';
-                                }
-                                else{
-                                    jQuery('#simpan').html('<i class="material-icons">save</i> SIMPAN');
-                                    jQuery('#simpan').prop('disabled',false);
-                                    alertify.log(result);
-                                }   
-                            },
-                            error:function(result){
-                                jQuery('#simpan').html('<i class="material-icons">save</i> SIMPAN');
-                                jQuery('#simpan').prop('disabled',false);
-                                alertify.log(result);
-                            }
-                        });
-                    }
-                    else{
-                        jQuery('#simpan').html('<i class="material-icons">save</i> SIMPAN');
-                        jQuery('#simpan').prop('disabled',false);
-                        alertify.log('Proses simpan gagal. Silahkan refresh halaman browser anda.');
-                    }
-                });
-            }
-            else{
-                jQuery('#simpan').html('<i class="material-icons">save</i> SIMPAN');
-                jQuery('#simpan').prop('disabled',false);
-                alertify.log('Kolom tidak boleh dikosongkan!');
-            }
-        });
+		//klik batal
+		jQuery('.batal').click(function(){
+			form_default();
+		});
 		
-	});	
+		//klik simpan
+		jQuery('#simpan').click(function(){
+			jQuery(this).html('<span class="loading"><i class="fa fa-refresh"></i> Loading.....</span>');
+			jQuery(this).prop('disabled',true);
+			var next = form_valid('username,nama,email,nik');
+			if(next==true){
+				jQuery.get('token', function(token){
+					if(token){
+						jQuery('#_token').val(token);
+						var data = jQuery('#form-ruh').serialize();
+						jQuery.ajax({
+							url: route,
+							method: 'POST',
+							data: data,
+							success: function(result){
+								if(result=='success') {
+									jQuery('#simpan').html('<i class="fa fa-check-square-o"></i> Simpan');
+									jQuery('#simpan').prop('disabled',false);
+									alertify.log('Proses simpan berhasil');
+									form_default();
+									table.ajax.reload();
+								} else {
+									jQuery('#simpan').html('<i class="fa fa-check-square-o"></i> Simpan');
+									jQuery('#simpan').prop('disabled',false);
+									alertify.log(result);
+								} 
+							},
+							error: function(result){
+								jQuery('#simpan').html('<i class="fa fa-check-square-o"></i> Simpan');
+								jQuery('#simpan').prop('disabled',false);
+								alertify.log('Data tidak dapat disimpan. Hubungi Admin!');
+							}
+						});
+					} 
+					else{
+						jQuery('#simpan').html('<i class="fa fa-check-square-o"></i> Simpan');
+						jQuery('#simpan').prop('disabled',false);
+						alertify.log('Sesi telah habis, silahkan refresh browser Anda!');
+					}
+				});
+			}
+			else{
+				jQuery('#simpan').html('<i class="fa fa-check-square-o"></i> Simpan');
+				jQuery('#simpan').prop('disabled',false);
+				alertify.log('Data tidak dapat dikosongkan!');
+			}
+		});
+		
+	});
+	
 </script>

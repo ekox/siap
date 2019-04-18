@@ -31,7 +31,7 @@ Route::group(['middleware' => 'auth'], function(){
 		
 		Route::get('', 'ProfileController@index');
 		Route::post('', 'ProfileController@ubah');
-		Route::post('/foto', 'ProfileController@upload');
+		Route::post('/upload', 'ProfileController@upload');
 		
 	});
 	

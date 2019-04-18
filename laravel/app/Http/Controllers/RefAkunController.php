@@ -9,14 +9,15 @@ class RefAkunController extends Controller {
 
 	public function index(Request $request)
 	{
-		$aColumns = array('kdakun','nmakun','kddk','nmlap');
+		$aColumns = array('kdakun','nmakun','kddk','nmlap','lvl');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "kdakun";
 		/* DB table to use */
 		$sTable = "select  a.kdakun,
 							a.nmakun,
 							a.kddk,
-							b.nmlap
+							b.nmlap,
+							a.lvl
 					from t_akun a
 					left outer join t_lap b on(a.kdlap=b.kdlap)
 					order by to_number(a.kdakun) asc
@@ -128,6 +129,7 @@ class RefAkunController extends Controller {
 				$row->nmakun,
 				$row->kddk,
 				$row->nmlap,
+				$row->lvl,
 				$aksi
 			);
 		}
@@ -176,6 +178,7 @@ class RefAkunController extends Controller {
 						'nmakun' => $request->input('nmakun'),
 						'kddk' => $request->input('kddk'),
 						'kdlap' => $request->input('kdlap'),
+						'lvl' => $request->input('lvl'),
 					]);
 					
 					if($insert){
@@ -197,12 +200,14 @@ class RefAkunController extends Controller {
 					update t_akun
 					set nmakun=?,
 						kddk=?,
-						kdlap=?
+						kdlap=?,
+						lvl=?
 					where kdakun=?
 				",[
 					$request->input('nmakun'),
 					$request->input('kddk'),
 					$request->input('kdlap'),
+					$request->input('lvl'),
 					$request->input('inp-id')
 				]);
 				

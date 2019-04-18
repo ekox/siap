@@ -185,8 +185,10 @@
 		
 		//tampilan default
 		function form_default() {
+			jQuery('input,select,textarea').val('');
 			jQuery('.warning, #div-form').hide();
 			jQuery('#div-tabel').show();
+			jQuery('.chosen').trigger('chosen:updated');
 			jQuery('#simpan').prop('disabled', false);
 		}
 		
