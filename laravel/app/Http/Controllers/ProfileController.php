@@ -94,72 +94,124 @@ class ProfileController extends Controller {
 		try {
 			DB::beginTransaction();
 			
-			//rekam header user
-			$update1 = DB::update("
-				update t_user
-				set nama=?,
-					nik=?,
-					email=?,
-					foto=?
+			$rows = DB::select("
+				select	*
+				from t_user
 				where id=?
 			",[
-				htmlspecialchars($request->input('nama')),
-				htmlspecialchars($request->input('nik')),
-				htmlspecialchars($request->input('email')),
-				session('upload_foto_user'),
 				session('id_user')
 			]);
 			
-			$update2 = DB::update("
-				update t_user_level
-				set status=0
-				where id_user=?
-			",[
-				session('id_user')
-			]);
-			
-			$update3 = DB::update("
-				update t_user_level
-				set status=1
-				where id_user=? and kdlevel=?
-			",[
-				session('id_user'),
-				htmlspecialchars($request->input('kdlevel')),
-			]);
-			
-			$update4 = DB::update("
-				update t_user_unit
-				set status=0
-				where id_user=?
-			",[
-				session('id_user')
-			]);
-			
-			$update5 = DB::update("
-				update t_user_unit
-				set status=1
-				where id_user=? and kdunit=?
-			",[
-				session('id_user'),
-				htmlspecialchars($request->input('kdunit')),
-			]);
-			
-			if($update1 || $update2 || $update3 || $update4 || $update5){
+			if(count($rows)>0){
 				
-				DB::commit();
+				$password = $rows[0]->pass;
+				$lanjut = true;
+				$error = '';
 				
-				session([
-					'foto' => session('upload_foto_user'),
-					'kdlevel' => $request->input('kdlevel'),
-					'kdunit' => $request->input('kdunit'),
-				]);
+				if($request->input('password1')!==''){
+					
+					if($request->input('password')!==''){
+						
+						if(md5($request->input('password'))==$password){
+							
+							$password = md5($request->input('password1'));
+							
+						}
+						else{
+							$lanjut = false;
+							$error = 'Password lama tidak valid!';
+						}
+						
+					}
+					else{
+						$lanjut = false;
+						$error = 'Password lama harus diisi!';
+					}
 				
-				return 'success';
+				}
+				
+				if($lanjut){
+					
+					//rekam header user
+					$update1 = DB::update("
+						update t_user
+						set nama=?,
+							nik=?,
+							email=?,
+							foto=?,
+							pass=?
+						where id=?
+					",[
+						htmlspecialchars($request->input('nama')),
+						htmlspecialchars($request->input('nik')),
+						htmlspecialchars($request->input('email')),
+						session('upload_foto_user'),
+						$password,
+						session('id_user')
+					]);
+					
+					$update2 = DB::update("
+						update t_user_level
+						set status=0
+						where id_user=?
+					",[
+						session('id_user')
+					]);
+					
+					$update3 = DB::update("
+						update t_user_level
+						set status=1
+						where id_user=? and kdlevel=?
+					",[
+						session('id_user'),
+						htmlspecialchars($request->input('kdlevel')),
+					]);
+					
+					$update4 = DB::update("
+						update t_user_unit
+						set status=0
+						where id_user=?
+					",[
+						session('id_user')
+					]);
+					
+					$update5 = DB::update("
+						update t_user_unit
+						set status=1
+						where id_user=? and kdunit=?
+					",[
+						session('id_user'),
+						htmlspecialchars($request->input('kdunit')),
+					]);
+					
+					if($update1 || $update2 || $update3 || $update4 || $update5){
+						
+						DB::commit();
+						
+						session([
+							'foto' => session('upload_foto_user'),
+							'kdlevel' => $request->input('kdlevel'),
+							'kdunit' => $request->input('kdunit'),
+						]);
+						
+						return 'success';
+					}
+					else{
+						return 'Data gagal disimpan!';
+					}
+					
+				}
+				else{
+					return $error;
+				}
+				
 			}
 			else{
-				return 'Data gagal disimpan!';
+				return 'Data tidak ditemukan!';
 			}
-		} catch (\Exception $e) {
+						
+		}
+		catch (\Exception $e) {
 			return $e;
 			return 'Terjadi kesalahan lain. Hubungi Admin!';
 			//return $e;
