@@ -8,12 +8,12 @@
     <meta name="keywords" content="admin template, Apex admin template, dashboard template, flat admin template, responsive admin template, web app">
     <meta name="author" content="PIXINVENT">
     <title>SIAP SAJA</title>
-    <link rel="apple-touch-icon" sizes="60x60" href="{{ asset('template/Apex6/app-assets/img/ico/apple-icon-60.png') }}">
-    <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('template/Apex6/app-assets/img/ico/apple-icon-76.png') }}">
-    <link rel="apple-touch-icon" sizes="120x120" href="{{ asset('template/Apex6/app-assets/img/ico/apple-icon-120.png') }}">
-    <link rel="apple-touch-icon" sizes="152x152" href="{{ asset('template/Apex6/app-assets/img/ico/apple-icon-152.png') }}">
-    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('template/Apex6/app-assets/img/ico/favicon.ico') }}">
-    <link rel="shortcut icon" type="image/png" href="{{ asset('template/Apex6/app-assets/img/ico/favicon-32.png') }}">
+    <link rel="apple-touch-icon" sizes="60x60" href="{{ asset('template/img/logo.png') }}">
+    <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('template/img/logo.png') }}">
+    <link rel="apple-touch-icon" sizes="120x120" href="{{ asset('template/img/logo.png') }}">
+    <link rel="apple-touch-icon" sizes="152x152" href="{{ asset('template/img/logo.png') }}">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('template/img/logo.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ asset('template/img/logo.png') }}">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-touch-fullscreen" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -55,11 +55,10 @@
 						<div class="col-12 d-flex align-items-center justify-content-center">
 							<div class="card gradient-indigo-purple text-center width-400">
 								<div class="card-img overlap">
-									<img alt="element 06" class="mb-1" src="{{ asset('template/Apex6/app-assets/img/portrait/avatars/avatar-08.png') }}" width="190">
+									<img alt="element 06" class="mb-1" src="{{ asset('template/img/logo.png') }}" width="190">
 								</div>
 								<div class="card-body">
 									<div class="card-block">
-										<h2 class="white">Login</h2>
 										<form id="form-ruh" name="form-ruh" onsubmit="return false">
 											<input type="hidden" name="_token" value="{{ csrf_token() }}" />
 											<div class="form-group">

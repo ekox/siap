@@ -8,12 +8,12 @@
     <meta name="keywords" content="admin template, Apex admin template, dashboard template, flat admin template, responsive admin template, web app">
     <meta name="author" content="PIXINVENT">
     <title>SIAP SAJA</title>
-    <link rel="apple-touch-icon" sizes="60x60" href="{{ asset('template/Apex6/app-assets/img/ico/apple-icon-60.png') }}">
-    <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('template/Apex6/app-assets/img/ico/apple-icon-76.png') }}">
-    <link rel="apple-touch-icon" sizes="120x120" href="{{ asset('template/Apex6/app-assets/img/ico/apple-icon-120.png') }}">
-    <link rel="apple-touch-icon" sizes="152x152" href="{{ asset('template/Apex6/app-assets/img/ico/apple-icon-152.png') }}">
-    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('template/Apex6/app-assets/img/ico/favicon.ico') }}">
-    <link rel="shortcut icon" type="image/png" href="{{ asset('template/Apex6/app-assets/img/ico/favicon-32.png') }}">
+    <link rel="apple-touch-icon" sizes="60x60" href="{{ asset('template/img/logo.png') }}">
+    <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('template/img/logo.png') }}">
+    <link rel="apple-touch-icon" sizes="120x120" href="{{ asset('template/img/logo.png') }}">
+    <link rel="apple-touch-icon" sizes="152x152" href="{{ asset('template/img/logo.png') }}">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('template/img/logo.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ asset('template/img/logo.png') }}">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-touch-fullscreen" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -63,7 +63,7 @@
         <!-- Sidebar Header starts-->
         <div class="sidebar-header">
           <div class="logo clearfix"><a href="index.html" class="logo-text float-left">
-          <div class="logo-img"><img src="{{ asset('template/Apex6/app-assets/img/logo.png') }}"/></div><span class="text align-middle">APEX</span></a><a id="sidebarToggle" href="javascript:;" class="nav-toggle d-none d-sm-none d-md-none d-lg-block"><i data-toggle="expanded" class="ft-toggle-right toggle-icon"></i></a><a id="sidebarClose" href="javascript:;" class="nav-close d-block d-md-block d-lg-none d-xl-none"><i class="ft-x"></i></a></div>
+          <div class="logo-img"></div><span class="text align-middle">SIAP</span></a><a id="sidebarToggle" href="javascript:;" class="nav-toggle d-none d-sm-none d-md-none d-lg-block"><i data-toggle="expanded" class="ft-toggle-right toggle-icon"></i></a><a id="sidebarClose" href="javascript:;" class="nav-close d-block d-md-block d-lg-none d-xl-none"><i class="ft-x"></i></a></div>
         </div>
         <!-- Sidebar Header Ends-->
         <!-- / main menu header-->
