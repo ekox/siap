@@ -5,7 +5,7 @@ use Session;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class RefOutputController extends Controller {
+class RefKegiatanController extends Controller {
 
 	public function index(Request $request)
 	{
@@ -15,7 +15,7 @@ class RefOutputController extends Controller {
 		/* DB table to use */
 		$sTable = "select	a.id,
 							a.uraian
-					from t_output a
+					from t_kegiatan a
 					order by a.id desc
 				";
 		
@@ -134,7 +134,7 @@ class RefOutputController extends Controller {
 		try{
 			$rows = DB::select("
 				select  a.*
-				from t_output a
+				from t_kegiatan a
 				where a.id=?
 			",[
 				$id
@@ -155,7 +155,7 @@ class RefOutputController extends Controller {
 		try{
 			if($request->input('inp-rekambaru')=='1'){
 				
-				$insert = DB::table('t_output')->insert([
+				$insert = DB::table('t_kegiatan')->insert([
 					'uraian' => $request->input('uraian')
 				]);
 				
@@ -170,7 +170,7 @@ class RefOutputController extends Controller {
 			else{
 				
 				$update = DB::update("
-					update t_output
+					update t_kegiatan
 					set uraian=?
 					where id=?
 				",[
@@ -196,7 +196,7 @@ class RefOutputController extends Controller {
 	{
 		try{
 			$delete = DB::delete("
-				delete from t_output
+				delete from t_kegiatan
 				where id=?
 			",[
 				$request->input('id')

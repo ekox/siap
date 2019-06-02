@@ -44,12 +44,28 @@
 									<label id="warning-id_alur" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="id_output">Output </label>
+	                            	<label class="col-md-2 label-control" for="id_output">Program </label>
 									<div class="col-md-7">
 	                            		<select id="id_output" name="id_output" class="form-control chosen">
 										</select>
 	                            	</div>
 									<label id="warning-id_output" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="id_giat">Kegiatan </label>
+									<div class="col-md-7">
+	                            		<select id="id_giat" name="id_giat" class="form-control chosen">
+										</select>
+	                            	</div>
+									<label id="warning-id_giat" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="kdtran">Transaksi </label>
+									<div class="col-md-7">
+	                            		<select id="kdtran" name="kdtran" class="form-control chosen">
+										</select>
+	                            	</div>
+									<label id="warning-kdtran" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="id_penerima">Penerima </label>
@@ -74,7 +90,7 @@
 									<label id="warning-tgbukti" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="uraian">Uraian </label>
+	                            	<label class="col-md-2 label-control" for="uraian">Keterangan </label>
 									<div class="col-md-7">
 	                            		<textarea id="uraian" name="uraian" class="form-control" maxlength="255"></textarea>
 	                            	</div>
@@ -101,16 +117,16 @@
 	                            		<table class="table table-bordered">
 											<thead>
 												<tr>
-													<th style="width:250px;">Akun</th>
-													<th style="width:200px;">Nilai</th>
-													<th>Aksi</th>
+													<th style="width:100px;">Akun</th>
+													<th style="width:300px;">Uraian</th>
+													<th style="width:50px;">D/K</th>
+													<th style="width:150px;">Nilai</th>
 												</tr>
 											</thead>
 											<tbody id="tabel-rincian">
 												
 											</tbody>
 										</table>
-										<div class="pull-right"><a href="javascript:;" id="tambah-detil" class="btn btn-sm btn-success">Tambah</a></div>
 	                            	</div>
 		                        </div>
 								
@@ -234,8 +250,26 @@
 			jQuery('#id_output').html(result).trigger('chosen:updated');
 		});
 		
+		jQuery.get('dropdown/kegiatan', function(result){
+			jQuery('#id_giat').html(result).trigger('chosen:updated');
+		});
+		
 		jQuery.get('dropdown/penerima', function(result){
 			jQuery('#id_penerima').html(result).trigger('chosen:updated');
+		});
+		
+		jQuery.get('dropdown/transaksi', function(result){
+			jQuery('#kdtran').html(result).trigger('chosen:updated');
+		});
+		
+		jQuery('#kdtran').change(function(){
+			var kdtran = jQuery(this).val();
+			jQuery.get('ref/transaksi/detil1/'+kdtran, function(result){
+				if(result.error==false){
+					jQuery('#tabel-rincian').html(result.message);
+					jQuery('.val_num').mask('000,000,000,000,000', {reverse: true});
+				}
+			});
 		});
 		
 		jQuery.get('cek/level', function(result){
@@ -244,21 +278,14 @@
 			}
 		});
 		
-		jQuery.getJSON('dropdown/akun/json', function(result){
-			var akun='';
-			jQuery.each(result, function(i,field){
-				akun+='<option value="'+field.kdakun+'">'+field.kdakun+' - '+field.nmakun+'</option>';
-			});
-			jQuery('#inp-akun').val(akun);
-		});
-		
 		//tampilan default
 		function form_default() {
-			jQuery('#id_alur,#id_output,#id_penerima,#nobukti,#tgbukti,#uraian').val('');
+			jQuery('input,select,textarea').val('');
 			jQuery('.warning, #div-form').hide();
 			jQuery('#div-tabel').show();
-			jQuery('#id_alur,#id_output,#id_penerima').trigger('chosen:updated');
+			jQuery('.chosen').trigger('chosen:updated');
 			jQuery('#simpan').prop('disabled', false);
+			jQuery('#tabel-rincian').html('');
 		}
 		
 		//aktivasi tampilan default
@@ -272,50 +299,7 @@
 				jQuery('#inp-rekambaru').val('1');
 				jQuery('#div-form').show();
 				jQuery('#x').val(0);
-				
-				jQuery('#tabel-rincian').html(
-					'<tr id="tr-0">'+
-						'<td>'+
-							'<select id="chosen0" class="form-control akun" name="rincian[0][\'kdakun\']">'+
-								jQuery('#inp-akun').val()+
-							'</select>'+
-						'</td>'+
-						'<td><input style="text-align:right;" type="text" name="rincian[0][\'nilai\']" class="val_num"></td>'+
-						'<td>'+
-							'<center><a href="javascript:;" id="0" class="btn btn-sm btn-danger hapus-detil"><i class="fa fa-minus"></i></a></center>'+
-						'</td>'+
-					'</tr>'
-				);
-				jQuery('.val_num').mask('000,000,000,000,000', {reverse: true});
-				jQuery('#chosen0').chosen({width:'100%'});
-				jQuery('#dk-0').chosen({width:'100%'});
 			});
-		});
-		
-		jQuery('#tambah-detil').click(function(){
-			var x=parseInt(jQuery('#x').val())+1;
-			jQuery('#tabel-rincian').append(
-				'<tr id="tr-'+x+'">'+
-					'<td>'+
-						'<select id="chosen'+x+'" class="form-control akun" name="rincian['+x+'][\'kdakun\']">'+
-							jQuery('#inp-akun').val()+
-						'</select>'+
-					'</td>'+
-					'<td><input style="text-align:right;" type="text" name="rincian['+x+'][\'nilai\']" class="val_num"></td>'+
-					'<td>'+
-						'<center><a href="javascript:;" id="'+x+'" class="btn btn-sm btn-danger hapus-detil"><i class="fa fa-minus"></i></a></center>'+
-					'</td>'+
-				'</tr>'
-			);
-			jQuery('#chosen'+x).chosen({width:'100%'});
-			jQuery('#dk-'+x).chosen({width:'100%'});
-			jQuery('.val_num').mask('000,000,000,000,000', {reverse: true});
-			jQuery('#x').val(x);
-		});
-		
-		jQuery('body').off('click', '.hapus-detil').on('click', '.hapus-detil', function(){
-			var id=this.id;
-			jQuery('#tr-'+id).remove();
 		});
 		
 		//data tabel
@@ -425,6 +409,8 @@
 					jQuery('#inp-rekambaru').val('0');
 					jQuery('#id_alur').val(result.message.id_alur);
 					jQuery('#id_output').val(result.message.id_output);
+					jQuery('#id_giat').val(result.message.id_giat);
+					jQuery('#kdtran').val(result.message.kdtran);
 					jQuery('#id_penerima').val(result.message.id_penerima);
 					jQuery('#nobukti').val(result.message.nobukti);
 					jQuery('#tgbukti').val(result.message.tgbukti);
@@ -436,20 +422,17 @@
 						jQuery('#tabel-rincian').append(
 							'<tr id="tr-'+x+'">'+
 								'<td>'+
-									'<select id="chosen'+x+'" class="form-control akun" name="rincian['+x+'][\'kdakun\']">'+
-										jQuery('#inp-akun').val()+
-									'</select>'+
+									'<input style="width:100px !important;" type="text" name="rincian['+x+'][\'kdakun\']" value="'+row.kdakun+'" readonly>'+
 								'</td>'+
-								'<td><input style="text-align:right;" type="text" name="rincian['+x+'][\'nilai\']" class="val_num" value="'+digit_grouping(row.nilai)+'"></td>'+
 								'<td>'+
-									'<center><a href="javascript:;" id="'+x+'" class="btn btn-sm btn-danger hapus-detil"><i class="fa fa-minus"></i></a></center>'+
+									row.nmakun+
 								'</td>'+
+								'<td><input style="width:50px !important;" type="text" name="rincian['+x+'][\'kddk\']" value="'+row.kddk+'" readonly></td>'+
+								'<td><input style="text-align:right;width:150px !important;" class="val_num" type="text" name="rincian['+x+'][\'nilai\']" value="'+digit_grouping(row.nilai)+'"></td>'+
 							'</tr>'
 						);
 						jQuery('#chosen'+x).val(row.kdakun);
-						jQuery('#dk-'+x).val(row.kddk);
-						jQuery('#chosen'+x).chosen({width:'100%'});
-						jQuery('#dk-'+x).chosen({width:'100%'});
+						jQuery('#kddk-'+x).val(row.kddk);
 						jQuery('.val_num').mask('000,000,000,000,000', {reverse: true});
 					});
 					
@@ -478,7 +461,7 @@
 		jQuery('#simpan').click(function(){
 			jQuery(this).html('<span class="loading"><i class="fa fa-refresh"></i> Loading.....</span>');
 			jQuery(this).prop('disabled',true);
-			var next = form_valid('id_alur,id_output,id_penerima,notrans,nobukti,tgbukti,uraian');
+			var next = form_valid('id_alur,id_output,id_giat,id_penerima,kdtran,notrans,nobukti,tgbukti,uraian');
 			if(next==true){
 				jQuery.get('token', function(token){
 					if(token){

@@ -5,19 +5,26 @@ use Session;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class RefOutputController extends Controller {
+class PembukuanSaldoAwalController extends Controller {
 
 	public function index(Request $request)
 	{
-		$aColumns = array('id','uraian');
+		$aColumns = array('id','nmlap','kdakun','kddk','nilai','tgsawal','created_at');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
 		/* DB table to use */
-		$sTable = "select	a.id,
-							a.uraian
-					from t_output a
-					order by a.id desc
-				";
+		$sTable = "select  	a.id,
+							b.nmlap,
+							a.kdakun,
+							a.kddk,
+							a.nilai,
+							to_char(a.tgsawal,'dd-mm-yyyy') as tgsawal,
+							to_char(a.created_at,'dd-mm-yyyy hh24:mi:ss') as created_at
+					from d_sawal a
+					left outer join t_lap b on(a.kdlap=b.kdlap)
+					left outer join t_akun c on(a.kdakun=c.kdakun)
+					where a.thang='".session('tahun')."'
+					order by a.id desc";
 		
 		/*
 		 * Paging
@@ -62,7 +69,8 @@ class RefOutputController extends Controller {
 		if(isset($_GET['sSearch'])){
 			$sSearch=$_GET['sSearch'];
 			if((isset($sSearch))&&($sSearch!='')){
-				$sWhere=" where lower(uraian) like lower('".$sSearch."%') or lower(uraian) like lower('%".$sSearch."%') ";
+				$sWhere=" where lower(nmlap) like lower('".$sSearch."%') or lower(nmlap) like lower('%".$sSearch."%') or
+								lower(kdakun) like lower('".$sSearch."%') or lower(kdakun) like lower('%".$sSearch."%') ";
 			}
 		}
 		
@@ -109,9 +117,9 @@ class RefOutputController extends Controller {
 		foreach( $rows as $row )
 		{
 			$aksi='';
-			if(session('kdlevel')=='00'){
+			if(session('kdlevel')=='00' || session('kdlevel')=='05'){
 				$aksi='<center>
-							<button type="button" class="btn btn-raised btn-sm btn-icon btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-check"></i></button>
+							<button type="button" class="btn btn-raised btn-sm btn-icon btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-check"></i></button>
 							<div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
 								<a id="'.$row->id.'" class="dropdown-item ubah" href="javascript:;">Ubah Data</a>
 								<a id="'.$row->id.'" class="dropdown-item hapus" href="javascript:;">Hapus Data</a>
@@ -120,8 +128,13 @@ class RefOutputController extends Controller {
 			}
 			
 			$output['aaData'][] = array(
-				$row->id,
-				$row->uraian,
+				$row->no,
+				$row->nmlap,
+				$row->kdakun,
+				$row->kddk,
+				'<div style="text-align:right;">'.number_format($row->nilai).'</div>',
+				$row->tgsawal,
+				$row->created_at,
 				$aksi
 			);
 		}
@@ -131,32 +144,54 @@ class RefOutputController extends Controller {
 	
 	public function pilih(Request $request, $id)
 	{
-		try{
-			$rows = DB::select("
-				select  a.*
-				from t_output a
-				where a.id=?
-			",[
-				$id
-			]);
-			
-			if(count($rows)>0){
-				return response()->json($rows[0]);
-			}
-			
+		$rows = DB::select("
+			select  id,
+					kdlap,
+					kdakun,
+					kddk,
+					nilai,
+					to_char(tgsawal,'yyyy-mm-dd') as tgsawal
+			from d_sawal
+			where id=?
+		",[
+			$id
+		]);
+		
+		if(count($rows)>0){
+			$data['error'] = false;
+			$data['message'] = $rows[0];
 		}
-		catch(\Exception $e){
-			return 'Kesalahan lainnya!';
+		else{
+			$data['error'] = true;
+			$data['message'] = 'Data akun tidak ditemukan!';
 		}
+		
+		return response()->json($data);
 	}
 	
 	public function simpan(Request $request)
 	{
-		try{
-			if($request->input('inp-rekambaru')=='1'){
+		if($request->input('inp-rekambaru')=='1'){
+			
+			$rows = DB::select("
+				SELECT	count(*) AS jml
+				from d_sawal
+				where thang=? and kdakun=?
+			",[
+				session('tahun'),
+				$request->input('kdakun'),
+			]);
+			
+			if($rows[0]->jml==0){
 				
-				$insert = DB::table('t_output')->insert([
-					'uraian' => $request->input('uraian')
+				$insert = DB::table('d_sawal')->insert([
+					'thang' => session('tahun'),
+					'kdlap' => $request->input('kdlap'),
+					'kdakun' => $request->input('kdakun'),
+					'kddk' => $request->input('kddk'),
+					'nilai' => str_replace(",", "", $request->input('nilai')),
+					'tgsawal' => $request->input('tgsawal'),
+					'id_user' => session('id_user')
 				]);
 				
 				if($insert){
@@ -168,51 +203,58 @@ class RefOutputController extends Controller {
 				
 			}
 			else{
-				
-				$update = DB::update("
-					update t_output
-					set uraian=?
-					where id=?
-				",[
-					$request->input('uraian'),
-					$request->input('inp-id')
-				]);
-				
-				if($update){
-					return 'success';
-				}
-				else{
-					return 'Data gagal diubah!';
-				}
-				
-			}			
+				return 'Duplikasi data!';
+			}
+			
 		}
-		catch(\Exception $e){
-			return 'Terdapat kesalahan lainnya, hubungi Administrator!';
-		}		
+		else{
+			
+			$update = DB::update("
+				update d_sawal
+				set kdlap=?,
+					kdakun=?,
+					kddk=?,
+					nilai=?,
+					tgsawal=?,
+					id_user=?,
+					updated_at=sysdate
+				where id=?
+			",[
+				$request->input('kdlap'),
+				$request->input('kdakun'),
+				$request->input('kddk'),
+				str_replace(",", "", $request->input('nilai')),
+				$request->input('tgsawal'),
+				session('id_user'),
+				$request->input('inp-id')
+			]);
+			
+			if($update){
+				return 'success';
+			}
+			else{
+				return 'Data gagal disimpan!';
+			}
+			
+		}
+			
 	}
 	
 	public function hapus(Request $request)
 	{
-		try{
-			$delete = DB::delete("
-				delete from t_output
-				where id=?
-			",[
-				$request->input('id')
-			]);
-			
-			if($delete==true) {
-				return 'success';
-			}
-			else {
-				return 'Proses hapus gagal. Hubungi Administrator.';
-			}
-			
+		$delete = DB::delete("
+			delete from d_sawal
+			where id=?
+		",[
+			$request->input('id')
+		]);
+		
+		if($delete==true) {
+			return 'success';
 		}
-		catch(\Exception $e){
-			return 'Terdapat kesalahan lainnya, hubungi Administrator!';
-		}		
+		else {
+			return 'Proses hapus gagal. Hubungi Administrator.';
+		}
 	}
 	
 }

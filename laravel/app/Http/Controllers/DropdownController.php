@@ -67,6 +67,40 @@ class DropdownController extends Controller {
 		
 	}
 	
+	public function kegiatan()
+	{
+		$rows = DB::select("
+			select  *
+			from t_kegiatan
+			order by id asc
+		");
+		
+		$data = '<option value="" style="display:none;">Pilih Data</option>';
+		foreach($rows as $row){
+			$data .= '<option value="'.$row->id.'">'.$row->uraian.'</option>';
+		}
+		
+		return $data;
+		
+	}
+	
+	public function transaksi()
+	{
+		$rows = DB::select("
+			select  *
+			from t_trans
+			order by id asc
+		");
+		
+		$data = '<option value="" style="display:none;">Pilih Data</option>';
+		foreach($rows as $row){
+			$data .= '<option value="'.$row->id.'">'.$row->nmtrans.'</option>';
+		}
+		
+		return $data;
+		
+	}
+	
 	public function level()
 	{
 		$rows = DB::select("
@@ -168,13 +202,37 @@ class DropdownController extends Controller {
 		
 	}
 	
+	public function akun_html_level1()
+	{
+		$and = "";
+		if(isset($_GET['kdlap'])){
+			if($_GET['kdlap']!==''){
+				$and = " and kdlap='".$_GET['kdlap']."' ";
+			}
+		}
+		
+		$rows = DB::select("
+			select	*
+			from t_akun
+			where kddk is not null ".$and."
+			order by kdakun asc
+		");
+		
+		$data = '<option value="" style="display:none;">Pilih Data</option>';
+		foreach($rows as $row){
+			$data .= '<option value="'.$row->kdakun.'"> '.$row->nmakun.' | '.$row->kdakun.' | '.$row->kddk.'</option>';
+		}
+		
+		return $data;
+		
+	}
+	
 	public function akun_json()
 	{
 		$rows = DB::select("
 			select	kdakun,
 					nmakun
 			from t_akun
-			where substr(kdakun,1,1) in('4','5')
 			order by kdakun asc
 		");
 		

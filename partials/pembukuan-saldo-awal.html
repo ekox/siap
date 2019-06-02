@@ -9,7 +9,7 @@
 	
 	<div class="row">
         <div class="col-sm-12">
-            <div class="content-header">Anggaran/ Pagu per Unit</div>
+            <div class="content-header">Pembukuan/ Saldo Awal</div>
         </div>
     </div>
 	
@@ -26,33 +26,51 @@
 							<input type="hidden" id="inp-id" name="inp-id">
 							<input type="hidden" id="_token" name="_token">
 							<div class="form-body">
-			                    <div class="form-group row">
-	                            	<label class="col-md-3 label-control" for="kdunit">Unit/ Divisi </label>
-		                            <div class="col-md-7">
-		                            	<select id="kdunit" name="kdunit" class="form-control chosen">
-										</select>
-		                            </div>
-									<label id="warning-kdunit" class="col-md-2 label-control label-warning warning">required!</label>
-		                        </div>
-		                        <div class="form-group row">
-	                            	<label class="col-md-3 label-control" for="id_output">Program </label>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="kdlap">Jenis </label>
 									<div class="col-md-7">
-	                            		<select id="id_output" name="id_output" class="form-control chosen">
+	                            		<select id="kdlap" name="kdlap" class="form-control chosen">
 										</select>
 	                            	</div>
-									<label id="warning-id_output" class="col-md-2 label-control label-warning warning">required!</label>
+									<label id="warning-kdlap" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
-	                            	<label class="col-md-3 label-control" for="nilai">Nilai </label>
+	                            	<label class="col-md-2 label-control" for="kdakun">Akun </label>
 									<div class="col-md-7">
-	                            		<input type="text" id="nilai" name="nilai" class="form-control val_num" style="text-align:right;" maxlength="19">
+	                            		<select id="kdakun" name="kdakun" class="form-control chosen">
+										</select>
+	                            	</div>
+									<label id="warning-kdakun" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="kddk">D/K </label>
+									<div class="col-md-7">
+	                            		<select id="kddk" name="kddk" class="form-control chosen">
+											<option value="" style="display:none;">Pilih Data</option>
+											<option value="D">Debet</option>
+											<option value="K">Kredit</option>
+										</select>
+	                            	</div>
+									<label id="warning-kddk" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="nilai">Nilai </label>
+									<div class="col-md-7">
+	                            		<input type="text" id="nilai" name="nilai" class="form-control uang" style="text-align:right;" maxlength="20">
 	                            	</div>
 									<label id="warning-nilai" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="tgbukti">Tgl.Posting </label>
+									<div class="col-md-7">
+	                            		<input type="date" id="tgsawal" name="tgsawal" class="form-control" maxlength="10">
+	                            	</div>
+									<label id="warning-tgsawal" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>								
 							</div>
 	                        <div class="form-actions">
 	                            <div class="form-group row">
-		                            <label class="col-md-3 label-control" for="projectinput4"></label>
+		                            <label class="col-md-2 label-control" for="projectinput4"></label>
 		                            <div class="col-md-7">
 		                            	<button type="button" class="btn btn-raised btn-warning mr-1 batal">
 											<i class="ft-x"></i> Batal
@@ -83,15 +101,17 @@
                 </div>
                 <div class="card-body collapse show">
                     <div class="card-block card-dashboard">
-						<div class="table-responsive">
+                        <div class="table-responsive">
 							<table id="tabel-ruh" class="table table-striped table-bordered">
 								<thead>
 									<tr>
 										<th>No</th>
-										<th>Tahun</th>
-										<th>Unit</th>
-										<th>Program</th>
+										<th>Jenis</th>
+										<th>Akun</th>
+										<th>D/K</th>
 										<th>Nilai</th>
+										<th>Tgl.Posting</th>
+										<th>Tgl.Rekam</th>
 										<th>Aksi</th>
 									</tr>
 								</thead>
@@ -111,7 +131,7 @@
 	jQuery(document).ready(function(){
 	
 		jQuery.fn.dataTable.ext.errMode = 'none';
-			
+		
 		function digit_grouping(nStr){
 			nStr += '';
 			x = nStr.split('.');
@@ -123,34 +143,40 @@
 			}
 			return x1 + x2;
 		}
-	
-		jQuery('.val_num').mask('000,000,000,000,000', {reverse: true});
+		
+		jQuery('.uang').mask('000,000,000,000,000', {reverse: true});
 		
 		//aktivasi chosen
 		jQuery('.chosen').chosen();
 		
-		jQuery.get('dropdown/unit/4', function(result){
-			jQuery('#kdunit').html(result).trigger('chosen:updated');
+		jQuery.get('dropdown/lap', function(result){
+			jQuery('#kdlap').html(result).trigger('chosen:updated');
 		});
 		
-		jQuery.get('dropdown/output', function(result){
-			jQuery('#id_output').html(result).trigger('chosen:updated');
+		jQuery.get('dropdown/akun/html/level1', function(result){
+			jQuery('#kdakun').html(result).trigger('chosen:updated');
+		});
+		
+		jQuery('#kdlap').change(function(){
+			var kdlap = jQuery(this).val();
+			jQuery.get('dropdown/akun/html/level1?kdlap='+kdlap, function(result){
+				jQuery('#kdakun').html(result).trigger('chosen:updated');
+			});
 		});
 		
 		jQuery.get('cek/level', function(result){
-			if(result=='00'){ //admin
+			if(result=='00' || result=='05'){ //admin
 				jQuery('#tambah').show();
 			}
 		});
 		
 		//tampilan default
 		function form_default() {
-			jQuery('input,textarea,select').val('');
+			jQuery('input,select').val('');
 			jQuery('.warning, #div-form').hide();
 			jQuery('#div-tabel').show();
-			jQuery('#kdunit,#id_output').prop('disabled', false);
-			jQuery('#simpan').prop('disabled', false);
 			jQuery('.chosen').trigger('chosen:updated');
+			jQuery('#simpan').prop('disabled', false);
 		}
 		
 		//aktivasi tampilan default
@@ -159,8 +185,8 @@
 		//klik tambah
 		jQuery('#tambah').click(function(){
 			jQuery('#inp-rekambaru').val('1');
-			jQuery('#div-form').show();
 			jQuery('#div-tabel').hide();
+			jQuery('#div-form').show();
 		});
 		
 		//data tabel
@@ -190,9 +216,21 @@
 			        "sortDescending": ": aktifkan untuk mengurutkan kolom (desc)"
 			    }
 			},
-			aaSorting: [],
+			"columns": [
+				{},
+				{},
+				{},
+				{},
+				{},
+				{},
+				{},
+				{}
+			],
 			bServerSide: true,
-			sAjaxSource: "anggaran/pagu/unit"
+			ajax:{
+				url: "pembukuan/saldo-awal", // Change this URL to where your json data comes from
+				type: "GET"
+			},
 		});
 		
 		//validasi isian form
@@ -211,14 +249,19 @@
 		//cari data user yang akan di edit berdasarkan id user
 		function cari_data(id){
 			jQuery('.chosen').val('').trigger('chosen:updated');
-			jQuery.getJSON('anggaran/pagu/unit/pilih/'+id, function(result){
-				if(result) {
+			jQuery.getJSON('pembukuan/saldo-awal/pilih/'+id, function(result){
+				if(result.error==false) {
 					jQuery('#inp-id').val(id);
 					jQuery('#inp-rekambaru').val('0');
-					jQuery('#id_output').val(result.id_output).prop('disabled', true);
-					jQuery('#kdunit').val(result.kdunit).prop('disabled', true);
-					jQuery('#nilai').val(digit_grouping(result.nilai));
+					jQuery('#kdlap').val(result.message.kdlap);
+					jQuery('#kdakun').val(result.message.kdakun);
+					jQuery('#kddk').val(result.message.kddk);
+					jQuery('#nilai').val(digit_grouping(result.message.nilai));
+					jQuery('#tgsawal').val(result.message.tgsawal);
 					jQuery('.chosen').trigger('chosen:updated');
+				}
+				else{
+					alertify.log(result.message);
 				}
 			});
 		}
@@ -240,14 +283,14 @@
 		jQuery('#simpan').click(function(){
 			jQuery(this).html('<span class="loading"><i class="fa fa-refresh"></i> Loading.....</span>');
 			jQuery(this).prop('disabled',true);
-			var next = form_valid('kdunit,kdoutput,nilai');
+			var next = form_valid('kdlap,kdakun,tgsawal,nilai');
 			if(next==true){
 				jQuery.get('token', function(token){
 					if(token){
 						jQuery('#_token').val(token);
 						var data = jQuery('#form-ruh').serialize();
 						jQuery.ajax({
-							url: 'anggaran/pagu/unit',
+							url: 'pembukuan/saldo-awal',
 							method: 'POST',
 							data: data,
 							success: function(result){
@@ -292,7 +335,7 @@
 					jQuery.get('token', function(token){
 						if(token) {
 							jQuery.ajax({
-								url:'anggaran/pagu/unit/hapus',
+								url:'pembukuan/saldo-awal/hapus',
 								method:'POST',
 								data:{
 									_token:token, 
@@ -304,7 +347,7 @@
 										table.ajax.reload();
 									} else {
 										alertify.log(result);
-									} 
+									}
 								},
 								error:function(result){
 									alertify.log('Koneksi pada aplikasi/database terputus. Hubungi Administrator.');

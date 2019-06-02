@@ -46,7 +46,7 @@ class ProfileController extends Controller {
 				foreach($rows as $row){
 					$checked = '';
 					if($row->status=='1'){
-						$checked = 'checked';
+						$checked = 'selected';
 					}
 					$kdlevel .= '<option value="'.$row->kdlevel.'" '.$checked.'>'.$row->nmlevel.'</option>';
 				}
@@ -73,7 +73,7 @@ class ProfileController extends Controller {
 				foreach($rows as $row){
 					$checked = '';
 					if($row->status=='1'){
-						$checked = 'checked';
+						$checked = 'selected';
 					}
 					$kdunit .= '<option value="'.$row->kdunit.'" '.$checked.'>'.$row->nmunit.'</option>';
 				}

@@ -43,11 +43,25 @@
 									<label id="warning-nmalur" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="nmoutput">Output </label>
+	                            	<label class="col-md-2 label-control" for="nmoutput">Program </label>
 									<div class="col-md-7">
 	                            		<input id="nmoutput" name="nmoutput" class="form-control" readonly>
 	                            	</div>
 									<label id="warning-nmoutput" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="nmgiat">Kegiatan </label>
+									<div class="col-md-7">
+	                            		<input id="nmgiat" name="nmgiat" class="form-control" readonly>
+	                            	</div>
+									<label id="warning-nmgiat" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="nmtrans">Transaksi </label>
+									<div class="col-md-7">
+	                            		<input id="nmtrans" name="nmtrans" class="form-control" readonly>
+	                            	</div>
+									<label id="warning-nmtrans" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="nmpenerima">Penerima </label>
@@ -89,8 +103,10 @@
 	                            		<table class="table table-bordered">
 											<thead>
 												<tr>
-													<th style="width:250px;">Akun</th>
-													<th style="width:200px;">Nilai</th>
+													<th style="width:100px;">Akun</th>
+													<th style="width:300px;">Uraian</th>
+													<th style="width:100px;">Debet</th>
+													<th style="width:100px;">Kredit</th>
 												</tr>
 											</thead>
 											<tbody id="tabel-rincian">
@@ -314,6 +330,8 @@
 					jQuery('#status').val(result.message.status);
 					jQuery('#nmalur').val(result.message.nmalur);
 					jQuery('#nmoutput').val(result.message.nmoutput);
+					jQuery('#nmgiat').val(result.message.nmgiat);
+					jQuery('#nmtrans').val(result.message.nmtrans);
 					jQuery('#nmpenerima').val(result.message.nmpenerima);
 					jQuery('#nobukti').val(result.message.nobukti);
 					jQuery('#tgbukti').val(result.message.tgbukti);
@@ -324,12 +342,27 @@
 					
 					jQuery('#tabel-rincian').html('');
 					jQuery.each(result.akun, function(x,row){
+						
+						var debet = '';
+						var kredit = '';
+						
+						if(row.kddk=='D'){
+							debet = digit_grouping(row.nilai);
+						}
+						else{
+							kredit = digit_grouping(row.nilai);
+						}
+						
 						jQuery('#tabel-rincian').append(
 							'<tr id="tr-'+x+'">'+
 								'<td>'+
 									row.kdakun+
 								'</td>'+
-								'<td>'+digit_grouping(row.nilai)+'</td>'+
+								'<td>'+
+									row.nmakun+
+								'</td>'+
+								'<td>'+debet+'</td>'+
+								'<td>'+kredit+'</td>'+
 							'</tr>'
 						);
 					});

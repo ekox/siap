@@ -24,7 +24,7 @@ class TransaksiProsesController extends Controller {
 								e.nama,
 								a.nobukti,
 								to_char(a.tgbukti,'dd-mm-yyyy') as tgbukti,
-								a.uraian,
+								h.nmtrans as uraian,
 								nvl(f.nilai,0) as nilai,
 								g.nmlevel||'<br>'||c.nmstatus as status,
 								decode(c.is_unit,null,
@@ -40,10 +40,12 @@ class TransaksiProsesController extends Controller {
 						left outer join t_unit d on(a.kdunit=d.kdunit)
 						left outer join t_penerima e on(a.id_penerima=e.id)
 						left outer join t_level g on(c.kdlevel=g.kdlevel)
+						left outer join t_trans h on(a.kdtran=h.id)
 						left outer join(
 							select  id_trans,
 									sum(nilai) as nilai
 							from d_trans_akun
+							where kddk='D'
 							group by id_trans
 						) f on(a.id=f.id_trans)
 						where a.thang='".session('tahun')."' and c.kdlevel='".session('kdlevel')."'
@@ -183,7 +185,7 @@ class TransaksiProsesController extends Controller {
 							e.nama,
 							a.nobukti,
 							to_char(a.tgbukti,'dd-mm-yyyy') as tgbukti,
-							a.uraian,
+							h.nmtrans as uraian,
 							nvl(f.nilai,0) as nilai,
 							g.nmlevel||'<br>'||c.nmstatus as status,
 							decode(c.is_unit,null,
@@ -199,10 +201,12 @@ class TransaksiProsesController extends Controller {
 					left outer join t_unit d on(a.kdunit=d.kdunit)
 					left outer join t_penerima e on(a.id_penerima=e.id)
 					left outer join t_level g on(c.kdlevel=g.kdlevel)
+					left outer join t_trans h on(a.kdtran=h.id)
 					left outer join(
 						select  id_trans,
 								sum(nilai) as nilai
 						from d_trans_akun
+						where kddk='D'
 						group by id_trans
 					) f on(a.id=f.id_trans)
 					where a.thang='".session('tahun')."'
@@ -333,6 +337,8 @@ class TransaksiProsesController extends Controller {
 					b.nmalur,
 					c.uraian as nmoutput,
 					d.nama as nmpenerima,
+					e.uraian as nmgiat,
+					f.nmtrans,
 					a.nobukti,
 					to_char(a.tgbukti,'yyyy-mm-dd') as tgbukti,
 					a.uraian,
@@ -342,6 +348,8 @@ class TransaksiProsesController extends Controller {
 			left outer join t_alur b on(a.id_alur=b.id)
 			left outer join t_output c on(a.id_output=c.id)
 			left outer join t_penerima d on(a.id_penerima=d.id)
+			left outer join t_kegiatan e on(a.id_giat=e.id)
+			left outer join t_trans f on(a.kdtran=f.id)
 			where a.id=?
 		",[
 			$id
@@ -365,10 +373,14 @@ class TransaksiProsesController extends Controller {
 			}
 			
 			$rows = DB::select("
-				select	kdakun,
-						nilai
-				from d_trans_akun
-				where id_trans=?
+				select	a.kdakun,
+						b.nmakun,
+						a.kddk,
+						a.nilai
+				from d_trans_akun a
+				left outer join t_akun b on(a.kdakun=b.kdakun)
+				where a.id_trans=?
+				order by a.kddk,a.kdakun asc
 			",[
 				$id
 			]);

@@ -22,7 +22,7 @@ class TransaksiRekamController extends Controller {
 							e.nama,
 							a.nobukti,
 							to_char(a.tgbukti,'dd-mm-yyyy') as tgbukti,
-							h.nmtrans as uraian,
+							a.uraian,
 							nvl(f.nilai,0) as nilai,
 							g.nmlevel||'<br>'||c.nmstatus as status
 					from d_trans a
@@ -31,12 +31,10 @@ class TransaksiRekamController extends Controller {
 					left outer join t_unit d on(a.kdunit=d.kdunit)
 					left outer join t_penerima e on(a.id_penerima=e.id)
 					left outer join t_level g on(c.kdlevel=g.kdlevel)
-					left outer join t_trans h on(a.kdtran=h.id)
 					left outer join(
 						select  id_trans,
 								sum(nilai) as nilai
 						from d_trans_akun
-						where kddk='D'
 						group by id_trans
 					) f on(a.id=f.id_trans)
 					where a.kdunit='".session('kdunit')."' and a.thang='".session('tahun')."'
@@ -186,8 +184,6 @@ class TransaksiRekamController extends Controller {
 					notrans,
 					id_alur,
 					id_output,
-					id_giat,
-					kdtran,
 					id_penerima,
 					nobukti,
 					to_char(tgbukti,'yyyy-mm-dd') as tgbukti,
@@ -215,13 +211,10 @@ class TransaksiRekamController extends Controller {
 			}
 			
 			$rows = DB::select("
-				select	a.kdakun,
-						b.nmakun,
-						a.kddk,
-						a.nilai
-				from d_trans_akun a
-				left outer join t_akun b on(a.kdakun=b.kdakun)
-				where a.id_trans=?
+				select	kdakun,
+						nilai
+				from d_trans_akun
+				where id_trans=?
 			",[
 				$id
 			]);
@@ -251,12 +244,11 @@ class TransaksiRekamController extends Controller {
 		$rows = DB::select("
 			select	a.kdakun,
 					b.nmakun,
-					a.kddk,
 					a.nilai
 			from d_trans_akun a
 			left outer join t_akun b on(a.kdakun=b.kdakun)
 			where a.id_trans=?
-			order by a.kddk,a.kdakun asc
+			order by a.kdakun asc
 		",[
 			$id
 		]);
@@ -269,30 +261,17 @@ class TransaksiRekamController extends Controller {
 								<th>No</th>
 								<th>Akun</th>
 								<th>Uraian</th>
-								<th>Debet</th>
-								<th>Kredit</th>
+								<th>Nilai</th>
 							</tr>
 						</thead>
 						<tbody>';
 			$i = 1;
 			foreach($rows as $row){
-				
-				$debet = '';
-				$kredit = '';
-				
-				if($row->kddk=='D'){
-					$debet = number_format($row->nilai);
-				}
-				else{
-					$kredit = number_format($row->nilai);
-				}
-				
 				$detil .= '<tr>
 								<td>'.$i++.'</td>
 								<td>'.$row->kdakun.'</td>
 								<td>'.$row->nmakun.'</td>
-								<td style="text-align:right;">'.$debet.'</td>
-								<td style="text-align:right;">'.$kredit.'</td>
+								<td style="text-align:right;">'.number_format($row->nilai).'</td>
 						   </tr>';
 			}
 			
@@ -336,8 +315,6 @@ class TransaksiRekamController extends Controller {
 						'notrans' => $request->input('notrans'),
 						'id_alur' => $request->input('id_alur'),
 						'id_output' => $request->input('id_output'),
-						'id_giat' => $request->input('id_giat'),
-						'kdtran' => $request->input('kdtran'),
 						'id_penerima' => $request->input('id_penerima'),
 						'nobukti' => $request->input('nobukti'),
 						'tgbukti' => $request->input('tgbukti'),
@@ -368,60 +345,29 @@ class TransaksiRekamController extends Controller {
 							
 						}
 						
-						$lanjut = true;
-						$tot_d = 0;
-						$tot_k = 0;
 						foreach($request->input('rincian') as $input){
-							if($input["'nilai'"]!==''){
-								$arr_insert[] = "select ".$id_trans.",'".$input["'kdakun'"]."','".$input["'kddk'"]."',".str_replace(",", "", $input["'nilai'"]).",".session('id_user')." from dual";
-								
-								if($input["'kddk'"]=='D'){
-									$tot_d += str_replace(",", "", $input["'nilai'"]);
-								}
-								else{
-									$tot_k += str_replace(",", "", $input["'nilai'"]);
-								}
-								
-							}
-							else{
-								$lanjut = false;
-								break;
-							}
+							$arr_insert[] = "select ".$id_trans.",'".$input["'kdakun'"]."',".str_replace(",", "", $input["'nilai'"]).",".session('id_user')." from dual";
 						}
 						
-						if($lanjut){
-							
-							if($tot_d>0 && $tot_d==$tot_k){
-								
-								$delete = DB::delete("
-									delete from d_trans_akun
-									where id_trans=?
-								",[
-									$id_trans
-								]);
-								
-								$insert = DB::insert("
-									insert into d_trans_akun(id_trans,kdakun,kddk,nilai,id_user)
-									".implode(" union all ", $arr_insert)."
-								");
-								
-								if($insert){
-									DB::commit();
-									session(['upload_lampiran' => null]);
-									return 'success';
-								}
-								else{
-									return 'Data akun gagal disimpan!';
-								}
-								
-							}
-							else{
-								return 'Total D/K tidak sama!';
-							}
-							
+						$delete = DB::delete("
+							delete from d_trans_akun
+							where id_trans=?
+						",[
+							$id_trans
+						]);
+						
+						$insert = DB::insert("
+							insert into d_trans_akun(id_trans,kdakun,nilai,id_user)
+							".implode(" union all ", $arr_insert)."
+						");
+						
+						if($insert){
+							DB::commit();
+							session(['upload_lampiran' => null]);
+							return 'success';
 						}
 						else{
-							return 'Nilai tidak dapat dikosongkan!';
+							return 'Data akun gagal disimpan!';
 						}
 						
 					}
@@ -437,121 +383,71 @@ class TransaksiRekamController extends Controller {
 			}
 			else{
 				
-				$rows = DB::select("
-					select	count(rowid) as jml
-					from d_trans
-					where id=? and status=1
+				$update = DB::update("
+					update d_trans
+					set id_alur=?,
+						id_output=?,
+						id_penerima=?,
+						nobukti=?,
+						tgbukti=?,
+						uraian=?,
+						id_user=?,
+						updated_at=sysdate
+					where id=?
+				",[
+					$request->input('id_alur'),
+					$request->input('id_output'),
+					$request->input('id_penerima'),
+					$request->input('nobukti'),
+					$request->input('tgbukti'),
+					$request->input('uraian'),
+					session('id_user'),
+					$request->input('inp-id')
+				]);
+				
+				foreach($request->input('rincian') as $input){
+					$arr_insert[] = "select ".$request->input('inp-id').",'".$input["'kdakun'"]."',".str_replace(",", "", $input["'nilai'"]).",".session('id_user')." from dual";
+				}
+				
+				if(session('upload_lampiran')!=='' && session('upload_lampiran')!==null){
+							
+					$delete = DB::delete("
+						delete from d_trans_dok
+						where id_trans=?
+					",[
+						$request->input('inp-id')
+					]);
+					
+					$insert = DB::insert("
+						insert into d_trans_dok(id_trans,id_dok,nmfile)
+						values(?,?,?)
+					",[
+						$request->input('inp-id'),
+						1,
+						session('upload_lampiran')
+					]);
+					
+				}
+				
+				$delete = DB::delete("
+					delete from d_trans_akun
+					where id_trans=?
 				",[
 					$request->input('inp-id')
 				]);
 				
-				if($rows[0]->jml==1){
-					
-					$update = DB::update("
-						update d_trans
-						set id_alur=?,
-							id_output=?,
-							id_giat=?,
-							kdtran=?,
-							id_penerima=?,
-							nobukti=?,
-							tgbukti=?,
-							uraian=?,
-							id_user=?,
-							updated_at=sysdate
-						where id=?
-					",[
-						$request->input('id_alur'),
-						$request->input('id_output'),
-						$request->input('id_giat'),
-						$request->input('kdtran'),
-						$request->input('id_penerima'),
-						$request->input('nobukti'),
-						$request->input('tgbukti'),
-						$request->input('uraian'),
-						session('id_user'),
-						$request->input('inp-id')
-					]);
-					
-					$lanjut = true;
-					$tot_d = 0;
-					$tot_k = 0;
-					foreach($request->input('rincian') as $input){
-						if($input["'nilai'"]!==''){
-							$arr_insert[] = "select ".$request->input('inp-id').",'".$input["'kdakun'"]."','".$input["'kddk'"]."',".str_replace(",", "", $input["'nilai'"]).",".session('id_user')." from dual";
-							
-							if($input["'kddk'"]=='D'){
-								$tot_d += str_replace(",", "", $input["'nilai'"]);
-							}
-							else{
-								$tot_k += str_replace(",", "", $input["'nilai'"]);
-							}
-							
-						}
-						else{
-							$lanjut = false;
-							break;
-						}
-					}
-					
-					if($lanjut){
-						
-						if($tot_d>0 && $tot_d==$tot_k){
-							
-							if(session('upload_lampiran')!=='' && session('upload_lampiran')!==null){
-								
-								$delete = DB::delete("
-									delete from d_trans_dok
-									where id_trans=?
-								",[
-									$request->input('inp-id')
-								]);
-								
-								$insert = DB::insert("
-									insert into d_trans_dok(id_trans,id_dok,nmfile)
-									values(?,?,?)
-								",[
-									$request->input('inp-id'),
-									1,
-									session('upload_lampiran')
-								]);
-								
-							}
-							
-							$delete = DB::delete("
-								delete from d_trans_akun
-								where id_trans=?
-							",[
-								$request->input('inp-id')
-							]);
-							
-							$insert = DB::insert("
-								insert into d_trans_akun(id_trans,kdakun,kddk,nilai,id_user)
-								".implode(" union all ", $arr_insert)."
-							");
-							
-							if($insert){
-								session(['upload_lampiran' => null]);
-								DB::commit();
-								return 'success';
-							}
-							else{
-								return 'Data gagal disimpan!';
-							}
-							
-						}
-						else{
-							return 'Total D/K tidak sama!';
-						}
-						
-					}
-					else{
-						return 'Nilai tidak dapat dikosongkan!';
-					}
-					
+				$insert = DB::insert("
+					insert into d_trans_akun(id_trans,kdakun,nilai,id_user)
+					".implode(" union all ", $arr_insert)."
+				");
+				
+				if($insert){
+					session(['upload_lampiran' => null]);
+					DB::commit();
+					return 'success';
 				}
 				else{
-					return 'Data yang sudah diproses tidak dapat diubah lagi!';
+					return 'Data gagal disimpan!';
 				}
 				
 			}
@@ -567,55 +463,40 @@ class TransaksiRekamController extends Controller {
 		try{
 			DB::beginTransaction();
 			
-			$rows = DB::select("
-				select	count(rowid) as jml
-				from d_trans
-				where id=? and status=1
+			$delete = DB::delete("
+				delete from d_trans_akun
+				where id_trans=?
 			",[
 				$request->input('id')
 			]);
 			
-			if($rows[0]->jml==1){
-				
-				$delete = DB::delete("
-					delete from d_trans_akun
-					where id_trans=?
-				",[
-					$request->input('id')
-				]);
-				
-				$delete = DB::delete("
-					delete from d_trans_dok
-					where id_trans=?
-				",[
-					$request->input('id')
-				]);
-				
-				$delete = DB::delete("
-					delete from d_trans_histori
-					where id_trans=?
-				",[
-					$request->input('id')
-				]);
-				
-				$delete = DB::delete("
-					delete from d_trans
-					where id=?
-				",[
-					$request->input('id')
-				]);
-				
-				if($delete==true) {
-					DB::commit();
-					return 'success';
-				}
-				else {
-					return 'Proses hapus gagal. Hubungi Administrator.';
-				}
-				
+			$delete = DB::delete("
+				delete from d_trans_dok
+				where id_trans=?
+			",[
+				$request->input('id')
+			]);
+			
+			$delete = DB::delete("
+				delete from d_trans_histori
+				where id_trans=?
+			",[
+				$request->input('id')
+			]);
+			
+			$delete = DB::delete("
+				delete from d_trans
+				where id=?
+			",[
+				$request->input('id')
+			]);
+			
+			if($delete==true) {
+				DB::commit();
+				return 'success';
 			}
-			else{
-				return 'Data tidak dapat dihapus karena sudah diproses!';
+			else {
+				return 'Proses hapus gagal. Hubungi Administrator.';
 			}
 			
 		}

@@ -5,19 +5,44 @@ use Session;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class RefOutputController extends Controller {
+class PembukuanJurnalController extends Controller {
 
 	public function index(Request $request)
 	{
-		$aColumns = array('id','uraian');
+		$aColumns = array('tgtrans','jenis','id_trans','kdlap','kdakun','nmakun','kddk','nilai');
 		/* Indexed column (used for fast and accurate table cardinality) */
-		$sIndexColumn = "id";
+		$sIndexColumn = "tgtrans";
 		/* DB table to use */
-		$sTable = "select	a.id,
-							a.uraian
-					from t_output a
-					order by a.id desc
-				";
+		$sTable = "select  a.*
+					from(
+						select  to_char(a.tgsawal,'DD-MM-YYYY') as tgtrans,
+								'Saldo Awal' as jenis,
+								a.id as id_trans,
+								a.kdlap,
+								a.kdakun,
+								b.nmakun,
+								a.kddk,
+								a.nilai
+						from d_sawal a
+						left outer join t_akun b on(a.kdakun=b.kdakun)
+						where a.thang='".session('tahun')."'
+
+						union all
+
+						select  to_char(b.tgbukti,'DD-MM-YYYY') as tgtrans,
+								'Transaksi' as jenis,
+								a.id_trans,
+								c.kdlap,
+								a.kdakun,
+								c.nmakun,
+								a.kddk,
+								a.nilai
+						from d_trans_akun a
+						left outer join d_trans b on(a.id_trans=b.id)
+						left outer join t_akun c on(a.kdakun=c.kdakun)
+						where b.thang='".session('tahun')."'
+					) a
+					order by a.tgtrans desc, a.kddk,a.kdakun asc";
 		
 		/*
 		 * Paging
@@ -62,7 +87,8 @@ class RefOutputController extends Controller {
 		if(isset($_GET['sSearch'])){
 			$sSearch=$_GET['sSearch'];
 			if((isset($sSearch))&&($sSearch!='')){
-				$sWhere=" where lower(uraian) like lower('".$sSearch."%') or lower(uraian) like lower('%".$sSearch."%') ";
+				$sWhere=" where lower(nmakun) like lower('".$sSearch."%') or lower(nmakun) like lower('%".$sSearch."%') or
+								lower(kdakun) like lower('".$sSearch."%') or lower(kdakun) like lower('%".$sSearch."%') ";
 			}
 		}
 		
@@ -108,111 +134,29 @@ class RefOutputController extends Controller {
 		
 		foreach( $rows as $row )
 		{
-			$aksi='';
-			if(session('kdlevel')=='00'){
-				$aksi='<center>
-							<button type="button" class="btn btn-raised btn-sm btn-icon btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-check"></i></button>
-							<div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
-								<a id="'.$row->id.'" class="dropdown-item ubah" href="javascript:;">Ubah Data</a>
-								<a id="'.$row->id.'" class="dropdown-item hapus" href="javascript:;">Hapus Data</a>
-							</div>
-						</center>';
+			$debet = '';
+			$kredit = '';
+			
+			if($row->kddk=='D'){
+				$debet = number_format($row->nilai);
+			}
+			else{
+				$kredit = number_format($row->nilai);
 			}
 			
 			$output['aaData'][] = array(
-				$row->id,
-				$row->uraian,
-				$aksi
+				$row->tgtrans,
+				$row->jenis,
+				$row->id_trans,
+				$row->kdlap,
+				$row->kdakun,
+				$row->nmakun,
+				'<div style="text-align:right;">'.$debet.'</div>',
+				'<div style="text-align:right;">'.$kredit.'</div>'
 			);
 		}
 		
 		return response()->json($output);
-	}
-	
-	public function pilih(Request $request, $id)
-	{
-		try{
-			$rows = DB::select("
-				select  a.*
-				from t_output a
-				where a.id=?
-			",[
-				$id
-			]);
-			
-			if(count($rows)>0){
-				return response()->json($rows[0]);
-			}
-			
-		}
-		catch(\Exception $e){
-			return 'Kesalahan lainnya!';
-		}
-	}
-	
-	public function simpan(Request $request)
-	{
-		try{
-			if($request->input('inp-rekambaru')=='1'){
-				
-				$insert = DB::table('t_output')->insert([
-					'uraian' => $request->input('uraian')
-				]);
-				
-				if($insert){
-					return 'success';
-				}
-				else{
-					return 'Data gagal disimpan!';
-				}
-				
-			}
-			else{
-				
-				$update = DB::update("
-					update t_output
-					set uraian=?
-					where id=?
-				",[
-					$request->input('uraian'),
-					$request->input('inp-id')
-				]);
-				
-				if($update){
-					return 'success';
-				}
-				else{
-					return 'Data gagal diubah!';
-				}
-				
-			}			
-		}
-		catch(\Exception $e){
-			return 'Terdapat kesalahan lainnya, hubungi Administrator!';
-		}		
-	}
-	
-	public function hapus(Request $request)
-	{
-		try{
-			$delete = DB::delete("
-				delete from t_output
-				where id=?
-			",[
-				$request->input('id')
-			]);
-			
-			if($delete==true) {
-				return 'success';
-			}
-			else {
-				return 'Proses hapus gagal. Hubungi Administrator.';
-			}
-			
-		}
-		catch(\Exception $e){
-			return 'Terdapat kesalahan lainnya, hubungi Administrator!';
-		}		
 	}
 	
 }
