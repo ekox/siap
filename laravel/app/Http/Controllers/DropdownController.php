@@ -227,6 +227,23 @@ class DropdownController extends Controller {
 		
 	}
 	
+	public function akun_html_all()
+	{
+		$rows = DB::select("
+			select	*
+			from t_akun
+			order by kdakun asc
+		");
+		
+		$data = '<option value="" style="display:none;">Pilih Data</option>';
+		foreach($rows as $row){
+			$data .= '<option value="'.$row->kdakun.'"> '.$row->nmakun.' | '.$row->kdakun.'</option>';
+		}
+		
+		return $data;
+		
+	}
+	
 	public function akun_json()
 	{
 		$rows = DB::select("
@@ -237,6 +254,23 @@ class DropdownController extends Controller {
 		");
 		
 		return response()->json($rows);
+		
+	}
+	
+	public function periode()
+	{
+		$rows = DB::select("
+			select	*
+			from t_bulan
+			order by bulan asc
+		");
+		
+		$data = '<option value="" style="display:none;">Pilih Data</option>';
+		foreach($rows as $row){
+			$data .= '<option value="'.$row->bulan.'"> '.$row->nmbulan.'</option>';
+		}
+		
+		return $data;
 		
 	}
 	

@@ -102,6 +102,14 @@ Route::group(['middleware' => 'auth'], function(){
 			
 		});
 		
+		Route::group(['prefix' => 'posting'], function () {
+		
+			Route::get('', 'PembukuanPostingController@index');
+			Route::get('/buku-besar', 'PembukuanPostingController@buku_besar');
+			Route::post('', 'PembukuanPostingController@simpan')->middleware('role:00');
+			
+		});
+		
 	});
 	
 	//route for Dropdown
@@ -120,6 +128,8 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get('/lap', 'DropdownController@lap');
 		Route::get('/akun/html/level1', 'DropdownController@akun_html_level1');
 		Route::get('/akun/json', 'DropdownController@akun_json');
+		Route::get('/akun/html/all', 'DropdownController@akun_html_all');
+		Route::get('/periode', 'DropdownController@periode');
 		
 	});
 	
