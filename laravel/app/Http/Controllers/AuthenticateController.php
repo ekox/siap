@@ -88,7 +88,7 @@ class AuthenticateController extends Controller {
 				
 					if($rows[0]->pass==md5($password)){
 					
-						if($rows[0]->aktif=='1'){
+						if($rows[0]->aktif=='1' || $rows[0]->aktif=='2'){
 						
 							session([
 								'authenticated' => true,

@@ -139,7 +139,8 @@ class ProfileController extends Controller {
 							nik=?,
 							email=?,
 							foto=?,
-							pass=?
+							pass=?,
+							aktif='1'
 						where id=?
 					",[
 						htmlspecialchars($request->input('nama')),

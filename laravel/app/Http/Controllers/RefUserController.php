@@ -20,7 +20,7 @@ class RefUserController extends Controller {
 								a.nik,
 								d.nmlevel,
 								e.nmunit,
-								decode(a.aktif,'1','Aktif','Tidak Aktif') as aktif
+								decode(a.aktif,'1','Aktif','0','Tidak Aktif','Default') as aktif
 						from t_user a
 						left outer join t_user_level b on(a.id=b.id_user and b.status='1')
 						left outer join t_user_unit c on(a.id=c.id_user and c.status='1')
@@ -253,7 +253,7 @@ class RefUserController extends Controller {
 								'nama' => $request->input('nama'),
 								'nik' => $request->input('nik'),
 								'email' => $request->input('email'),
-								'aktif' => '1',
+								'aktif' => $request->input('aktif'),
 								'foto' => 'no-image.png',
 							)
 						);
