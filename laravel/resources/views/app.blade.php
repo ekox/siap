@@ -90,10 +90,7 @@
           <div class="navbar-header">
             <button type="button" data-toggle="collapse" class="navbar-toggle d-lg-none float-left"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button><span class="d-lg-none navbar-right navbar-collapse-toggle"><a aria-controls="navbarSupportedContent" href="javascript:;" class="open-navbar-container black"><i class="ft-more-vertical"></i></a></span>
             <form role="search" class="navbar-form navbar-right mt-1">
-              <div class="position-relative has-icon-right">
-                <input type="text" placeholder="Search" class="form-control round"/>
-                <div class="form-control-position"><i class="ft-search"></i></div>
-              </div>
+			{{$info_nmkantor}} - {{$info_nmlevel}}
             </form>
           </div>
           <div class="navbar-container">
@@ -101,7 +98,7 @@
               <ul class="navbar-nav">
                 <li class="dropdown nav-item">
 					<a id="dropdownBasic3" href="#" data-toggle="dropdown" class="nav-link position-relative dropdown-toggle">
-						<i class="ft-user font-medium-3 blue-grey darken-4"></i>
+						<i class="ft-user font-medium-3 blue-grey darken-4"></i> {{$info_username}}
 						<p class="d-none">User Settings</p>
 					</a>
                   <div ngbdropdownmenu="" aria-labelledby="dropdownBasic3" class="dropdown-menu text-left dropdown-menu-right">
@@ -132,7 +129,8 @@
     </div>
     
     <!-- Theme customizer Starts-->
-    <div class="customizer border-left-blue-grey border-left-lighten-4 d-none d-sm-none d-md-block"><a class="customizer-close"><i class="ft-x font-medium-3"></i></a><a id="rtl-icon" href="../../fixed-navbar/html-demo-6" target="_blank" class="customizer-toggle bg-dark "><span class="font-medium-1 white align-middle">RTL</span></a><a id="customizer-toggle-icon" class="customizer-toggle bg-danger"><i class="ft-settings font-medium-4 fa fa-spin white align-middle"></i></a>
+    <div class="customizer border-left-blue-grey border-left-lighten-4 d-none d-sm-none d-md-block"><a class="customizer-close"><i class="ft-x font-medium-3"></i></a>
+	</a><a id="customizer-toggle-icon" class="customizer-toggle bg-danger"><i class="ft-settings font-medium-4 fa fa-spin white align-middle"></i></a>
       <div data-ps-id="df6a5ce4-a175-9172-4402-dabd98fc9c0a" class="customizer-content p-3 ps-container ps-theme-dark">
         <h4 class="text-uppercase mb-0 text-bold-400">Theme Customizer</h4>
         <p>Customize & Preview in Real Time</p>

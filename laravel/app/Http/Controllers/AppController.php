@@ -148,9 +148,8 @@ class AppController extends Controller {
 					[
 						'menu' => $html_out,
 						'angular' => $angular,
-						'info_nmkantor' => session('nmsatker').'<br>'.session('nmkantor'),
+						'info_nmkantor' => session('nmunit'),
 						'info_nmlevel' => session('nmlevel'),
-						'info_ppk' => session('kdppk'),
 						'info_foto' => session('foto'),
 						'info_username' => session('username'),
 						'info_nama' => session('nama'),
