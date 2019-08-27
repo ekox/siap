@@ -9,11 +9,12 @@ class RefTransaksiController extends Controller {
 
 	public function index(Request $request)
 	{
-		$aColumns = array('id','nmtrans','jml');
+		$aColumns = array('id','nmalur','nmtrans','jml');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
 		/* DB table to use */
 		$sTable = "select  a.id,
+							c.nmalur,
 							a.nmtrans,
 							nvl(b.jml,0) as jml
 					from t_trans a
@@ -23,6 +24,7 @@ class RefTransaksiController extends Controller {
 						from t_trans_akun
 						group by id_trans
 					) b on(a.id=b.id_trans)
+					left outer join t_alur c on(a.id_alur=c.id)
 					order by a.id desc
 					";
 		
@@ -129,6 +131,7 @@ class RefTransaksiController extends Controller {
 			$output['aaData'][] = array(
 				$row->id,
 				$row->id,
+				$row->nmalur,
 				$row->nmtrans,
 				'<div style="text-align:right;">'.number_format($row->jml).'</div>',
 				$aksi
@@ -288,6 +291,7 @@ class RefTransaksiController extends Controller {
 			if($request->input('inp-rekambaru')=='1'){
 			
 				$id_trans = DB::table('t_trans')->insertGetId([
+					'id_alur' => $request->input('id_alur'),
 					'nmtrans' => $request->input('nmtrans'),
 				]);
 				
@@ -327,9 +331,11 @@ class RefTransaksiController extends Controller {
 				
 				$update = DB::update("
 					update t_trans
-					set nmtrans=?
+					set id_alur=?,
+						nmtrans=?
 					where id=?
 				",[
+					$request->input('id_alur'),
 					$request->input('nmtrans'),
 					$request->input('inp-id')
 				]);

@@ -1,11 +1,5 @@
 <?php
 
-Route::get('/test', function(){
-	
-	return view('app');
-	
-});
-
 //otentikasi/login
 Route::group(['prefix' => 'auth'], function () {
 
@@ -53,6 +47,72 @@ Route::group(['middleware' => 'auth'], function(){
 		
 	});
 	
+	//tagihan
+	Route::group(['prefix' => 'tagihan'], function () {
+		
+		Route::group(['prefix' => 'monitoring'], function () {
+			
+			Route::get('', 'TagihanProsesController@monitoring');
+			
+		});
+		
+		Route::group(['prefix' => 'proses'], function () {
+			
+			Route::get('', 'TagihanProsesController@index');
+			Route::get('/pilih/{param}', 'TagihanProsesController@pilih');
+			Route::post('', 'TagihanProsesController@simpan');
+			
+		});
+		
+		Route::group(['prefix' => 'rekam'], function () {
+			
+			Route::get('', 'TagihanRekamController@index');
+			Route::get('/pilih/{param}', 'TagihanRekamController@pilih')->middleware('role:12');
+			Route::get('/nomor', 'TagihanRekamController@nomor')->middleware('role:12');
+			Route::get('/detil/{param}', 'TagihanRekamController@detil');
+			Route::get('/download/{param}', 'TagihanRekamController@download')->middleware('role:12');
+			Route::post('', 'TagihanRekamController@simpan')->middleware('role:12');
+			Route::post('/hapus', 'TagihanRekamController@hapus')->middleware('role:12');
+			Route::post('/upload', 'TagihanRekamController@upload')->middleware('role:12');
+			
+		});
+		
+	});
+	
+	//penerimaan
+	Route::group(['prefix' => 'penerimaan'], function () {
+		
+		Route::group(['prefix' => 'monitoring'], function () {
+			
+			Route::get('', 'PenerimaanProsesController@monitoring');
+			
+		});
+		
+		Route::group(['prefix' => 'proses'], function () {
+			
+			Route::get('', 'PenerimaanProsesController@index');
+			Route::get('/pilih/{param}', 'PenerimaanProsesController@pilih');
+			Route::post('', 'PenerimaanProsesController@simpan');
+			
+		});
+		
+		Route::group(['prefix' => 'rekam'], function () {
+			
+			Route::get('', 'PenerimaanRekamController@index');
+			Route::get('/pilih/{param}', 'PenerimaanRekamController@pilih')->middleware('role:11');
+			Route::get('/nomor', 'PenerimaanRekamController@nomor')->middleware('role:11');
+			Route::get('/tagihan/{param}', 'PenerimaanRekamController@tagihan');
+			Route::get('/detil/{param}', 'PenerimaanRekamController@detil');
+			Route::get('/download/{param}', 'PenerimaanRekamController@download')->middleware('role:11');
+			Route::get('/upload/{param}', 'PenerimaanRekamController@dok')->middleware('role:11');
+			Route::post('', 'PenerimaanRekamController@simpan')->middleware('role:11');
+			Route::post('/hapus', 'PenerimaanRekamController@hapus')->middleware('role:11');
+			Route::post('/upload/{param}', 'PenerimaanRekamController@upload')->middleware('role:11');
+			
+		});
+		
+	});
+	
 	//transaksi
 	Route::group(['prefix' => 'transaksi'], function () {
 		
@@ -84,7 +144,8 @@ Route::group(['middleware' => 'auth'], function(){
 		});
 		
 	});
-		
+	
+	//pembukuan
 	Route::group(['prefix' => 'pembukuan'], function () {
 		
 		Route::group(['prefix' => 'saldo-awal'], function () {
@@ -117,13 +178,18 @@ Route::group(['middleware' => 'auth'], function(){
 		
 		Route::get('/output', 'DropdownController@output');
 		Route::get('/kegiatan', 'DropdownController@kegiatan');
+		Route::get('/tagihan', 'DropdownController@tagihan');
 		Route::get('/transaksi', 'DropdownController@transaksi');
+		Route::get('/transaksi/{param}', 'DropdownController@transaksiByParam');
 		Route::get('/unit', 'DropdownController@unit_all');
 		Route::get('/unit/{param}', 'DropdownController@unit');
 		Route::get('/level', 'DropdownController@level');
 		Route::get('/jenis-pagu', 'DropdownController@jenis_pagu');
 		Route::get('/alur', 'DropdownController@alur');
+		Route::get('/alur-tagihan', 'DropdownController@alurTagihan');
+		Route::get('/alur-penerimaan', 'DropdownController@alurPenerimaan');
 		Route::get('/penerima', 'DropdownController@penerima');
+		Route::get('/pelanggan', 'DropdownController@pelanggan');
 		Route::get('/bank', 'DropdownController@bank');
 		Route::get('/lap', 'DropdownController@lap');
 		Route::get('/akun/html/level1', 'DropdownController@akun_html_level1');

@@ -84,6 +84,28 @@ class DropdownController extends Controller {
 		
 	}
 	
+	public function tagihan()
+	{
+		$rows = DB::select("
+			select  a.id,
+					a.nopks,
+					to_char(a.tgpks,'dd-mm-yyyy') as tgpks,
+					a.nilai
+			from d_tagih a
+			left outer join d_terima b on(a.id=b.id_tagih)
+			where b.id_tagih is null
+			order by a.id asc
+		");
+		
+		$data = '<option value="" style="display:none;">Pilih Data</option>';
+		foreach($rows as $row){
+			$data .= '<option value="'.$row->id.'">PKS : '.$row->nopks.', '.$row->tgpks.', Nilai Rp. '.number_format($row->nilai).',-</option>';
+		}
+		
+		return $data;
+		
+	}
+	
 	public function transaksi()
 	{
 		$rows = DB::select("
@@ -91,6 +113,26 @@ class DropdownController extends Controller {
 			from t_trans
 			order by id asc
 		");
+		
+		$data = '<option value="" style="display:none;">Pilih Data</option>';
+		foreach($rows as $row){
+			$data .= '<option value="'.$row->id.'">'.$row->nmtrans.'</option>';
+		}
+		
+		return $data;
+		
+	}
+	
+	public function transaksiByParam($param)
+	{
+		$rows = DB::select("
+			select  *
+			from t_trans
+			where id_alur=?
+			order by id asc
+		",[
+			$param
+		]);
 		
 		$data = '<option value="" style="display:none;">Pilih Data</option>';
 		foreach($rows as $row){
@@ -151,11 +193,64 @@ class DropdownController extends Controller {
 		
 	}
 	
+	public function alurTagihan()
+	{
+		$rows = DB::select("
+			select	*
+			from t_alur
+			where id in(1)
+			order by id asc
+		");
+		
+		$data = '<option value="" style="display:none;">Pilih Data</option>';
+		foreach($rows as $row){
+			$data .= '<option value="'.$row->id.'"> '.$row->nmalur.'</option>';
+		}
+		
+		return $data;
+		
+	}
+	
+	public function alurPenerimaan()
+	{
+		$rows = DB::select("
+			select	*
+			from t_alur
+			where id in(2,3)
+			order by id asc
+		");
+		
+		$data = '<option value="" style="display:none;">Pilih Data</option>';
+		foreach($rows as $row){
+			$data .= '<option value="'.$row->id.'"> '.$row->nmalur.'</option>';
+		}
+		
+		return $data;
+		
+	}
+	
 	public function penerima()
 	{
 		$rows = DB::select("
 			select	*
 			from t_penerima
+			order by nama asc
+		");
+		
+		$data = '<option value="" style="display:none;">Pilih Data</option>';
+		foreach($rows as $row){
+			$data .= '<option value="'.$row->id.'"> '.$row->nama.'</option>';
+		}
+		
+		return $data;
+		
+	}
+	
+	public function pelanggan()
+	{
+		$rows = DB::select("
+			select	*
+			from t_pelanggan
 			order by nama asc
 		");
 		

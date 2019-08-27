@@ -37,6 +37,7 @@ class ProfileController extends Controller {
 				from t_user_level a
 				left outer join t_level b on(a.kdlevel=b.kdlevel)
 				where a.id_user=?
+				order by a.kdlevel asc
 			",[
 				session('id_user')
 			]);

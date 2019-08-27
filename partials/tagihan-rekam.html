@@ -9,7 +9,7 @@
 	
 	<div class="row">
         <div class="col-sm-12">
-            <div class="content-header">Referensi/ Transaksi</div>
+            <div class="content-header">Tagihan/ Rekam</div>
         </div>
     </div>
 	
@@ -29,7 +29,7 @@
 							<input type="hidden" id="inp-akun">
 							<div class="form-body">
 								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="nmtrans">Jenis </label>
+	                            	<label class="col-md-2 label-control" for="id_alur">Kode Proses </label>
 									<div class="col-md-7">
 	                            		<select id="id_alur" name="id_alur" class="form-control chosen">
 										</select>
@@ -37,29 +37,63 @@
 									<label id="warning-id_alur" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="nmtrans">Uraian </label>
+	                            	<label class="col-md-2 label-control" for="id_alur">Kode Divisi </label>
 									<div class="col-md-7">
-	                            		<textarea id="nmtrans" name="nmtrans" class="form-control" maxlength="4000"></textarea>
+	                            		<select id="kdunit" name="kdunit" class="form-control chosen">
+										</select>
 	                            	</div>
-									<label id="warning-nmtrans" class="col-md-2 label-control label-warning warning">required!</label>
+									<label id="warning-kdunit" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="akun">Akun</label>
-									<div class="col-md-9 table-responsive">
-	                            		<table class="table table-bordered">
-											<thead>
-												<tr>
-													<th style="width:250px;">Akun</th>
-													<th style="width:200px;">D/K</th>
-													<th>Aksi</th>
-												</tr>
-											</thead>
-											<tbody id="tabel-rincian">
-												
-											</tbody>
-										</table>
-										<div class="pull-right"><a href="javascript:;" id="tambah-detil" class="btn btn-sm btn-success">Tambah</a></div>
+	                            	<label class="col-md-2 label-control" for="kdtran">Kode Transaksi </label>
+									<div class="col-md-7">
+	                            		<select id="kdtran" name="kdtran" class="form-control chosen">
+										</select>
 	                            	</div>
+									<label id="warning-kdtran" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="id_pelanggan">Pelanggan </label>
+									<div class="col-md-7">
+	                            		<select id="id_pelanggan" name="id_pelanggan" class="form-control chosen">
+										</select>
+	                            	</div>
+									<label id="warning-id_pelanggan" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="nobukti">Nilai </label>
+									<div class="col-md-7">
+	                            		<input type="text" id="nilai" name="nilai" class="form-control val_num" style="text-align:right;" maxlength="19">
+	                            	</div>
+									<label id="warning-nilai" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="nobukti">No.PKS </label>
+									<div class="col-md-7">
+	                            		<input type="text" id="nopks" name="nopks" class="form-control" maxlength="255">
+	                            	</div>
+									<label id="warning-nopks" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="tgbukti">Tgl.PKS </label>
+									<div class="col-md-7">
+	                            		<input type="date" id="tgpks" name="tgpks" class="form-control" maxlength="10">
+	                            	</div>
+									<label id="warning-tgpks" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="tgbukti">Jatuh Tempo </label>
+									<div class="col-md-7">
+	                            		<input type="date" id="tgjtempo" name="tgjtempo" class="form-control" maxlength="10">
+	                            	</div>
+									<label id="warning-tgjtempo" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="uraian">Uraian </label>
+									<div class="col-md-7">
+	                            		<textarea id="uraian" name="uraian" class="form-control" maxlength="4000"></textarea>
+	                            	</div>
+									<label id="warning-uraian" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								
 							</div>
@@ -100,11 +134,15 @@
 							<table id="tabel-ruh" class="table table-striped table-bordered">
 								<thead>
 									<tr>
-										<th></th>
-										<th>Kode</th>
-										<th>Jenis</th>
+										<th>No</th>
+										<th>Divisi</th>
+										<th>Pelanggan</th>
+										<th>Transaksi</th>
+										<th>Nomor/ Tgl.PKS</th>
+										<th>Jatuh Tempo</th>
 										<th>Uraian</th>
-										<th>Jml.Akun</th>
+										<th>Nilai</th>
+										<th>Proses/ Posisi/ Status</th>
 										<th>Aksi</th>
 									</tr>
 								</thead>
@@ -123,8 +161,6 @@
 <script>
 	jQuery(document).ready(function(){
 	
-		jQuery.fn.dataTable.ext.errMode = 'none';
-			
 		function digit_grouping(nStr){
 			nStr += '';
 			x = nStr.split('.');
@@ -136,34 +172,51 @@
 			}
 			return x1 + x2;
 		}
+	
+		jQuery.fn.dataTable.ext.errMode = 'none';
+		
+		jQuery('.val_num').mask('000,000,000,000,000', {reverse: true});
 		
 		//aktivasi chosen
 		jQuery('.chosen').chosen();
 		
+		jQuery.get('dropdown/unit/4', function(result){
+			jQuery('#kdunit').html(result).trigger('chosen:updated');
+		});
+		
+		jQuery.get('dropdown/alur-tagihan', function(result){
+			jQuery('#id_alur').html(result).trigger('chosen:updated');
+		});
+		
+		jQuery.get('dropdown/pelanggan', function(result){
+			jQuery('#id_pelanggan').html(result).trigger('chosen:updated');
+		});
+		
+		jQuery.get('dropdown/transaksi', function(result){
+			jQuery('#kdtran').html(result).trigger('chosen:updated');
+		});
+		
 		jQuery.get('cek/level', function(result){
-			if(result=='00'){ //admin
+			if(result=='12'){ //admin
 				jQuery('#tambah').show();
 			}
 		});
 		
-		jQuery.get('dropdown/alur', function(result){
-			jQuery('#id_alur').html(result).trigger('chosen:updated');
-		});
-		
-		jQuery.getJSON('dropdown/akun/json', function(result){
-			var akun='';
-			jQuery.each(result, function(i,field){
-				akun+='<option value="'+field.kdakun+'">'+field.kdakun+' - '+field.nmakun+'</option>';
+		jQuery('#id_alur').change(function(){
+			var id_alur = jQuery(this).val();
+			jQuery.get('dropdown/transaksi/'+id_alur, function(result){
+				jQuery('#kdtran').html(result).trigger('chosen:updated');
 			});
-			jQuery('#inp-akun').val(akun);
 		});
 		
 		//tampilan default
 		function form_default() {
-			jQuery('#nmtrans').val('');
+			jQuery('input,select,textarea').val('');
 			jQuery('.warning, #div-form').hide();
 			jQuery('#div-tabel').show();
+			jQuery('.chosen').prop('disabled', false).trigger('chosen:updated');
 			jQuery('#simpan').prop('disabled', false);
+			jQuery('#tabel-rincian').html('');
 		}
 		
 		//aktivasi tampilan default
@@ -174,60 +227,6 @@
 			jQuery('#div-tabel').hide();
 			jQuery('#inp-rekambaru').val('1');
 			jQuery('#div-form').show();
-			jQuery('#x').val(0);
-			
-			jQuery('#tabel-rincian').html(
-				'<tr id="tr-0">'+
-					'<td>'+
-						'<select id="chosen0" class="form-control akun" name="rincian[0][\'kdakun\']">'+
-							jQuery('#inp-akun').val()+
-						'</select>'+
-					'</td>'+
-					'<td>'+
-						'<select id="kddk-0" class="form-control" name="rincian[0][\'kddk\']">'+
-							'<option value="D">Debet</option>'+
-							'<option value="K">Kredit</option>'+
-						'</select>'+
-					'</td>'+
-					'<td>'+
-						'<center><a href="javascript:;" id="0" class="btn btn-sm btn-danger hapus-detil"><i class="fa fa-minus"></i></a></center>'+
-					'</td>'+
-				'</tr>'
-			);
-			jQuery('.val_num').mask('000,000,000,000,000', {reverse: true});
-			jQuery('#chosen0').chosen({width:'100%'});
-			jQuery('#kddk-0').chosen({width:'100%'});
-		});
-		
-		jQuery('#tambah-detil').click(function(){
-			var x=parseInt(jQuery('#x').val())+1;
-			jQuery('#tabel-rincian').append(
-				'<tr id="tr-'+x+'">'+
-					'<td>'+
-						'<select id="chosen'+x+'" class="form-control akun" name="rincian['+x+'][\'kdakun\']">'+
-							jQuery('#inp-akun').val()+
-						'</select>'+
-					'</td>'+
-					'<td>'+
-						'<select id="kddk-'+x+'" class="form-control" name="rincian['+x+'][\'kddk\']">'+
-							'<option value="D">Debet</option>'+
-							'<option value="K">Kredit</option>'+
-						'</select>'+
-					'</td>'+
-					'<td>'+
-						'<center><a href="javascript:;" id="'+x+'" class="btn btn-sm btn-danger hapus-detil"><i class="fa fa-minus"></i></a></center>'+
-					'</td>'+
-				'</tr>'
-			);
-			jQuery('#chosen'+x).chosen({width:'100%'});
-			jQuery('#kddk-'+x).chosen({width:'100%'});
-			jQuery('.val_num').mask('000,000,000,000,000', {reverse: true});
-			jQuery('#x').val(x);
-		});
-		
-		jQuery('body').off('click', '.hapus-detil').on('click', '.hapus-detil', function(){
-			var id=this.id;
-			jQuery('#tr-'+id).remove();
 		});
 		
 		//data tabel
@@ -258,12 +257,11 @@
 			    }
 			},
 			"columns": [
-				{
-					"className":      'details-control',
-					"orderable":      false,
-					"data":      null,
-					"defaultContent": ''
-				},
+				{},
+				{},
+				{},
+				{},
+				{},
 				{},
 				{},
 				{},
@@ -272,43 +270,11 @@
 			],
 			bServerSide: true,
 			ajax:{
-				url: "ref/transaksi", // Change this URL to where your json data comes from
+				url: "tagihan/rekam", // Change this URL to where your json data comes from
 				type: "GET"
 			},
 			fnCreatedRow: function( nRow, aData, iDataIndex ) {
 				jQuery(nRow).attr('id', aData[0]);
-			}
-		});
-		
-		//klik detil
-		jQuery('#tabel-ruh').off('click', 'td.details-control').on('click', 'td.details-control', function () {
-			var tr = jQuery(this).closest('tr');
-			var row = table.row( tr );
-	 
-			if ( row.child.isShown() ) {
-				// This row is already open - close it
-				var id=jQuery(this).parent().attr('id');
-				row.child.hide();
-				tr.removeClass('shown');
-			}
-			else {
-				var id=jQuery(this).parent().attr('id');
-				
-				if(id!=''){
-					jQuery.getJSON('ref/transaksi/detil/'+id, function(result){
-						if(result.error==false){
-							// Open this row
-							row.child( result.message).show();
-							tr.addClass('shown');
-						}
-						else{
-							alertify.log('Data detil tidak ditemukan!');
-						}
-					});
-				}
-				else{
-					alertify.log('Tidak ada data detil...');
-				}
 			}
 		});
 		
@@ -328,40 +294,24 @@
 		//cari data user yang akan di edit berdasarkan id user
 		function cari_data(id){
 			jQuery('.chosen').val('').trigger('chosen:updated');
-			jQuery.getJSON('ref/transaksi/pilih/'+id, function(result){
+			jQuery.getJSON('tagihan/rekam/pilih/'+id, function(result){
 				if(result.error==false) {
+				
+					jQuery.get('dropdown/transaksi/'+result.message.id_alur, function(result1){
+						jQuery('#kdtran').html(result1).trigger('chosen:updated');
+						jQuery('#kdtran').val(result.message.kdtran).trigger('chosen:updated');
+					});
+				
 					jQuery('#inp-id').val(id);
 					jQuery('#inp-rekambaru').val('0');
-					jQuery('#id_alur').val(result.message.id_alur);
-					jQuery('#nmtrans').val(result.message.nmtrans);
-					
-					jQuery('#tabel-rincian').html('');
-					jQuery.each(result.akun, function(x,row){
-						jQuery('#tabel-rincian').append(
-							'<tr id="tr-'+x+'">'+
-								'<td>'+
-									'<select id="chosen'+x+'" class="form-control akun" name="rincian['+x+'][\'kdakun\']">'+
-										jQuery('#inp-akun').val()+
-									'</select>'+
-								'</td>'+
-								'<td>'+
-									'<select id="kddk-'+x+'" class="form-control" name="rincian['+x+'][\'kddk\']">'+
-										'<option value="D">Debet</option>'+
-										'<option value="K">Kredit</option>'+
-									'</select>'+
-								'</td>'+
-								'<td>'+
-									'<center><a href="javascript:;" id="'+x+'" class="btn btn-sm btn-danger hapus-detil"><i class="fa fa-minus"></i></a></center>'+
-								'</td>'+
-							'</tr>'
-						);
-						jQuery('#chosen'+x).val(row.kdakun);
-						jQuery('#kddk-'+x).val(row.kddk);
-						jQuery('#chosen'+x).chosen({width:'100%'});
-						jQuery('#kddk-'+x).chosen({width:'100%'});
-						jQuery('.val_num').mask('000,000,000,000,000', {reverse: true});
-					});
-					
+					jQuery('#kdunit').val(result.message.kdunit);
+					jQuery('#id_alur').val(result.message.id_alur).prop('disabled',true);
+					jQuery('#id_pelanggan').val(result.message.id_pelanggan);
+					jQuery('#nopks').val(result.message.nopks);
+					jQuery('#tgpks').val(result.message.tgpks);
+					jQuery('#tgjtempo').val(result.message.tgjtempo);
+					jQuery('#uraian').val(result.message.uraian);
+					jQuery('#nilai').val(digit_grouping(result.message.nilai));
 					jQuery('.chosen').trigger('chosen:updated');
 				}
 				else{
@@ -387,14 +337,14 @@
 		jQuery('#simpan').click(function(){
 			jQuery(this).html('<span class="loading"><i class="fa fa-refresh"></i> Loading.....</span>');
 			jQuery(this).prop('disabled',true);
-			var next = form_valid('id_alur,nmtrans');
+			var next = form_valid('kdunit,id_alur,id_pelanggan,kdtran,nopks,tgpks,uraian,tgjtempo,nilai');
 			if(next==true){
 				jQuery.get('token', function(token){
 					if(token){
 						jQuery('#_token').val(token);
 						var data = jQuery('#form-ruh').serialize();
 						jQuery.ajax({
-							url: 'ref/transaksi',
+							url: 'tagihan/rekam',
 							method: 'POST',
 							data: data,
 							success: function(result){
@@ -416,7 +366,7 @@
 								alertify.log('Data tidak dapat disimpan. Koneksi pada aplikasi/database terputus atau data sudah pernah direkam atau format data salah. Hubungi Administrator.');
 							}
 						})
-					} 
+					}
 					else{
 						jQuery('#simpan').html('<i class="fa fa-check-square-o"></i> Simpan');
 						jQuery('#simpan').prop('disabled',false);
@@ -439,7 +389,7 @@
 					jQuery.get('token', function(token){
 						if(token) {
 							jQuery.ajax({
-								url:'ref/transaksi/hapus',
+								url:'tagihan/rekam/hapus',
 								method:'POST',
 								data:{
 									_token:token, 
