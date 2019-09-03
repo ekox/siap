@@ -195,6 +195,8 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get('/akun/html/level1', 'DropdownController@akun_html_level1');
 		Route::get('/akun/json', 'DropdownController@akun_json');
 		Route::get('/akun/html/all', 'DropdownController@akun_html_all');
+		Route::get('/akun/debet/{param}', 'DropdownController@akun_debet');
+		Route::get('/akun/kredit/{param}', 'DropdownController@akun_kredit');
 		Route::get('/periode', 'DropdownController@periode');
 		
 	});

@@ -352,6 +352,58 @@ class DropdownController extends Controller {
 		
 	}
 	
+	public function akun_debet($id_trans)
+	{
+		$rows = DB::select("
+			select  a.*
+			from t_akun a,
+			(
+				select  kdakun,
+						panjang
+				from t_trans_akun
+				where id_trans=? and kddk='D'
+			) b
+			where a.lvl=6 and substr(a.kdakun,1,b.panjang)=substr(b.kdakun,1,b.panjang)
+			order by a.kdakun asc
+		",[
+			$id_trans
+		]);
+		
+		$data = '<option value="" style="display:none;">Pilih Data</option>';
+		foreach($rows as $row){
+			$data .= '<option value="'.$row->kdakun.'"> '.$row->nmakun.'</option>';
+		}
+		
+		return $data;
+		
+	}
+	
+	public function akun_kredit($id_trans)
+	{
+		$rows = DB::select("
+			select  a.*
+			from t_akun a,
+			(
+				select  kdakun,
+						panjang
+				from t_trans_akun
+				where id_trans=? and kddk='K'
+			) b
+			where a.lvl=6 and substr(a.kdakun,1,b.panjang)=substr(b.kdakun,1,b.panjang)
+			order by a.kdakun asc
+		",[
+			$id_trans
+		]);
+		
+		$data = '<option value="" style="display:none;">Pilih Data</option>';
+		foreach($rows as $row){
+			$data .= '<option value="'.$row->kdakun.'"> '.$row->nmakun.'</option>';
+		}
+		
+		return $data;
+		
+	}
+	
 	public function periode()
 	{
 		$rows = DB::select("

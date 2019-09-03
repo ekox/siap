@@ -19,10 +19,10 @@ class TagihanProsesController extends Controller {
 								d.nmunit,
 								e.nama,
 								h.nmtrans,
-								a.nopks||'<br>'||to_char(a.tgpks,'dd-mm-yyyy') as pks,
-								to_char(a.tgjtempo,'dd-mm-yyyy') as tgjtempo,
+								a.nodok||'<br>'||to_char(a.tgdok,'dd-mm-yyyy') as pks,
+								to_char(a.tgdok1,'dd-mm-yyyy') as tgjtempo,
 								a.uraian,
-								a.nilai,
+								nvl(f.nilai,0) as nilai,
 								b.nmalur||'<br>'||g.nmlevel||'<br>'||c.nmstatus as status,
 								decode(c.is_unit,null,
 									1,
@@ -31,13 +31,20 @@ class TagihanProsesController extends Controller {
 										0
 									)
 								) as akses
-						from d_tagih a
+						from d_trans a
 						left outer join t_alur b on(a.id_alur=b.id)
 						left outer join t_alur_status c on(a.id_alur=c.id_alur and a.status=c.status)
 						left outer join t_unit d on(a.kdunit=d.kdunit)
-						left outer join t_pelanggan e on(a.id_pelanggan=e.id)
+						left outer join t_penerima e on(a.id_penerima=e.id)
 						left outer join t_level g on(c.kdlevel=g.kdlevel)
 						left outer join t_trans h on(a.kdtran=h.id)
+						left outer join(
+							select	id_trans,
+									sum(nilai) as nilai
+							from d_trans_akun
+							where kddk='D'
+							group by id_trans
+						) f on(a.id=f.id_trans)
 						where a.thang='".session('tahun')."' and c.kdlevel='".session('kdlevel')."'
 					) a
 					where a.akses=1
@@ -168,20 +175,26 @@ class TagihanProsesController extends Controller {
 							d.nmunit,
 							e.nama,
 							h.nmtrans,
-							a.nopks||'<br>'||to_char(a.tgpks,'dd-mm-yyyy') as pks,
-							to_char(a.tgjtempo,'dd-mm-yyyy') as tgjtempo,
+							a.nodok||'<br>'||to_char(a.tgdok,'dd-mm-yyyy') as pks,
+							to_char(a.tgdok1,'dd-mm-yyyy') as tgjtempo,
 							a.uraian,
-							a.nilai,
+							nvl(f.nilai,0) as nilai,
 							b.nmalur||'<br>'||g.nmlevel||'<br>'||c.nmstatus as status
-					from d_tagih a
+					from d_trans a
 					left outer join t_alur b on(a.id_alur=b.id)
 					left outer join t_alur_status c on(a.id_alur=c.id_alur and a.status=c.status)
 					left outer join t_unit d on(a.kdunit=d.kdunit)
-					left outer join t_pelanggan e on(a.id_pelanggan=e.id)
+					left outer join t_penerima e on(a.id_penerima=e.id)
 					left outer join t_level g on(c.kdlevel=g.kdlevel)
 					left outer join t_trans h on(a.kdtran=h.id)
+					left outer join(
+						select	id_trans,
+								sum(nilai) as nilai
+						from d_trans_akun
+						where kddk='D'
+						group by id_trans
+					) f on(a.id=f.id_trans)
 					where a.thang='".session('tahun')."'
-					order by a.id desc
 					";
 		
 		/*
@@ -306,18 +319,36 @@ class TagihanProsesController extends Controller {
 					c.nmunit,
 					d.nama as nmpelanggan,
 					f.nmtrans,
-					a.nopks,
-					to_char(a.tgpks,'yyyy-mm-dd') as tgpks,
-					to_char(a.tgjtempo,'yyyy-mm-dd') as tgjtempo,
+					a.nodok as nopks,
+					to_char(a.tgdok,'yyyy-mm-dd') as tgpks,
+					to_char(a.tgdok1,'yyyy-mm-dd') as tgjtempo,
 					a.uraian,
-					a.nilai,
+					nvl(g.nilai,0) as nilai,
+					nvl(f.nmakun,0) as debet,
+					nvl(i.nmakun,0) as kredit,
 					a.id_alur,
 					a.status
-			from d_tagih a
+			from d_trans a
 			left outer join t_alur b on(a.id_alur=b.id)
 			left outer join t_unit c on(a.kdunit=c.kdunit)
-			left outer join t_pelanggan d on(a.id_pelanggan=d.id)
+			left outer join t_penerima d on(a.id_penerima=d.id)
 			left outer join t_trans f on(a.kdtran=f.id)
+			left outer join(
+				select	id_trans,
+						kdakun,
+						nilai
+				from d_trans_akun
+				where kddk='D'
+			) g on(a.id=g.id_trans)
+			left outer join(
+				select	id_trans,
+						kdakun,
+						nilai
+				from d_trans_akun
+				where kddk='K'
+			) h on(a.id=h.id_trans)
+			left outer join t_akun f on(g.kdakun=f.kdakun)
+			left outer join t_akun i on(h.kdakun=i.kdakun)
 			where a.id=?
 		",[
 			$id
@@ -363,7 +394,7 @@ class TagihanProsesController extends Controller {
 	{
 		$rows = DB::select("
 			select	count(*) as jml
-			from d_tagih
+			from d_trans
 			where id=? and id_alur=? and status=?
 		",[
 			$request->input('inp-id'),
@@ -403,9 +434,9 @@ class TagihanProsesController extends Controller {
 					DB::beginTransaction();
 					
 					$insert = DB::insert("
-						insert into d_tagih_histori(id_tagih,id_alur,status,ket,id_user,created_at,updated_at)
+						insert into d_trans_histori(id_trans,id_alur,status,ket,id_user,created_at,updated_at)
 						select	id,id_alur,status,ket,id_user,created_at,updated_at
-						from d_tagih
+						from d_trans
 						where id=?
 					",[
 						$request->input('inp-id')
@@ -414,7 +445,7 @@ class TagihanProsesController extends Controller {
 					if($insert){
 						
 						$update = DB::update("
-							update d_tagih
+							update d_trans
 							set id_alur=?,
 								status=?,
 								id_user=?,
