@@ -44,13 +44,13 @@
 	                            	</div>
 									<label id="warning-kdtran" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
-								<div class="form-group row" id="div-tagihan" style="display:none;">
-	                            	<label class="col-md-2 label-control" for="kdtran">Tagihan </label>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="id_tagih">Kode Tagihan </label>
 									<div class="col-md-7">
-	                            		<select id="parent_id" name="parent_id" class="form-control chosen">
+	                            		<select id="id_tagih" name="id_tagih" class="form-control chosen">
 										</select>
 	                            	</div>
-									<label id="warning-parent_id" class="col-md-2 label-control label-warning warning">required!</label>
+									<label id="warning-id_tagih" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="id_pelanggan">Pelanggan </label>
@@ -61,23 +61,7 @@
 									<label id="warning-id_pelanggan" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="kdtran">Debet </label>
-									<div class="col-md-7">
-	                            		<select id="debet" name="debet" class="form-control chosen">
-										</select>
-	                            	</div>
-									<label id="warning-debet" class="col-md-2 label-control label-warning warning">required!</label>
-		                        </div>
-								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="kdtran">Kredit </label>
-									<div class="col-md-7">
-	                            		<select id="kredit" name="kredit" class="form-control chosen">
-										</select>
-	                            	</div>
-									<label id="warning-kredit" class="col-md-2 label-control label-warning warning">required!</label>
-		                        </div>
-								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="nobukti">Nilai </label>
+	                            	<label class="col-md-2 label-control" for="nilai">Nilai </label>
 									<div class="col-md-7">
 	                            		<input type="text" id="nilai" name="nilai" class="form-control val_num" style="text-align:right;" maxlength="19">
 	                            	</div>
@@ -86,23 +70,23 @@
 								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="nobukti">No.Bukti </label>
 									<div class="col-md-7">
-	                            		<input type="text" id="nopks" name="nopks" class="form-control" maxlength="255">
+	                            		<input type="text" id="nobukti" name="nobukti" class="form-control" maxlength="255">
 	                            	</div>
-									<label id="warning-nopks" class="col-md-2 label-control label-warning warning">required!</label>
+									<label id="warning-nobukti" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="tgbukti">Tgl.Bukti </label>
 									<div class="col-md-7">
-	                            		<input type="date" id="tgpks" name="tgpks" class="form-control" maxlength="10">
+	                            		<input type="date" id="tgbukti" name="tgbukti" class="form-control" maxlength="10">
 	                            	</div>
-									<label id="warning-tgpks" class="col-md-2 label-control label-warning warning">required!</label>
+									<label id="warning-tgbukti" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="tgbukti">Tgl.Setor </label>
+	                            	<label class="col-md-2 label-control" for="tgsetor">Tgl.Setor</label>
 									<div class="col-md-7">
-	                            		<input type="date" id="tgjtempo" name="tgjtempo" class="form-control" maxlength="10">
+	                            		<input type="date" id="tgsetor" name="tgsetor" class="form-control" maxlength="10">
 	                            	</div>
-									<label id="warning-tgjtempo" class="col-md-2 label-control label-warning warning">required!</label>
+									<label id="warning-tgsetor" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="uraian">Uraian </label>
@@ -111,6 +95,8 @@
 	                            	</div>
 									<label id="warning-uraian" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
+								<div id="div-upload">
+								</div>
 								
 							</div>
 	                        <div class="form-actions">
@@ -154,7 +140,7 @@
 										<th>Divisi</th>
 										<th>Pelanggan</th>
 										<th>Transaksi</th>
-										<th>Nomor/ Tgl.PKS</th>
+										<th>Nomor/ Tgl.Bukti</th>
 										<th>Jatuh Tempo</th>
 										<th>Uraian</th>
 										<th>Nilai</th>
@@ -200,7 +186,11 @@
 			jQuery('#id_alur').html(result).trigger('chosen:updated');
 		});
 		
-		jQuery.get('dropdown/penerima', function(result){
+		jQuery.get('dropdown/tagihan', function(result){
+			jQuery('#id_tagih').html(result).trigger('chosen:updated');
+		});
+		
+		jQuery.get('dropdown/pelanggan', function(result){
 			jQuery('#id_pelanggan').html(result).trigger('chosen:updated');
 		});
 		
@@ -221,45 +211,32 @@
 			});
 		});
 		
-		jQuery('#kdtran').change(function(){
-			var kdtran = jQuery(this).val();
-			jQuery('#id_pelanggan,#kredit').prop('disabled', false).trigger('chosen:updated');
-			jQuery.get('dropdown/akun/debet/'+kdtran, function(result){
-				jQuery('#debet').html(result).trigger('chosen:updated');
-			});
-			jQuery.get('dropdown/akun/kredit/'+kdtran, function(result){
-				jQuery('#kredit').html(result).trigger('chosen:updated');
-			});
-			jQuery.getJSON('penerimaan/rekam/tagihan/'+kdtran, function(result){
-				if(result.error==false){
-					jQuery('#parent_id').html(result.dropdown).trigger('chosen:updated');
-					jQuery('#div-tagihan').show();
-				}
-				else{
-					jQuery('#parent_id').html('').trigger('chosen:updated');
-					jQuery('#div-tagihan').hide();
-				}
+		jQuery('#id_tagih').change(function(){
+			var id_tagih = jQuery(this).val();
+			jQuery.get('penerimaan/rekam/tagihan/'+id_tagih, function(result){
+				jQuery('#id_pelanggan').val(result.id_pelanggan);
+				jQuery('#uraian').val(result.uraian);
+				jQuery('#nilai').val(digit_grouping(result.nilai));
+				jQuery('.chosen').trigger('chosen:updated');
 			});
 		});
 		
-		jQuery('#parent_id').change(function(){
-			var data = jQuery(this).val().split('|');
-			jQuery('#id_pelanggan').val(data[1]).trigger('chosen:updated');
-			jQuery('#uraian').val(data[2]);
-			jQuery('#nilai').val(digit_grouping(data[3]));
-			jQuery('#kredit').val(data[4]).trigger('chosen:updated');
-			jQuery('#id_pelanggan,#kredit').prop('disabled', true).trigger('chosen:updated');
+		jQuery('#kdtran').change(function(){
+			var kdtran = jQuery(this).val();
+			jQuery('#div-upload').html('Sedang proses....');
+			jQuery.get('penerimaan/rekam/upload/'+kdtran, function(result){
+				jQuery('#div-upload').html(result);
+			});
 		});
 		
 		//tampilan default
 		function form_default() {
-			jQuery('#id_pelanggan,#kredit').prop('disabled', false).trigger('chosen:updated');
 			jQuery('input,select,textarea').val('');
-			jQuery('.warning, #div-form, #div-tagihan').hide();
+			jQuery('.warning, #div-form').hide();
 			jQuery('#div-tabel').show();
 			jQuery('.chosen').prop('disabled', false).trigger('chosen:updated');
 			jQuery('#simpan').prop('disabled', false);
-			jQuery('#tabel-rincian').html('');
+			jQuery('#div-upload').html('');
 		}
 		
 		//aktivasi tampilan default
@@ -344,25 +321,18 @@
 						jQuery('#kdtran').html(result1).trigger('chosen:updated');
 						jQuery('#kdtran').val(result.message.kdtran).trigger('chosen:updated');
 					});
-					
-					if(result.message.parent_id!==''){
-						jQuery('#parent_id').html(result.tagihan).trigger('chosen:updated');
-						jQuery('#div-tagihan').show();
-						jQuery('#id_pelanggan,#kredit').prop('disabled', true).trigger('chosen:updated');
-					}
-					
-					jQuery('#debet').html(result.dropdown_d).trigger('chosen:updated');
-					jQuery('#kredit').html(result.dropdown_k).trigger('chosen:updated');
-					
+				
 					jQuery('#inp-id').val(id);
 					jQuery('#inp-rekambaru').val('0');
 					jQuery('#kdunit').val(result.message.kdunit);
 					jQuery('#id_alur').val(result.message.id_alur).prop('disabled',true);
 					jQuery('#id_pelanggan').val(result.message.id_pelanggan);
-					jQuery('#nopks').val(result.message.nopks);
-					jQuery('#tgpks').val(result.message.tgpks);
-					jQuery('#tgjtempo').val(result.message.tgjtempo);
+					jQuery('#id_tagih').html(result.id_tagih);
+					jQuery('#nobukti').val(result.message.nobukti);
+					jQuery('#tgbukti').val(result.message.tgbukti);
+					jQuery('#tgsetor').val(result.message.tgsetor);
 					jQuery('#uraian').val(result.message.uraian);
+					jQuery('#div-upload').val(result.upload);
 					jQuery('#nilai').val(digit_grouping(result.message.nilai));
 					jQuery('.chosen').trigger('chosen:updated');
 				}
@@ -389,8 +359,7 @@
 		jQuery('#simpan').click(function(){
 			jQuery(this).html('<span class="loading"><i class="fa fa-refresh"></i> Loading.....</span>');
 			jQuery(this).prop('disabled',true);
-			jQuery('#id_pelanggan,#kredit').prop('disabled', false).trigger('chosen:updated');
-			var next = form_valid('kdunit,id_alur,id_pelanggan,kdtran,nopks,tgpks,uraian,tgjtempo,nilai');
+			var next = form_valid('id_alur,id_pelanggan,kdtran,nobukti,tgbukti,uraian,tgsetor,nilai');
 			if(next==true){
 				jQuery.get('token', function(token){
 					if(token){

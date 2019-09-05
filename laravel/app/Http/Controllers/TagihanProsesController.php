@@ -45,7 +45,7 @@ class TagihanProsesController extends Controller {
 							where kddk='D'
 							group by id_trans
 						) f on(a.id=f.id_trans)
-						where a.thang='".session('tahun')."' and c.kdlevel='".session('kdlevel')."'
+						where b.menu=1 and a.thang='".session('tahun')."' and c.kdlevel='".session('kdlevel')."'
 					) a
 					where a.akses=1
 					order by a.id desc
@@ -194,7 +194,7 @@ class TagihanProsesController extends Controller {
 						where kddk='D'
 						group by id_trans
 					) f on(a.id=f.id_trans)
-					where a.thang='".session('tahun')."'
+					where b.menu=1 and a.thang='".session('tahun')."'
 					";
 		
 		/*

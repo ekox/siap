@@ -29,32 +29,11 @@
 							<input type="hidden" id="status" name="status">
 							<div class="form-body">
 								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="nmalur">Kode Proses </label>
-									<div class="col-md-7">
-	                            		<input id="nmalur" name="nmalur" class="form-control" readonly>
-	                            	</div>
-									<label id="warning-nmalur" class="col-md-2 label-control label-warning warning">required!</label>
-		                        </div>
-								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="nmunit">Kode Divisi </label>
+	                            	<label class="col-md-2 label-control" for="nmunit">Divisi/ Unit </label>
 									<div class="col-md-7">
 	                            		<input id="nmunit" name="nmunit" class="form-control" readonly>
 	                            	</div>
 									<label id="warning-nmunit" class="col-md-2 label-control label-warning warning">required!</label>
-		                        </div>
-								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="nmtrans">Kode Transaksi </label>
-									<div class="col-md-7">
-	                            		<input id="nmtrans" name="nmtrans" class="form-control" readonly>
-	                            	</div>
-									<label id="warning-nmtrans" class="col-md-2 label-control label-warning warning">required!</label>
-		                        </div>
-								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="id_tagih">Tagihan </label>
-									<div class="col-md-7">
-	                            		<input id="id_tagih" name="id_tagih" class="form-control" readonly>
-	                            	</div>
-									<label id="warning-id_tagih" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="nmpelanggan">Pelanggan </label>
@@ -64,6 +43,34 @@
 									<label id="warning-nmpelanggan" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="nmalur">Kode Proses </label>
+									<div class="col-md-7">
+	                            		<input id="nmalur" name="nmalur" class="form-control" readonly>
+	                            	</div>
+									<label id="warning-nmalur" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="nmtrans">Kode Transaksi </label>
+									<div class="col-md-7">
+	                            		<input id="nmtrans" name="nmtrans" class="form-control" readonly>
+	                            	</div>
+									<label id="warning-nmtrans" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="nilai">Debet </label>
+									<div class="col-md-7">
+	                            		<input id="debet" name="debet" class="form-control" readonly>
+	                            	</div>
+									<label id="warning-debet" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="nilai">Kredit </label>
+									<div class="col-md-7">
+	                            		<input id="kredit" name="kredit" class="form-control" readonly>
+	                            	</div>
+									<label id="warning-kredit" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="nilai">Nilai </label>
 									<div class="col-md-7">
 	                            		<input id="nilai" name="nilai" class="form-control" readonly style="text-align:right;">
@@ -71,25 +78,25 @@
 									<label id="warning-nilai" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="nobukti">No.Bukti </label>
+	                            	<label class="col-md-2 label-control" for="nopks">No.PKS </label>
 									<div class="col-md-7">
-	                            		<input type="text" id="nobukti" name="nobukti" class="form-control" maxlength="255" readonly>
+	                            		<input type="text" id="nopks" name="nopks" class="form-control" maxlength="255" readonly>
 	                            	</div>
-									<label id="warning-nobukti" class="col-md-2 label-control label-warning warning">required!</label>
+									<label id="warning-nopks" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="tgbukti">Tgl.Bukti </label>
+	                            	<label class="col-md-2 label-control" for="tgpks">Tgl.PKS </label>
 									<div class="col-md-7">
-	                            		<input type="date" id="tgbukti" name="tgbukti" class="form-control" maxlength="10" readonly>
+	                            		<input type="date" id="tgpks" name="tgpks" class="form-control" maxlength="10" readonly>
 	                            	</div>
-									<label id="warning-tgbukti" class="col-md-2 label-control label-warning warning">required!</label>
+									<label id="warning-tgpks" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="tgsetor">Tgl.Setor </label>
+	                            	<label class="col-md-2 label-control" for="tgpks">Jatuh Tempo </label>
 									<div class="col-md-7">
-	                            		<input type="date" id="tgsetor" name="tgsetor" class="form-control" maxlength="10" readonly>
+	                            		<input type="date" id="tgjtempo" name="tgjtempo" class="form-control" maxlength="10" readonly>
 	                            	</div>
-									<label id="warning-tgsetor" class="col-md-2 label-control label-warning warning">required!</label>
+									<label id="warning-tgjtempo" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="uraian">Uraian </label>
@@ -98,7 +105,6 @@
 	                            	</div>
 									<label id="warning-uraian" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
-								<div id="div-upload"></div>
 								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="status1">Status </label>
 									<div class="col-md-7">
@@ -154,7 +160,7 @@
 										<th>Divisi</th>
 										<th>Pelanggan</th>
 										<th>Transaksi</th>
-										<th>Nomor/ Tgl.Bukti</th>
+										<th>Nomor/ Tgl.PKS</th>
 										<th>Jatuh Tempo</th>
 										<th>Uraian</th>
 										<th>Nilai</th>
@@ -277,17 +283,17 @@
 					jQuery('#inp-rekambaru').val('0');
 					jQuery('#nmunit').val(result.message.nmunit);
 					jQuery('#id_alur').val(result.message.id_alur);
-					jQuery('#id_tagih').val('No.PKS '+result.message.nopks+', '+result.message.tgpks+', Rp. '+digit_grouping(result.message.nilai_tagih)+',-');
 					jQuery('#status').val(result.message.status);
 					jQuery('#nmunit').val(result.message.nmunit);
 					jQuery('#nmalur').val(result.message.nmalur);
+					jQuery('#debet').val(result.message.debet);
+					jQuery('#kredit').val(result.message.kredit);
 					jQuery('#nmtrans').val(result.message.nmtrans);
 					jQuery('#nmpelanggan').val(result.message.nmpelanggan);
-					jQuery('#nobukti').val(result.message.nobukti);
-					jQuery('#tgbukti').val(result.message.tgbukti);
-					jQuery('#tgsetor').val(result.message.tgsetor);
+					jQuery('#nopks').val(result.message.nopks);
+					jQuery('#tgpks').val(result.message.tgpks);
+					jQuery('#tgjtempo').val(result.message.tgjtempo);
 					jQuery('#uraian').val(result.message.uraian);
-					jQuery('#div-upload').html(result.upload);
 					jQuery('#nilai').val(digit_grouping(result.message.nilai));
 					jQuery('#status1').html(result.dropdown).trigger('chosen:updated');					
 				}

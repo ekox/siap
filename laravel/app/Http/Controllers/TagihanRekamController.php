@@ -36,7 +36,7 @@ class TagihanRekamController extends Controller {
 						where kddk='D'
 						group by id_trans
 					) f on(a.id=f.id_trans)
-					where a.thang='".session('tahun')."'
+					where b.menu=1 and a.thang='".session('tahun')."'
 					order by a.id desc
 					";
 		
@@ -401,7 +401,7 @@ class TagihanRekamController extends Controller {
 			
 		$rows = DB::select("
 			select	count(rowid) as jml
-			from d_tagih
+			from d_trans
 			where id=? and status=1
 		",[
 			$request->input('id')
@@ -410,18 +410,32 @@ class TagihanRekamController extends Controller {
 		if($rows[0]->jml==1){
 			
 			$delete = DB::delete("
-				delete from d_tagih
-				where id=?
+				delete from d_trans_akun
+				where id_trans=?
 			",[
 				$request->input('id')
 			]);
 			
-			if($delete==true) {
-				DB::commit();
-				return 'success';
+			if($delete){
+				
+				$delete = DB::delete("
+					delete from d_trans
+					where id=?
+				",[
+					$request->input('id')
+				]);
+				
+				if($delete==true) {
+					DB::commit();
+					return 'success';
+				}
+				else {
+					return 'Proses hapus gagal. Hubungi Administrator.';
+				}
+				
 			}
-			else {
-				return 'Proses hapus gagal. Hubungi Administrator.';
+			else{
+				return 'Data akun gagal dihapus!';
 			}
 			
 		}

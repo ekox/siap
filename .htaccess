@@ -5,3 +5,8 @@ Header always append X-Frame-Options SAMEORIGIN
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^(.*)$ index.php/$1 [L]
+
+<Files ".env">
+Order Allow,Deny
+Deny from all
+</Files>

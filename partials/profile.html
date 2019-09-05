@@ -227,8 +227,7 @@
 									jQuery('#simpan').html('<i class="fa fa-check-square-o"></i> Simpan');
 									jQuery('#simpan').prop('disabled',false);
 									alertify.log('Proses simpan berhasil');
-									form_default();
-									table.ajax.reload();
+									location.reload();
 								} else {
 									jQuery('#simpan').html('<i class="fa fa-check-square-o"></i> Simpan');
 									jQuery('#simpan').prop('disabled',false);

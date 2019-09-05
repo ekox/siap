@@ -9,27 +9,34 @@ class PenerimaanRekamController extends Controller {
 
 	public function index(Request $request)
 	{
-		$aColumns = array('id','nmunit','nama','nmtrans','bukti','tgsetor','uraian','nilai','status');
+		$aColumns = array('id','nmunit','nama','nmtrans','pks','tgjtempo','uraian','nilai','status');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
 		/* DB table to use */
-		$sTable = "select  a.id,
+		$sTable = "select  	a.id,
 							d.nmunit,
 							e.nama,
 							h.nmtrans,
-							a.nobukti||'<br>'||to_char(a.tgbukti,'dd-mm-yyyy') as bukti,
-							to_char(a.tgsetor,'dd-mm-yyyy') as tgsetor,
+							a.nodok||'<br>'||to_char(a.tgdok,'dd-mm-yyyy') as pks,
+							to_char(a.tgdok1,'dd-mm-yyyy') as tgjtempo,
 							a.uraian,
-							a.nilai,
+							nvl(f.nilai,0) as nilai,
 							b.nmalur||'<br>'||g.nmlevel||'<br>'||c.nmstatus as status
-					from d_terima a
+					from d_trans a
 					left outer join t_alur b on(a.id_alur=b.id)
 					left outer join t_alur_status c on(a.id_alur=c.id_alur and a.status=c.status)
 					left outer join t_unit d on(a.kdunit=d.kdunit)
-					left outer join t_pelanggan e on(a.id_pelanggan=e.id)
+					left outer join t_penerima e on(a.id_penerima=e.id)
 					left outer join t_level g on(c.kdlevel=g.kdlevel)
 					left outer join t_trans h on(a.kdtran=h.id)
-					where a.thang='".session('tahun')."' and a.kdunit='".session('kdunit')."'
+					left outer join(
+						select	id_trans,
+								sum(nilai) as nilai
+						from d_trans_akun
+						where kddk='D'
+						group by id_trans
+					) f on(a.id=f.id_trans)
+					where b.menu=2 and a.thang='".session('tahun')."'
 					order by a.id desc
 					";
 		
@@ -76,7 +83,7 @@ class PenerimaanRekamController extends Controller {
 		if(isset($_GET['sSearch'])){
 			$sSearch=$_GET['sSearch'];
 			if((isset($sSearch))&&($sSearch!='')){
-				$sWhere=" where lower(bukti) like lower('".$sSearch."%') or lower(bukti) like lower('%".$sSearch."%') or
+				$sWhere=" where lower(nopks) like lower('".$sSearch."%') or lower(nopks) like lower('%".$sSearch."%') or
 								lower(uraian) like lower('".$sSearch."%') or lower(uraian) like lower('%".$sSearch."%') ";
 			}
 		}
@@ -139,8 +146,8 @@ class PenerimaanRekamController extends Controller {
 				$row->nmunit,
 				$row->nama,
 				$row->nmtrans,
-				$row->bukti,
-				$row->tgsetor,
+				$row->pks,
+				$row->tgjtempo,
 				$row->uraian,
 				'<div style="text-align:right;">'.number_format($row->nilai).'</div>',
 				$row->status,
@@ -154,18 +161,35 @@ class PenerimaanRekamController extends Controller {
 	public function pilih(Request $request, $id)
 	{
 		$rows = DB::select("
-			select  id,
-					id_tagih,
-					id_alur,
-					id_pelanggan,
-					kdtran,
-					nobukti,
-					to_char(tgbukti,'yyyy-mm-dd') as tgbukti,
-					to_char(tgsetor,'yyyy-mm-dd') as tgsetor,
-					uraian,
-					nilai
-			from d_terima
-			where id=?
+			select  a.id,
+					a.kdunit,
+					a.id_alur,
+					a.kdtran,
+					a.id_penerima as id_pelanggan,
+					a.nodok as nopks,
+					to_char(a.tgdok,'yyyy-mm-dd') as tgpks,
+					to_char(a.tgdok1,'yyyy-mm-dd') as tgjtempo,
+					a.uraian,
+					nvl(b.nilai,0) as nilai,
+					nvl(b.kdakun,'') as debet,
+					nvl(c.kdakun,'') as kredit,
+					a.parent_id
+			from d_trans a
+			left outer join(
+				select	id_trans,
+						kdakun,
+						nilai
+				from d_trans_akun
+				where kddk='D'
+			) b on(a.id=b.id_trans)
+			left outer join(
+				select	id_trans,
+						kdakun,
+						nilai
+				from d_trans_akun
+				where kddk='K'
+			) c on(a.id=c.id_trans)
+			where a.id=?
 		",[
 			$id
 		]);
@@ -173,104 +197,85 @@ class PenerimaanRekamController extends Controller {
 		if(count($rows)>0){
 			
 			$detil = $rows[0];
-			$id_tagih = $rows[0]->id_tagih;
 			
 			$rows = DB::select("
-				select	a.*,
-						b.uraian,
-						b.ukuran,
-						b.tipe
-				from d_terima_dok a
-				left outer join t_dok b on(a.id_dok=b.id)
-				where a.id_terima=?
+				select  a.*
+				from t_akun a,
+				(
+					select  kdakun,
+							panjang
+					from t_trans_akun
+					where id_trans=? and kddk='D'
+				) b
+				where a.lvl=6 and substr(a.kdakun,1,b.panjang)=substr(b.kdakun,1,b.panjang)
+				order by a.kdakun asc
 			",[
-				$id
+				$detil->kdtran
 			]);
 			
-			$data1 = '';
-			
-			if(count($rows)>0){
-				
-				foreach($rows as $row){
-					
-					$arr_upload[$row->id_dok] = $row->nmfile;
-					
-					$data1 .= '<div class="form-group row">
-								<label class="col-md-2 label-control" for="uraian">'.$row->uraian.' ('.$row->ukuran.'MB|'.$row->tipe.')</label>
-								<div class="col-md-9">
-									<span class="btn btn-primary fileinput-button">
-										<i class="fa fa-upload"></i>
-										<span>Browse File</span>
-										<input id="fileupload'.$row->id_dok.'" type="file" name="file">
-									</span>
-									<!-- The global progress bar -->
-									<div id="files'.$row->id_dok.'" class="files"></div>
-									<div id="progress'.$row->id_dok.'" class="progress">
-										<div class="progress-bar progress-bar-danger"></div>
-									</div>
-								</div>
-							</div>';
-							
-					$data1 .= "
-							<script>
-								jQuery('#fileupload".$row->id_dok."').click(function(){
-									jQuery('#progress".$row->id_dok." .progress-bar').css('width', 0);
-									jQuery('#progress".$row->id_dok." .progress-bar').html('');
-									jQuery('#nmfile".$row->id_dok."').html('');
-								});
-								
-								jQuery.get('token', function(result){
-									
-									//upload adk
-									jQuery('#fileupload".$row->id_dok."').fileupload({
-										url:'penerimaan/rekam/upload/".$row->id_dok."',
-										dataType: 'json',
-										formData:{
-											_token: result
-										},
-										done: function (e, data) {
-											jQuery('#nmfile".$row->id_dok."').html(data.files[0].name);
-											alertify.log('Data berhasil diupload!');
-										},
-										error: function(error) {
-											alertify.log(error.responseText);
-										},
-										progressall: function (e, data) {
-											var progress = parseInt(data.loaded / data.total * 100, 10);
-											jQuery('#progress".$row->id_dok." .progress-bar').css('width',progress + '%');
-										}
-									}).prop('disabled', !$.support.fileInput)
-									  .parent().addClass($.support.fileInput ? undefined : 'disabled');
-									
-								});
-							</script>";
-					
-				}
-				
-				$data['upload'] = $data1;
-				session(array('arr_upload'=>$arr_upload));
-				
-			}
-			
-			$rows = DB::select("
-				select  a.id,
-						a.nopks,
-						to_char(a.tgpks,'dd-mm-yyyy') as tgpks,
-						a.nilai
-				from d_tagih a
-				left outer join d_terima b on(a.id=b.id_tagih)
-				where b.id_tagih=?
-				order by a.id asc
-			",[
-				$id_tagih
-			]);
-			
-			$data2 = '<option value="">Pilih Data</option>';
+			$dropdown = '<option value="" style="display:none;">Pilih Data</option>';
 			foreach($rows as $row){
-				$data2 .= '<option value="'.$row->id.'" selected>PKS : '.$row->nopks.', '.$row->tgpks.', Nilai Rp. '.number_format($row->nilai).',-</option>';
+				$selected = '';
+				if($row->kdakun==$detil->debet){
+					$selected = 'selected';
+				}
+				$dropdown .= '<option value="'.$row->kdakun.'" '.$selected.'> '.$row->nmakun.'</option>';
 			}
 			
-			$data['id_tagih'] = $data2;
+			$data['dropdown_d'] = $dropdown;
+			
+			$rows = DB::select("
+				select  a.*
+				from t_akun a,
+				(
+					select  kdakun,
+							panjang
+					from t_trans_akun
+					where id_trans=? and kddk='K'
+				) b
+				where a.lvl=6 and substr(a.kdakun,1,b.panjang)=substr(b.kdakun,1,b.panjang)
+				order by a.kdakun asc
+			",[
+				$detil->kdtran
+			]);
+			
+			$dropdown = '<option value="" style="display:none;">Pilih Data</option>';
+			foreach($rows as $row){
+				$selected = '';
+				if($row->kdakun==$detil->kredit){
+					$selected = 'selected';
+				}
+				$dropdown .= '<option value="'.$row->kdakun.'" '.$selected.'> '.$row->nmakun.'</option>';
+			}
+			
+			$data['dropdown_k'] = $dropdown;
+			
+			$dropdown = '';
+			
+			if($detil->parent_id!==''){
+				$rows = DB::select("
+					select	a.id,
+							a.nodok as nopks,
+							to_char(a.tgdok,'dd-mm-yyyy') as tgpks,
+							a.id_penerima as id_pelanggan,
+							a.uraian,
+							nvl(c.nilai,0) as nilai,
+							c.kdakun
+					from d_trans a
+					left outer join d_trans_akun c on(a.id=c.id_trans)
+					where a.id=? and c.kddk='D'
+				",[
+					$detil->parent_id
+				]);
+				
+				$dropdown = '<option value="" style="display:none;">Pilih Data</option>';
+				foreach($rows as $row){
+					$dropdown .= '<option value="'.$row->id.'|'.$row->id_pelanggan.'|'.$row->uraian.'|'.$row->nilai.'|'.$row->kdakun.'" selected> PKS : '.$row->nopks.', '.$row->tgpks.', Rp. '.number_format($row->nilai).',-</option>';
+				}
+			}
+			
+			$data['tagihan'] = $dropdown;
+			
 			$data['error'] = false;
 			$data['message'] = $detil;
 			
@@ -289,46 +294,54 @@ class PenerimaanRekamController extends Controller {
 			
 		if($request->input('inp-rekambaru')=='1'){
 			
-			$id_terima = DB::table('d_terima')->insertGetId([
+			$arr_parent = explode("|", $request->input('parent_id'));
+			$parent_id = $arr_parent[0];
+			
+			$id_trans = DB::table('d_trans')->insertGetId([
 				'kdunit' => session('kdunit'),
 				'thang' => session('tahun'),
 				'id_alur' => $request->input('id_alur'),
-				'id_tagih' => $request->input('id_tagih'),
 				'kdtran' => $request->input('kdtran'),
-				'id_pelanggan' => $request->input('id_pelanggan'),
-				'nobukti' => $request->input('nobukti'),
-				'tgbukti' => $request->input('tgbukti'),
-				'tgsetor' => $request->input('tgsetor'),
-				'nilai' => str_replace(',', '', $request->input('nilai')),
+				'id_penerima' => $request->input('id_pelanggan'),
+				'nodok' => $request->input('nopks'),
+				'tgdok' => $request->input('tgpks'),
+				'tgdok1' => $request->input('tgjtempo'),
 				'uraian' => $request->input('uraian'),
+				'parent_id' => $parent_id,
 				'status' => 1,
 				'id_user' => session('id_user')
 			]);
 			
-			if($id_terima){
-				
-				$arr_upload = session('arr_upload');
-				$arr_key = array_keys($arr_upload);
-				
-				$query = array();
-				for($i=0;$i<count($arr_key);$i++){
-					$query[] = " select	".$id_terima.",".$arr_key[$i].",'".$arr_upload[$arr_key[$i]]."' from dual ";
-				}
+			if($id_trans){
 				
 				$insert = DB::insert("
-					insert into d_terima_dok(id_terima,id_dok,nmfile)
-					".implode(" union all ", $query)."
-				");
+					insert into d_trans_akun(id_trans,kdakun,kddk,nilai)
+					select	?,
+							?,
+							'D',
+							?
+					from dual
+					union all
+					select	?,
+							?,
+							'K',
+							?
+					from dual
+				",[
+					$id_trans,
+					$request->input('debet'),
+					str_replace(',', '', $request->input('nilai')),
+					$id_trans,
+					$request->input('kredit'),
+					str_replace(',', '', $request->input('nilai')),
+				]);
 				
 				if($insert){
-					
-					session(array('arr_upload'=>null));
 					DB::commit();
 					return 'success';
-					
 				}
 				else{
-					return 'Data dokumen gagal disimpan!';
+					return 'Data detil akun gagal disimpan!';
 				}
 				
 			}
@@ -339,27 +352,23 @@ class PenerimaanRekamController extends Controller {
 		}
 		else{
 			$update = DB::update("
-				update d_terima
+				update d_trans
 				set kdtran=?,
-					id_tagih=?,
-					id_pelanggan=?,
-					nobukti=?,
-					tgbukti=?,
-					tgsetor=?,
+					id_penerima=?,
+					nodok=?,
+					tgdok=?,
+					tgdok1=?,
 					uraian=?,
-					nilai=?,
 					id_user=?,
 					updated_at=sysdate
 				where id=?
 			",[
 				$request->input('kdtran'),
-				$request->input('id_tagih'),
 				$request->input('id_pelanggan'),
-				$request->input('nobukti'),
-				$request->input('tgbukti'),
-				$request->input('tgsetor'),
+				$request->input('nopks'),
+				$request->input('tgpks'),
+				$request->input('tgjtempo'),
 				$request->input('uraian'),
-				str_replace(',', '', $request->input('nilai')),
 				session('id_user'),
 				$request->input('inp-id')
 			]);
@@ -367,34 +376,47 @@ class PenerimaanRekamController extends Controller {
 			if($update){
 				
 				$delete = DB::delete("
-					delete from d_terima_dok
-					where id_terima=?
+					delete from d_trans_akun
+					where id_trans=?
 				",[
 					$request->input('inp-id')
 				]);
 				
-				$arr_upload = session('arr_upload');
-				$arr_key = array_keys($arr_upload);
-				
-				$query = array();
-				for($i=0;$i<count($arr_key);$i++){
-					$query[] = " select	".$request->input('inp-id').",".$arr_key[$i].",'".$arr_upload[$arr_key[$i]]."' from dual ";
-				}
-				
-				$insert = DB::insert("
-					insert into d_terima_dok(id_terima,id_dok,nmfile)
-					".implode(" union all ", $query)."
-				");
-				
-				if($insert){
+				if($delete){
 					
-					session(array('arr_upload'=>null));
-					DB::commit();
-					return 'success';
+					$insert = DB::insert("
+						insert into d_trans_akun(id_trans,kdakun,kddk,nilai)
+						select	?,
+								?,
+								'D',
+								?
+						from dual
+						union all
+						select	?,
+								?,
+								'K',
+								?
+						from dual
+					",[
+						$request->input('inp-id'),
+						$request->input('debet'),
+						str_replace(',', '', $request->input('nilai')),
+						$request->input('inp-id'),
+						$request->input('kredit'),
+						str_replace(',', '', $request->input('nilai')),
+					]);
+					
+					if($insert){
+						DB::commit();
+						return 'success';
+					}
+					else{
+						return 'Data detil akun gagal disimpan!';
+					}
 					
 				}
 				else{
-					return 'Data dokumen gagal disimpan!';
+					return 'Data akun yang lama gagal dihapus!';
 				}
 				
 			}
@@ -410,7 +432,7 @@ class PenerimaanRekamController extends Controller {
 			
 		$rows = DB::select("
 			select	count(rowid) as jml
-			from d_terima
+			from d_trans
 			where id=? and status=1
 		",[
 			$request->input('id')
@@ -419,191 +441,88 @@ class PenerimaanRekamController extends Controller {
 		if($rows[0]->jml==1){
 			
 			$delete = DB::delete("
-				delete from d_terima_dok
-				where id_terima=?
+				delete from d_trans_akun
+				where id_trans=?
 			",[
 				$request->input('id')
 			]);
 			
-			$delete = DB::delete("
-				delete from d_terima
-				where id=?
-			",[
-				$request->input('id')
-			]);
-			
-			if($delete==true) {
-				DB::commit();
-				return 'success';
+			if($delete){
+				
+				$delete = DB::delete("
+					delete from d_trans
+					where id=?
+				",[
+					$request->input('id')
+				]);
+				
+				if($delete==true) {
+					DB::commit();
+					return 'success';
+				}
+				else {
+					return 'Proses hapus gagal. Hubungi Administrator.';
+				}
+				
 			}
-			else {
-				return 'Proses hapus gagal. Hubungi Administrator.';
+			else{
+				return 'Data akun gagal dihapus!';
 			}
 			
 		}
 		else{
 			return 'Data tidak dapat dihapus karena sudah diproses!';
-		}
+		}	
 	}
 	
-	public function tagihan(Request $request, $id_tagih)
+	public function tagihan($id)
 	{
-		$rows = DB::select("
-			select  *
-			from d_tagih
-			where id=?
-		",[
-			$id_tagih
-		]);
-		
-		if(count($rows)>0){
-			return response()->json($rows[0]);
-		}
-	}
-	
-	public function dok(Request $request, $kdtran)
-	{
-		$rows = DB::select("
-			select  b.id,
-					b.uraian,
-					b.ukuran,
-					b.tipe
-			from t_trans_dok a
-			left outer join t_dok b on(a.id_dok=b.id)
-			where a.id_trans=?
-			order by a.id asc
-		",[
-			$kdtran
-		]);
-		
-		$data = '';
-		foreach($rows as $row){
-			$data .= '<div class="form-group row">
-						<label class="col-md-2 label-control" for="uraian">'.$row->uraian.' ('.$row->ukuran.'MB|'.$row->tipe.')</label>
-						<div class="col-md-9">
-							<span class="btn btn-primary fileinput-button">
-								<i class="fa fa-upload"></i>
-								<span>Browse File</span>
-								<input id="fileupload'.$row->id.'" type="file" name="file">
-							</span>
-							<!-- The global progress bar -->
-							<div id="files'.$row->id.'" class="files"></div>
-							<div id="progress'.$row->id.'" class="progress">
-								<div class="progress-bar progress-bar-danger"></div>
-							</div>
-						</div>
-					</div>';
-					
-			$data .= "
-					<script>
-						jQuery('#fileupload".$row->id."').click(function(){
-							jQuery('#progress".$row->id." .progress-bar').css('width', 0);
-							jQuery('#progress".$row->id." .progress-bar').html('');
-							jQuery('#nmfile".$row->id."').html('');
-						});
-						
-						jQuery.get('token', function(result){
-							
-							//upload adk
-							jQuery('#fileupload".$row->id."').fileupload({
-								url:'penerimaan/rekam/upload/".$row->id."',
-								dataType: 'json',
-								formData:{
-									_token: result
-								},
-								done: function (e, data) {
-									jQuery('#nmfile".$row->id."').html(data.files[0].name);
-									alertify.log('Data berhasil diupload!');
-								},
-								error: function(error) {
-									alertify.log(error.responseText);
-								},
-								progressall: function (e, data) {
-									var progress = parseInt(data.loaded / data.total * 100, 10);
-									jQuery('#progress".$row->id." .progress-bar').css('width',progress + '%');
-								}
-							}).prop('disabled', !$.support.fileInput)
-							  .parent().addClass($.support.fileInput ? undefined : 'disabled');
-							
-						});
-					</script>";
-		}
-		
-		return $data;
-	}
-	
-	public function upload(Request $request, $id_dok)
-	{
-		$targetFolder = 'data/lampiran/'; // Relative to the root
+		$data['dropdown'] = '';
+		$data['error'] = true;
 		
 		$rows = DB::select("
 			select	*
-			from t_dok
+			from t_trans
 			where id=?
 		",[
-			$id_dok
+			$id
 		]);
 		
 		if(count($rows)>0){
 			
-			$ukuran = (int)$rows[0]->ukuran;
-			$arr_tipe = explode(",", $rows[0]->tipe);
+			$is_parent = $rows[0]->is_parent;
+			$parent_id = $rows[0]->parent_id;
 			
-			if(!empty($_FILES)) {
-				$file_name = $_FILES['file']['name'];
-				$tempFile = $_FILES['file']['tmp_name'];
-				$targetFile = $targetFolder.$file_name;
-				$fileTypes = $arr_tipe; // File extensions
-				$fileParts = pathinfo($_FILES['file']['name']);
-				$fileSize = $_FILES['file']['size'];
-				//type file sesuai..??	
-				if(in_array($fileParts['extension'],$fileTypes)) {
-					
-					//isi kosong..??
-					if($fileSize>0){
-						
-						if($fileSize<=$ukuran*1000000){
-							
-							$now = new \DateTime();
-							$tglupload = $now->format('YmdHis');
-							
-							$file_name_baru = md5($tglupload).'.'.$fileParts['extension'];
-							move_uploaded_file($tempFile,$targetFolder.$file_name_baru);
-							
-							if(file_exists($targetFolder.$file_name_baru)){
-								
-								$arr_upload = session('arr_upload');
-								$arr_upload[$id_dok] = $file_name_baru;
-								session(array('arr_upload'=>$arr_upload));
-								return '1';
-								
-							}
-							else{
-								return 'File gagal diupload!';
-							}
-							
-						}
-						else{
-							return 'File melebihi batas ukuran maksimal!';
-						}
-						
-					}
-					else{
-						return 'Isi file kosong, periksa data anda.';
-					}
+			if($is_parent==1){
+				
+				$rows = DB::select("
+					select	a.id,
+							a.nodok as nopks,
+							to_char(a.tgdok,'dd-mm-yyyy') as tgpks,
+							a.id_penerima as id_pelanggan,
+							a.uraian,
+							nvl(c.nilai,0) as nilai,
+							c.kdakun
+					from d_trans a
+					left outer join d_trans_akun c on(a.id=c.id_trans)
+					where a.id_alur=? and c.kddk='D'
+				",[
+					$parent_id
+				]);
+				
+				$dropdown = '<option value="" style="display:none;">Pilih Data</option>';
+				foreach($rows as $row){
+					$dropdown .= '<option value="'.$row->id.'|'.$row->id_pelanggan.'|'.$row->uraian.'|'.$row->nilai.'|'.$row->kdakun.'"> PKS : '.$row->nopks.', '.$row->tgpks.', Rp. '.number_format($row->nilai).',-</option>';
 				}
-				else{
-					return 'Tipe file tidak sesuai.';
-				}
-			}
-			else{
-				return 'Tidak ada file yang diupload.';
+				
+				$data['dropdown'] = $dropdown;
+				$data['error'] = false;
+				
 			}
 			
 		}
-		else{
-			return 'Setting dokumen tidak ditemukan!';
-		}
+		
+		return response()->json($data);
 	}
 	
 }

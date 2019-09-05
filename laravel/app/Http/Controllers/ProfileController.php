@@ -190,10 +190,35 @@ class ProfileController extends Controller {
 						
 						DB::commit();
 						
+						$rows = DB::select("
+							select  a.id,
+									a.pass,
+									a.nama,
+									a.nik,
+									a.aktif,
+									a.foto,
+									b.kdlevel,
+									c.nmlevel,
+									d.kdunit,
+									e.nmunit
+							from t_user a
+							left outer join t_user_level b on(a.id=b.id_user)
+							left outer join t_level c on(b.kdlevel=c.kdlevel)
+							left outer join t_user_unit d on(a.id=d.id_user)
+							left outer join t_unit e on(d.kdunit=e.kdunit)
+							where a.id=? and b.status='1' and d.status='1'
+						",[
+							session('id_user'),
+						]);
+						
 						session([
-							'foto' => session('upload_foto_user'),
-							'kdlevel' => $request->input('kdlevel'),
-							'kdunit' => $request->input('kdunit'),
+							'nama' => $rows[0]->nama,
+							'nik' => $rows[0]->nik,
+							'foto' => $rows[0]->foto,
+							'kdlevel' => $rows[0]->kdlevel,
+							'nmlevel' => $rows[0]->nmlevel,
+							'kdunit' => $rows[0]->kdunit,
+							'nmunit' => $rows[0]->nmunit
 						]);
 						
 						return 'success';
