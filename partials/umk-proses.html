@@ -9,7 +9,7 @@
 	
 	<div class="row">
         <div class="col-sm-12">
-            <div class="content-header">Penerimaan/ Monitoring</div>
+            <div class="content-header">Permintaan UMK/ Proses</div>
         </div>
     </div>
 	
@@ -78,14 +78,14 @@
 									<label id="warning-nilai" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="nopks">No.PKS </label>
+	                            	<label class="col-md-2 label-control" for="nopks">No.Dokumen </label>
 									<div class="col-md-7">
 	                            		<input type="text" id="nopks" name="nopks" class="form-control" maxlength="255" readonly>
 	                            	</div>
 									<label id="warning-nopks" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="tgpks">Tgl.PKS </label>
+	                            	<label class="col-md-2 label-control" for="tgpks">Tgl.Dokumen </label>
 									<div class="col-md-7">
 	                            		<input type="date" id="tgpks" name="tgpks" class="form-control" maxlength="10" readonly>
 	                            	</div>
@@ -106,10 +106,19 @@
 									<label id="warning-uraian" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="uraian">Lampiran </label>
-									<div class="col-md-7" id="div-lampiran">
-	                            		
+	                            	<label class="col-md-2 label-control" for="status1">Status </label>
+									<div class="col-md-7">
+	                            		<select id="status1" name="status1" class="form-control chosen">
+										</select>
 	                            	</div>
+									<label id="warning-status1" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="ket">Keterangan </label>
+									<div class="col-md-7">
+	                            		<textarea id="ket" name="ket" class="form-control" maxlength="4000"></textarea>
+	                            	</div>
+									<label id="warning-ket" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								
 							</div>
@@ -119,6 +128,9 @@
 		                            <div class="col-md-7">
 		                            	<button type="button" class="btn btn-raised btn-warning mr-1 batal">
 											<i class="ft-x"></i> Batal
+										</button>
+										<button id="simpan" type="button" class="btn btn-raised btn-primary">
+											<i class="fa fa-check-square-o"></i> Simpan
 										</button>
 		                            </div>
 		                        </div>
@@ -146,9 +158,9 @@
 									<tr>
 										<th>No</th>
 										<th>Divisi</th>
-										<th>Pelanggan</th>
+										<th>Penerima</th>
 										<th>Transaksi</th>
-										<th>Nomor/ Tgl.PKS</th>
+										<th>Nomor/ Tgl.Dokumen</th>
 										<th>Jatuh Tempo</th>
 										<th>Uraian</th>
 										<th>Nilai</th>
@@ -185,11 +197,16 @@
 			return x1 + x2;
 		}
 		
+		//aktivasi chosen
+		jQuery('.chosen').chosen();
+		
 		//tampilan default
 		function form_default() {
 			jQuery('input,textarea,select').val('');
 			jQuery('.warning, #div-form').hide();
 			jQuery('#div-tabel').show();
+			jQuery('.chosen').trigger('chosen:updated');
+			jQuery('#simpan').prop('disabled', false);
 		}
 		
 		//aktivasi tampilan default
@@ -236,7 +253,7 @@
 			],
 			bServerSide: true,
 			ajax:{
-				url: "penerimaan/monitoring", // Change this URL to where your json data comes from
+				url: "umk/proses", // Change this URL to where your json data comes from
 				type: "GET"
 			},
 			fnCreatedRow: function( nRow, aData, iDataIndex ) {
@@ -260,7 +277,7 @@
 		//cari data user yang akan di edit berdasarkan id user
 		function cari_data(id){
 			jQuery('.chosen').val('').trigger('chosen:updated');
-			jQuery.getJSON('penerimaan/proses/pilih/'+id, function(result){
+			jQuery.getJSON('umk/proses/pilih/'+id, function(result){
 				if(result.error==false) {
 					jQuery('#inp-id').val(id);
 					jQuery('#inp-rekambaru').val('0');
@@ -269,16 +286,16 @@
 					jQuery('#status').val(result.message.status);
 					jQuery('#nmunit').val(result.message.nmunit);
 					jQuery('#nmalur').val(result.message.nmalur);
-					jQuery('#nmtrans').val(result.message.nmtrans);
 					jQuery('#debet').val(result.message.debet);
 					jQuery('#kredit').val(result.message.kredit);
+					jQuery('#nmtrans').val(result.message.nmtrans);
 					jQuery('#nmpelanggan').val(result.message.nmpelanggan);
 					jQuery('#nopks').val(result.message.nopks);
 					jQuery('#tgpks').val(result.message.tgpks);
 					jQuery('#tgjtempo').val(result.message.tgjtempo);
 					jQuery('#uraian').val(result.message.uraian);
 					jQuery('#nilai').val(digit_grouping(result.message.nilai));
-					jQuery('#div-lampiran').html(result.lampiran);					
+					jQuery('#status1').html(result.dropdown).trigger('chosen:updated');					
 				}
 				else{
 					alertify.log(result.message);
@@ -297,6 +314,54 @@
 		//klik batal
 		jQuery('.batal').click(function(){
 			form_default();
+		});
+		
+		//klik simpan
+		jQuery('#simpan').click(function(){
+			jQuery(this).html('<span class="loading"><i class="fa fa-refresh"></i> Loading.....</span>');
+			jQuery(this).prop('disabled',true);
+			var next = form_valid('inp-id,id_alur,status,status1');
+			if(next==true){
+				jQuery.get('token', function(token){
+					if(token){
+						jQuery('#_token').val(token);
+						var data = jQuery('#form-ruh').serialize();
+						jQuery.ajax({
+							url: 'umk/proses',
+							method: 'POST',
+							data: data,
+							success: function(result){
+								if(result=='success') {
+									jQuery('#simpan').html('<i class="fa fa-check-square-o"></i> Simpan');
+									jQuery('#simpan').prop('disabled',false);
+									alertify.log('Proses simpan berhasil');
+									form_default();
+									table.ajax.reload();
+								} else {
+									jQuery('#simpan').html('<i class="fa fa-check-square-o"></i> Simpan');
+									jQuery('#simpan').prop('disabled',false);
+									alertify.log(result);
+								} 
+							},
+							error: function(result){
+								jQuery('#simpan').html('<i class="fa fa-check-square-o"></i> Simpan');
+								jQuery('#simpan').prop('disabled',false);
+								alertify.log('Data tidak dapat disimpan. Koneksi pada aplikasi/database terputus atau data sudah pernah direkam atau format data salah. Hubungi Administrator.');
+							}
+						})
+					} 
+					else{
+						jQuery('#simpan').html('<i class="fa fa-check-square-o"></i> Simpan');
+						jQuery('#simpan').prop('disabled',false);
+						alertify.log('Sesi telah habis, silahkan refresh browser Anda!');
+					}
+				});
+			}
+			else{
+				jQuery('#simpan').html('<i class="fa fa-check-square-o"></i> Simpan');
+				jQuery('#simpan').prop('disabled',false);
+				alertify.log('Data tidak dapat dikosongkan!');
+			}
 		});
 		
 	});

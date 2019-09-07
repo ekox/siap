@@ -108,6 +108,40 @@ Route::group(['middleware' => 'auth'], function(){
 			Route::post('', 'PenerimaanRekamController@simpan')->middleware('role:11');
 			Route::post('/hapus', 'PenerimaanRekamController@hapus')->middleware('role:11');
 			Route::post('/upload/{param}', 'PenerimaanRekamController@upload')->middleware('role:11');
+			Route::post('/upload-simpan', 'PenerimaanRekamController@uploadSimpan')->middleware('role:11');
+			Route::post('/hapus-dok', 'PenerimaanRekamController@hapusDok')->middleware('role:11');
+			
+		});
+		
+	});
+	
+	//umk
+	Route::group(['prefix' => 'umk'], function () {
+		
+		Route::group(['prefix' => 'monitoring'], function () {
+			
+			Route::get('', 'UMKProsesController@monitoring');
+			
+		});
+		
+		Route::group(['prefix' => 'proses'], function () {
+			
+			Route::get('', 'UMKProsesController@index');
+			Route::get('/pilih/{param}', 'UMKProsesController@pilih');
+			Route::post('', 'UMKProsesController@simpan');
+			
+		});
+		
+		Route::group(['prefix' => 'rekam'], function () {
+			
+			Route::get('', 'UMKRekamController@index');
+			Route::get('/pilih/{param}', 'UMKRekamController@pilih')->middleware('role:11');
+			Route::get('/nomor', 'UMKRekamController@nomor')->middleware('role:11');
+			Route::get('/detil/{param}', 'UMKRekamController@detil');
+			Route::get('/download/{param}', 'UMKRekamController@download')->middleware('role:11');
+			Route::post('', 'UMKRekamController@simpan')->middleware('role:11');
+			Route::post('/hapus', 'UMKRekamController@hapus')->middleware('role:11');
+			Route::post('/upload', 'UMKRekamController@upload')->middleware('role:11');
 			
 		});
 		
@@ -178,6 +212,8 @@ Route::group(['middleware' => 'auth'], function(){
 		
 		Route::get('/output', 'DropdownController@output');
 		Route::get('/kegiatan', 'DropdownController@kegiatan');
+		Route::get('/dok/{param}', 'DropdownController@dok');
+		Route::get('/dokDetil/{param}', 'DropdownController@dokTransaksi');
 		Route::get('/tagihan', 'DropdownController@tagihan');
 		Route::get('/transaksi', 'DropdownController@transaksi');
 		Route::get('/transaksi/{param}', 'DropdownController@transaksiByParam');
@@ -188,8 +224,8 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get('/alur', 'DropdownController@alur');
 		Route::get('/alur-tagihan', 'DropdownController@alurTagihan');
 		Route::get('/alur-penerimaan', 'DropdownController@alurPenerimaan');
+		Route::get('/alur-umk', 'DropdownController@alurUmk');
 		Route::get('/penerima', 'DropdownController@penerima');
-		Route::get('/pelanggan', 'DropdownController@pelanggan');
 		Route::get('/bank', 'DropdownController@bank');
 		Route::get('/lap', 'DropdownController@lap');
 		Route::get('/akun/html/level1', 'DropdownController@akun_html_level1');

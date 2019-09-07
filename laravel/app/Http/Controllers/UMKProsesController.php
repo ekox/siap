@@ -5,7 +5,7 @@ use Session;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class PenerimaanProsesController extends Controller {
+class UMKProsesController extends Controller {
 
 	public function index(Request $request)
 	{
@@ -45,7 +45,7 @@ class PenerimaanProsesController extends Controller {
 							where kddk='D'
 							group by id_trans
 						) f on(a.id=f.id_trans)
-						where b.menu=2 and a.thang='".session('tahun')."' and c.kdlevel='".session('kdlevel')."'
+						where b.menu=3 and a.thang='".session('tahun')."' and c.kdlevel='".session('kdlevel')."'
 					) a
 					where a.akses=1
 					order by a.id desc
@@ -194,7 +194,7 @@ class PenerimaanProsesController extends Controller {
 						where kddk='D'
 						group by id_trans
 					) f on(a.id=f.id_trans)
-					where b.menu=2 and a.thang='".session('tahun')."'
+					where b.menu=3 and a.thang='".session('tahun')."'
 					";
 		
 		/*
@@ -380,25 +380,6 @@ class PenerimaanProsesController extends Controller {
 			}
 			
 			$data['dropdown'] = $status;
-			
-			$rows = DB::select("
-				select	a.id,
-						b.uraian,
-						a.nmfile
-				from d_trans_dok a
-				left outer join t_dok b on(a.id_dok=b.id)
-				where a.id_trans=?
-			",[
-				$id
-			]);
-			
-			$lampiran = '<ul>';
-			foreach($rows as $row){
-				$lampiran .= '<li><a href="penerimaan/rekam/download/'.$row->id.'" target="_blank" title="Download Lampiran">'.$row->uraian.'</li>';
-			}
-			$lampiran .= '</ul>';
-			
-			$data['lampiran'] = $lampiran;
 			
 		}
 		else{

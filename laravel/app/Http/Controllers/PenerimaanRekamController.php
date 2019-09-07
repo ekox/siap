@@ -9,7 +9,7 @@ class PenerimaanRekamController extends Controller {
 
 	public function index(Request $request)
 	{
-		$aColumns = array('id','nmunit','nama','nmtrans','pks','tgjtempo','uraian','nilai','status');
+		$aColumns = array('id','nmunit','nama','nmtrans','pks','tgjtempo','uraian','nilai','status','lampiran');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
 		/* DB table to use */
@@ -21,7 +21,8 @@ class PenerimaanRekamController extends Controller {
 							to_char(a.tgdok1,'dd-mm-yyyy') as tgjtempo,
 							a.uraian,
 							nvl(f.nilai,0) as nilai,
-							b.nmalur||'<br>'||g.nmlevel||'<br>'||c.nmstatus as status
+							b.nmalur||'<br>'||g.nmlevel||'<br>'||c.nmstatus as status,
+							i.lampiran
 					from d_trans a
 					left outer join t_alur b on(a.id_alur=b.id)
 					left outer join t_alur_status c on(a.id_alur=c.id_alur and a.status=c.status)
@@ -36,7 +37,14 @@ class PenerimaanRekamController extends Controller {
 						where kddk='D'
 						group by id_trans
 					) f on(a.id=f.id_trans)
-					where b.menu=2 and a.thang='".session('tahun')."'
+					left outer join(
+						select  a.id_trans,
+								rtrim(xmlagg(xmlelement(e, a.id||'|'||b.uraian, ',')).extract('//text()').getclobval(), ',') as lampiran
+						from d_trans_dok a
+						left outer join t_dok b on(a.id_dok=b.id)
+						group by a.id_trans
+					) i on(a.id=i.id_trans)
+					where b.menu=2 and a.thang='".session('tahun')."' and a.kdunit='".session('kdunit')."'
 					order by a.id desc
 					";
 		
@@ -137,9 +145,31 @@ class PenerimaanRekamController extends Controller {
 							<div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
 								<a id="'.$row->id.'" class="dropdown-item ubah" href="javascript:;">Ubah Data</a>
 								<a id="'.$row->id.'" class="dropdown-item hapus" href="javascript:;">Hapus Data</a>
+								<a id="'.$row->id.'" class="dropdown-item upload" href="javascript:;">Upload Lampiran</a>
 							</div>
 						</center>';
 			}
+			
+			$lampiran = '<ul>';
+			if($row->lampiran!==''){
+				
+				$arr_lampiran = explode(',', $row->lampiran);
+				for($i=0;$i<count($arr_lampiran);$i++){
+					
+					$arr_dok = explode('|', $arr_lampiran[$i]);
+					if(count($arr_dok)>1){
+						
+						$lampiran .= '<li>'.$arr_dok[1].'
+										<a id="'.$arr_dok[0].'" href="javascript:;" class="hapus-dok" title="Hapus Lampiran"><i class="fa fa-times"></i></a>
+										<a href="penerimaan/rekam/download/'.$arr_dok[0].'" target="_blank" title="Download Lampiran"><i class="fa fa-download"></i></a>
+									 </li>';
+						
+					}
+					
+				}
+				
+			}
+			$lampiran .= '</ul>';
 			
 			$output['aaData'][] = array(
 				$row->no,
@@ -147,10 +177,10 @@ class PenerimaanRekamController extends Controller {
 				$row->nama,
 				$row->nmtrans,
 				$row->pks,
-				$row->tgjtempo,
 				$row->uraian,
 				'<div style="text-align:right;">'.number_format($row->nilai).'</div>',
 				$row->status,
+				$lampiran,
 				$aksi
 			);
 		}
@@ -441,6 +471,13 @@ class PenerimaanRekamController extends Controller {
 		if($rows[0]->jml==1){
 			
 			$delete = DB::delete("
+				delete from d_trans_dok
+				where id_trans=?
+			",[
+				$request->input('id')
+			]);
+			
+			$delete = DB::delete("
 				delete from d_trans_akun
 				where id_trans=?
 			",[
@@ -473,6 +510,26 @@ class PenerimaanRekamController extends Controller {
 		else{
 			return 'Data tidak dapat dihapus karena sudah diproses!';
 		}	
+	}
+	
+	public function hapusDok(Request $request)
+	{
+		DB::beginTransaction();
+			
+		$delete = DB::delete("
+			delete from d_trans_dok
+			where id=?
+		",[
+			$request->input('id')
+		]);
+		
+		if($delete==true) {
+			DB::commit();
+			return 'success';
+		}
+		else {
+			return 'Proses hapus gagal. Hubungi Administrator.';
+		}
 	}
 	
 	public function tagihan($id)
@@ -523,6 +580,145 @@ class PenerimaanRekamController extends Controller {
 		}
 		
 		return response()->json($data);
+	}
+	
+	public function upload(Request $request, $id_dok)
+	{
+		$targetFolder = 'data/lampiran/'; // Relative to the root
+		
+		$rows = DB::select("
+			select	*
+			from t_dok
+			where id=?
+		",[
+			$id_dok
+		]);
+		
+		if(count($rows)>0){
+			
+			$ukuran = (int)$rows[0]->ukuran;
+			$arr_tipe = explode(",", $rows[0]->tipe);
+			
+			if(!empty($_FILES)) {
+				$file_name = $_FILES['file']['name'];
+				$tempFile = $_FILES['file']['tmp_name'];
+				$targetFile = $targetFolder.$file_name;
+				$fileTypes = $arr_tipe; // File extensions
+				$fileParts = pathinfo($_FILES['file']['name']);
+				$fileSize = $_FILES['file']['size'];
+				//type file sesuai..??	
+				if(in_array($fileParts['extension'],$fileTypes)) {
+					
+					//isi kosong..??
+					if($fileSize>0){
+						
+						if($fileSize<=$ukuran*1000000){
+							
+							$now = new \DateTime();
+							$tglupload = $now->format('YmdHis');
+							
+							$file_name_baru = md5($tglupload).'.'.$fileParts['extension'];
+							move_uploaded_file($tempFile,$targetFolder.$file_name_baru);
+							
+							if(file_exists($targetFolder.$file_name_baru)){
+								
+								session(array('upload_lampiran'=>$file_name_baru));
+								return '1';
+								
+							}
+							else{
+								return 'File gagal diupload!';
+							}
+							
+						}
+						else{
+							return 'File melebihi batas ukuran maksimal!';
+						}
+						
+					}
+					else{
+						return 'Isi file kosong, periksa data anda.';
+					}
+				}
+				else{
+					return 'Tipe file tidak sesuai.';
+				}
+			}
+			else{
+				return 'Tidak ada file yang diupload.';
+			}
+			
+		}
+		else{
+			return 'Setting dokumen tidak ditemukan!';
+		}
+	}
+	
+	public function uploadSimpan(Request $request)
+	{
+		DB::beginTransaction();
+		
+		if(session('upload_lampiran')!=='' && session('upload_lampiran')!==null){
+			
+			$delete = DB::delete("
+				delete from d_trans_dok
+				where id_trans=? and id_dok=?
+			",[
+				$request->input('id_trans'),
+				$request->input('id_dok'),
+			]);
+			
+			$insert = DB::insert("
+				insert into d_trans_dok(id_trans,id_dok,nmfile)
+				values(?,?,?)
+			",[
+				$request->input('id_trans'),
+				$request->input('id_dok'),
+				session('upload_lampiran')
+			]);
+			
+			if($insert) {
+				DB::commit();
+				session(array('upload_lampiran'=>null));
+				return 'success';
+			}
+			else {
+				return 'Proses hapus gagal. Hubungi Administrator.';
+			}
+			
+		}
+		else{
+			return 'Lampiran belum diupload!';
+		}
+	}
+	
+	public function download(Request $request, $id)
+	{
+		$rows = DB::select("
+			select	*
+			from d_trans_dok
+			where id=?
+		",[
+			$id
+		]);
+		
+		if(count($rows)>0){
+			
+			$log = 'data/lampiran/'.$rows[0]->nmfile;
+			
+			header('Content-Description:Lampiran Transaksi');
+			header('Content-Disposition:attachment;filename=' . basename($log));
+			header('Content-Transfer-Encoding:binary');
+			header('Expires:0');
+			header('Cahce-Control:must-revalidate');
+			header('Pragma:public');
+			header('Content-Length:'.filesize($log));
+			readfile($log);
+			
+		}
+		else{
+			return 'Dokumen tidak ditemukan!';
+		}
 	}
 	
 }

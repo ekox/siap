@@ -106,6 +106,12 @@
 									<label id="warning-uraian" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="uraian">Lampiran </label>
+									<div class="col-md-7" id="div-lampiran">
+	                            		
+	                            	</div>
+		                        </div>
+								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="status1">Status </label>
 									<div class="col-md-7">
 	                            		<select id="status1" name="status1" class="form-control chosen">
@@ -295,7 +301,8 @@
 					jQuery('#tgjtempo').val(result.message.tgjtempo);
 					jQuery('#uraian').val(result.message.uraian);
 					jQuery('#nilai').val(digit_grouping(result.message.nilai));
-					jQuery('#status1').html(result.dropdown).trigger('chosen:updated');					
+					jQuery('#status1').html(result.dropdown).trigger('chosen:updated');
+					jQuery('#div-lampiran').html(result.lampiran);
 				}
 				else{
 					alertify.log(result.message);

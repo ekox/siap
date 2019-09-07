@@ -64,6 +64,7 @@
 	                            	<label class="col-md-2 label-control" for="kdtran">Debet </label>
 									<div class="col-md-7">
 	                            		<select id="debet" name="debet" class="form-control chosen">
+											<option value="" style="display:none;">Pilih Data</option>
 										</select>
 	                            	</div>
 									<label id="warning-debet" class="col-md-2 label-control label-warning warning">required!</label>
@@ -72,6 +73,7 @@
 	                            	<label class="col-md-2 label-control" for="kdtran">Kredit </label>
 									<div class="col-md-7">
 	                            		<select id="kredit" name="kredit" class="form-control chosen">
+											<option value="" style="display:none;">Pilih Data</option>
 										</select>
 	                            	</div>
 									<label id="warning-kredit" class="col-md-2 label-control label-warning warning">required!</label>
@@ -204,7 +206,7 @@
 			jQuery('#id_alur').html(result).trigger('chosen:updated');
 		});
 		
-		jQuery.get('dropdown/pelanggan', function(result){
+		jQuery.get('dropdown/penerima', function(result){
 			jQuery('#id_pelanggan').html(result).trigger('chosen:updated');
 		});
 		
@@ -366,7 +368,7 @@
 		jQuery('#simpan').click(function(){
 			jQuery(this).html('<span class="loading"><i class="fa fa-refresh"></i> Loading.....</span>');
 			jQuery(this).prop('disabled',true);
-			var next = form_valid('kdunit,id_alur,id_pelanggan,kdtran,nopks,tgpks,uraian,tgjtempo,nilai');
+			var next = form_valid('kdunit,id_alur,id_pelanggan,kdtran,nopks,tgpks,uraian,tgjtempo,nilai,debet,kredit');
 			if(next==true){
 				jQuery.get('token', function(token){
 					if(token){

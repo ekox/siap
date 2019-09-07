@@ -50,6 +50,101 @@ class DropdownController extends Controller {
 		
 	}
 	
+	public function dok($id_trans)
+	{
+		$rows = DB::select("
+			select  b.*
+			from t_alur_dok a
+			left outer join t_dok b on(a.id_dok=b.id)
+			where a.id_alur=(
+				select	id_alur
+				from d_trans
+				where id=?
+			)
+			order by b.id asc
+		",[
+			$id_trans
+		]);
+		
+		$data = '<option value="" style="display:none;">Pilih Data</option>';
+		foreach($rows as $row){
+			$data .= '<option value="'.$row->id.'">'.$row->uraian.'</option>';
+		}
+		
+		return $data;
+		
+	}
+	
+	public function dokTransaksi($id_dok)
+	{
+		$rows = DB::select("
+			select  b.id,
+					b.uraian,
+					b.ukuran,
+					b.tipe
+			from t_dok b
+			where b.id=?
+			order by b.id asc
+		",[
+			$id_dok
+		]);
+		
+		$data = '';
+		foreach($rows as $row){
+			$data .= '<div class="form-group row">
+						<label class="col-md-2 label-control" for="uraian">'.$row->uraian.' ('.$row->ukuran.'MB|'.$row->tipe.')</label>
+						<div class="col-md-9">
+							<span class="btn btn-primary fileinput-button">
+								<i class="fa fa-upload"></i>
+								<span>Browse File</span>
+								<input id="fileupload'.$row->id.'" type="file" name="file">
+							</span>
+							<!-- The global progress bar -->
+							<div id="files'.$row->id.'" class="files"></div>
+							<div id="progress'.$row->id.'" class="progress">
+								<div class="progress-bar progress-bar-danger"></div>
+							</div>
+						</div>
+					</div>';
+					
+			$data .= "
+					<script>
+						jQuery('#fileupload".$row->id."').click(function(){
+							jQuery('#progress".$row->id." .progress-bar').css('width', 0);
+							jQuery('#progress".$row->id." .progress-bar').html('');
+							jQuery('#nmfile".$row->id."').html('');
+						});
+						
+						jQuery.get('token', function(result){
+							
+							//upload adk
+							jQuery('#fileupload".$row->id."').fileupload({
+								url:'penerimaan/rekam/upload/".$row->id."',
+								dataType: 'json',
+								formData:{
+									_token: result
+								},
+								done: function (e, data) {
+									jQuery('#nmfile".$row->id."').html(data.files[0].name);
+									alertify.log('Data berhasil diupload!');
+								},
+								error: function(error) {
+									alertify.log(error.responseText);
+								},
+								progressall: function (e, data) {
+									var progress = parseInt(data.loaded / data.total * 100, 10);
+									jQuery('#progress".$row->id." .progress-bar').css('width',progress + '%');
+								}
+							}).prop('disabled', !$.support.fileInput)
+							  .parent().addClass($.support.fileInput ? undefined : 'disabled');
+							
+						});
+					</script>";
+		}
+		
+		return $data;
+	}
+	
 	public function output()
 	{
 		$rows = DB::select("
@@ -198,7 +293,7 @@ class DropdownController extends Controller {
 		$rows = DB::select("
 			select	*
 			from t_alur
-			where id in(1)
+			where menu=1
 			order by id asc
 		");
 		
@@ -216,7 +311,43 @@ class DropdownController extends Controller {
 		$rows = DB::select("
 			select	*
 			from t_alur
-			where id in(2,3)
+			where menu=2
+			order by id asc
+		");
+		
+		$data = '<option value="" style="display:none;">Pilih Data</option>';
+		foreach($rows as $row){
+			$data .= '<option value="'.$row->id.'"> '.$row->nmalur.'</option>';
+		}
+		
+		return $data;
+		
+	}
+	
+	public function alurUmk()
+	{
+		$rows = DB::select("
+			select	*
+			from t_alur
+			where menu=3
+			order by id asc
+		");
+		
+		$data = '<option value="" style="display:none;">Pilih Data</option>';
+		foreach($rows as $row){
+			$data .= '<option value="'.$row->id.'"> '.$row->nmalur.'</option>';
+		}
+		
+		return $data;
+		
+	}
+	
+	public function alurPengeluaran()
+	{
+		$rows = DB::select("
+			select	*
+			from t_alur
+			where menu=4
 			order by id asc
 		");
 		
