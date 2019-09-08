@@ -29,7 +29,7 @@ class PembukuanJurnalController extends Controller {
 
 						union all
 
-						select  to_char(b.tgbukti,'DD-MM-YYYY') as tgtrans,
+						select  to_char(b.tgdok,'DD-MM-YYYY') as tgtrans,
 								'Transaksi' as jenis,
 								a.id_trans,
 								c.kdlap,
