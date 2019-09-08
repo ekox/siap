@@ -147,6 +147,42 @@ Route::group(['middleware' => 'auth'], function(){
 		
 	});
 	
+	//pengeluaran
+	Route::group(['prefix' => 'pengeluaran'], function () {
+		
+		Route::group(['prefix' => 'monitoring'], function () {
+			
+			Route::get('', 'PengeluaranProsesController@monitoring');
+			
+		});
+		
+		Route::group(['prefix' => 'proses'], function () {
+			
+			Route::get('', 'PengeluaranProsesController@index');
+			Route::get('/pilih/{param}', 'PengeluaranProsesController@pilih');
+			Route::post('', 'PengeluaranProsesController@simpan');
+			
+		});
+		
+		Route::group(['prefix' => 'rekam'], function () {
+			
+			Route::get('', 'PengeluaranRekamController@index');
+			Route::get('/pilih/{param}', 'PengeluaranRekamController@pilih')->middleware('role:11');
+			Route::get('/nomor', 'PengeluaranRekamController@nomor')->middleware('role:11');
+			Route::get('/tagihan/{param}', 'PengeluaranRekamController@tagihan');
+			Route::get('/detil/{param}', 'PengeluaranRekamController@detil');
+			Route::get('/download/{param}', 'PengeluaranRekamController@download')->middleware('role:11');
+			Route::get('/upload/{param}', 'PengeluaranRekamController@dok')->middleware('role:11');
+			Route::post('', 'PengeluaranRekamController@simpan')->middleware('role:11');
+			Route::post('/hapus', 'PengeluaranRekamController@hapus')->middleware('role:11');
+			Route::post('/upload/{param}', 'PengeluaranRekamController@upload')->middleware('role:11');
+			Route::post('/upload-simpan', 'PengeluaranRekamController@uploadSimpan')->middleware('role:11');
+			Route::post('/hapus-dok', 'PengeluaranRekamController@hapusDok')->middleware('role:11');
+			
+		});
+		
+	});
+	
 	//transaksi
 	Route::group(['prefix' => 'transaksi'], function () {
 		
@@ -225,6 +261,7 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get('/alur-tagihan', 'DropdownController@alurTagihan');
 		Route::get('/alur-penerimaan', 'DropdownController@alurPenerimaan');
 		Route::get('/alur-umk', 'DropdownController@alurUmk');
+		Route::get('/alur-pengeluaran', 'DropdownController@alurPengeluaran');
 		Route::get('/penerima', 'DropdownController@penerima');
 		Route::get('/bank', 'DropdownController@bank');
 		Route::get('/lap', 'DropdownController@lap');
