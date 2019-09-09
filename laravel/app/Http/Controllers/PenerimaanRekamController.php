@@ -34,7 +34,7 @@ class PenerimaanRekamController extends Controller {
 						select	id_trans,
 								sum(nilai) as nilai
 						from d_trans_akun
-						where kddk='D'
+						where kddk='D' and grup is null
 						group by id_trans
 					) f on(a.id=f.id_trans)
 					left outer join(

@@ -42,7 +42,7 @@ class PenerimaanProsesController extends Controller {
 							select	id_trans,
 									sum(nilai) as nilai
 							from d_trans_akun
-							where kddk='D'
+							where kddk='D' and grup is null
 							group by id_trans
 						) f on(a.id=f.id_trans)
 						where b.menu=2 and a.thang='".session('tahun')."' and c.kdlevel='".session('kdlevel')."'
@@ -191,7 +191,7 @@ class PenerimaanProsesController extends Controller {
 						select	id_trans,
 								sum(nilai) as nilai
 						from d_trans_akun
-						where kddk='D'
+						where kddk='D' and grup is null
 						group by id_trans
 					) f on(a.id=f.id_trans)
 					where b.menu=2 and a.thang='".session('tahun')."'
@@ -327,7 +327,9 @@ class PenerimaanProsesController extends Controller {
 					nvl(f.nmakun,0) as debet,
 					nvl(i.nmakun,0) as kredit,
 					a.id_alur,
-					a.status
+					a.status,
+					nvl(j.nilai,0) as pajak,
+					nvl(g.nilai,0)-nvl(j.nilai,0) as total
 			from d_trans a
 			left outer join t_alur b on(a.id_alur=b.id)
 			left outer join t_unit c on(a.kdunit=c.kdunit)
@@ -338,7 +340,7 @@ class PenerimaanProsesController extends Controller {
 						kdakun,
 						nilai
 				from d_trans_akun
-				where kddk='D'
+				where kddk='D' and grup is null
 			) g on(a.id=g.id_trans)
 			left outer join(
 				select	id_trans,
@@ -347,6 +349,13 @@ class PenerimaanProsesController extends Controller {
 				from d_trans_akun
 				where kddk='K'
 			) h on(a.id=h.id_trans)
+			left outer join(
+				select  a.id_trans,
+						sum(a.nilai) as nilai
+				from d_trans_akun a
+				where substr(a.kdakun,1,1)='7'
+				group by a.id_trans
+			) j on(a.id=j.id_trans)
 			left outer join t_akun f on(g.kdakun=f.kdakun)
 			left outer join t_akun i on(h.kdakun=i.kdakun)
 			where a.id=?
@@ -357,6 +366,7 @@ class PenerimaanProsesController extends Controller {
 		if(count($rows)>0){
 			
 			$id_alur = $rows[0]->id_alur;
+			$status = $rows[0]->status;
 			$detil = $rows[0];
 			$data['error'] = false;
 			$data['message'] = $detil;
@@ -367,11 +377,12 @@ class PenerimaanProsesController extends Controller {
 				where id_alur_status=(
 					select id
 					from t_alur_status
-					where id_alur=? and status=1
+					where id_alur=? and status=?
 				)
 				order by nourut asc
 			",[
-				$id_alur
+				$id_alur,
+				$status
 			]);
 			
 			$status = '<option value="">Pilih Data</option>';
@@ -435,15 +446,19 @@ class PenerimaanProsesController extends Controller {
 				
 				$lanjut = true;
 				
-				if($rows[0]->is_valid=='1'){
+				if($rows[0]->is_pajak=='1'){
 					
-					if(count($request->input('pilih'))>0){
-						
-						
-						
-					}
-					else{
+					$rows_pajak = DB::select("
+						select	id
+						from d_trans_akun
+						where id_trans=? and substr(kdakun,1,1)='7'
+					",[
+						$request->input('inp-id')
+					]);
+					
+					if(count($rows_pajak)==0){
 						$lanjut = false;
+						$error = $rows[0]->ket;
 					}
 					
 				}
@@ -494,7 +509,7 @@ class PenerimaanProsesController extends Controller {
 					
 				}
 				else{
-					return 'Anda belum melakukan validasi data!';
+					return $error;
 				}
 				
 			}

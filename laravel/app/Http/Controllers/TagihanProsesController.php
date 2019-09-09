@@ -357,6 +357,7 @@ class TagihanProsesController extends Controller {
 		if(count($rows)>0){
 			
 			$id_alur = $rows[0]->id_alur;
+			$status = $rows[0]->status;
 			$detil = $rows[0];
 			$data['error'] = false;
 			$data['message'] = $detil;
@@ -367,11 +368,12 @@ class TagihanProsesController extends Controller {
 				where id_alur_status=(
 					select id
 					from t_alur_status
-					where id_alur=? and status=1
+					where id_alur=? and status=?
 				)
 				order by nourut asc
 			",[
-				$id_alur
+				$id_alur,
+				$status
 			]);
 			
 			$status = '<option value="">Pilih Data</option>';

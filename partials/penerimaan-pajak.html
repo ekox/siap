@@ -9,7 +9,7 @@
 	
 	<div class="row">
         <div class="col-sm-12">
-            <div class="content-header">Penerimaan/ Proses</div>
+            <div class="content-header">Penerimaan/ Hitung Pajak</div>
         </div>
     </div>
 	
@@ -71,25 +71,11 @@
 									<label id="warning-kredit" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="nilai">Nilai Bruto</label>
+	                            	<label class="col-md-2 label-control" for="nilai">Nilai </label>
 									<div class="col-md-7">
 	                            		<input id="nilai" name="nilai" class="form-control" readonly style="text-align:right;">
 	                            	</div>
 									<label id="warning-nilai" class="col-md-2 label-control label-warning warning">required!</label>
-		                        </div>
-								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="nilai">Nilai Pajak</label>
-									<div class="col-md-7">
-	                            		<input id="pajak" name="pajak" class="form-control" readonly style="text-align:right;">
-	                            	</div>
-									<label id="warning-pajak" class="col-md-2 label-control label-warning warning">required!</label>
-		                        </div>
-								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="nilai">Nilai Netto</label>
-									<div class="col-md-7">
-	                            		<input id="total" name="total" class="form-control" readonly style="text-align:right;">
-	                            	</div>
-									<label id="warning-total" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="nopks">No.PKS </label>
@@ -126,19 +112,19 @@
 	                            	</div>
 		                        </div>
 								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="status1">Status </label>
+	                            	<label class="col-md-2 label-control" for="pajak">Kode Pajak</label>
 									<div class="col-md-7">
-	                            		<select id="status1" name="status1" class="form-control chosen">
+	                            		<select id="pajak" name="pajak" class="form-control chosen">
 										</select>
 	                            	</div>
-									<label id="warning-status1" class="col-md-2 label-control label-warning warning">required!</label>
+									<label id="warning-pajak" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="ket">Keterangan </label>
+	                            	<label class="col-md-2 label-control" for="nilai1">Nilai Pajak </label>
 									<div class="col-md-7">
-	                            		<textarea id="ket" name="ket" class="form-control" maxlength="4000"></textarea>
+	                            		<input id="nilai1" name="nilai1" class="form-control val_num" style="text-align:right;">
 	                            	</div>
-									<label id="warning-ket" class="col-md-2 label-control label-warning warning">required!</label>
+									<label id="warning-nilai1" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								
 							</div>
@@ -180,11 +166,10 @@
 										<th>Divisi</th>
 										<th>Pelanggan</th>
 										<th>Transaksi</th>
-										<th>Nomor/ Tgl.PKS</th>
-										<th>Jatuh Tempo</th>
 										<th>Uraian</th>
-										<th>Nilai</th>
-										<th>Proses/ Posisi/ Status</th>
+										<th>Nilai Bruto</th>
+										<th>Pajak</th>
+										<th>Nilai Netto</th>
 										<th>Aksi</th>
 									</tr>
 								</thead>
@@ -216,6 +201,8 @@
 			}
 			return x1 + x2;
 		}
+		
+		jQuery('.val_num').mask('000,000,000,000,000', {reverse: true});
 		
 		//aktivasi chosen
 		jQuery('.chosen').chosen();
@@ -268,12 +255,11 @@
 				{},
 				{},
 				{},
-				{},
 				{}
 			],
 			bServerSide: true,
 			ajax:{
-				url: "penerimaan/proses", // Change this URL to where your json data comes from
+				url: "penerimaan/pajak", // Change this URL to where your json data comes from
 				type: "GET"
 			},
 			fnCreatedRow: function( nRow, aData, iDataIndex ) {
@@ -297,7 +283,7 @@
 		//cari data user yang akan di edit berdasarkan id user
 		function cari_data(id){
 			jQuery('.chosen').val('').trigger('chosen:updated');
-			jQuery.getJSON('penerimaan/proses/pilih/'+id, function(result){
+			jQuery.getJSON('penerimaan/pajak/pilih/'+id, function(result){
 				if(result.error==false) {
 					jQuery('#inp-id').val(id);
 					jQuery('#inp-rekambaru').val('0');
@@ -315,10 +301,8 @@
 					jQuery('#tgjtempo').val(result.message.tgjtempo);
 					jQuery('#uraian').val(result.message.uraian);
 					jQuery('#nilai').val(digit_grouping(result.message.nilai));
-					jQuery('#pajak').val(digit_grouping(result.message.pajak));
-					jQuery('#total').val(digit_grouping(result.message.total));
-					jQuery('#status1').html(result.dropdown).trigger('chosen:updated');
 					jQuery('#div-lampiran').html(result.lampiran);
+					jQuery('#pajak').html(result.pajak).trigger('chosen:updated');
 				}
 				else{
 					alertify.log(result.message);
@@ -343,14 +327,14 @@
 		jQuery('#simpan').click(function(){
 			jQuery(this).html('<span class="loading"><i class="fa fa-refresh"></i> Loading.....</span>');
 			jQuery(this).prop('disabled',true);
-			var next = form_valid('inp-id,id_alur,status,status1');
+			var next = form_valid('inp-id,pajak,nilai1');
 			if(next==true){
 				jQuery.get('token', function(token){
 					if(token){
 						jQuery('#_token').val(token);
 						var data = jQuery('#form-ruh').serialize();
 						jQuery.ajax({
-							url: 'penerimaan/proses',
+							url: 'penerimaan/pajak',
 							method: 'POST',
 							data: data,
 							success: function(result){
@@ -385,6 +369,39 @@
 				jQuery('#simpan').prop('disabled',false);
 				alertify.log('Data tidak dapat dikosongkan!');
 			}
+		});
+		
+		jQuery('body').off('click', '.hapus-pajak').on('click', '.hapus-pajak', function(){
+			var id = this.id;
+			alertify.confirm('Hapus pajak ini?', function(c){
+				if(c) {
+					jQuery.get('token', function(token){
+						if(token) {
+							jQuery.ajax({
+								url:'penerimaan/pajak/hapus',
+								method:'POST',
+								data:{
+									_token:token, 
+									id:id
+								},
+								success:function(result){
+									if(result=='success') {
+										alertify.log('Proses hapus berhasil.');
+										table.ajax.reload();
+									} else {
+										alertify.log(result);
+									}
+								},
+								error:function(result){
+									alertify.log('Koneksi pada aplikasi/database terputus. Hubungi Administrator.');
+								}
+							});
+						} else {
+							alertify.log('Proses hapus gagal. Silahkan refresh halaman browser anda.');
+						} 
+					});
+				} 
+			});
 		});
 		
 	});
