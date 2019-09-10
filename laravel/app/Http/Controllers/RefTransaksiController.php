@@ -32,11 +32,11 @@ class RefTransaksiController extends Controller {
 		 * Paging
 		 */ 
 		$sLimit = " ";
-		if((isset($_GET['iDisplayStart']))&&(isset($_GET['iDisplayLength']))){
-			$iDisplayStart=$_GET['iDisplayStart']+1;
-			$iDisplayLength=$_GET['iDisplayLength'];
-			$sSearch=$_GET['sSearch'];
-			if ((isset( $iDisplayStart )) &&  ($iDisplayLength != '-1' )) 
+		if((isset($_GET['start']))&&(isset($_GET['length']))){
+			$iDisplayStart=$_GET['start']+1;
+			$iDisplayLength=$_GET['length'];
+			$sSearch=$_GET['search'];
+			if ((isset($sSearch)) && (isset( $iDisplayStart )) &&  ($iDisplayLength != '-1' )) 
 			{
 				$iDisplayEnd=$iDisplayStart+$iDisplayLength-1;
 				$sLimit = " WHERE NO BETWEEN '$iDisplayStart' AND '$iDisplayEnd'";
@@ -47,19 +47,19 @@ class RefTransaksiController extends Controller {
 		 * Ordering
 		 */
 		$sOrder = " ";
-		if((isset($_GET['iSortCol_0']))&&(isset($_GET['sSortDir_0']))){
-			$iSortCol_0=$_GET['iSortCol_0'];
-			$iSortDir_0=$_GET['sSortDir_0'];
+		if((isset($_GET['order'][0]['column']))&&(isset($_GET['order'][0]['dir']))){
+			$iSortCol_0=$_GET['order'][0]['column'];
+			$iSortDir_0=$_GET['order'][0]['dir'];
 			if ( isset($iSortCol_0  ) )
-			{		
+			{
 				//modified ordering
 				for($i=0;$i<count($aColumns);$i++){
 					if($iSortCol_0==$i){
 						if($iSortDir_0=='asc'){
-							$sOrder = " ORDER BY ".$aColumns[$i]." DESC ";
+							$sOrder = " ORDER BY ".$aColumns[$i]." ASC ";
 						}
 						else{
-							$sOrder = " ORDER BY ".$aColumns[$i]." ASC ";
+							$sOrder = " ORDER BY ".$aColumns[$i]." DESC ";
 						}
 					}
 				}
@@ -68,8 +68,8 @@ class RefTransaksiController extends Controller {
 		
 		//modified filtering
 		$sWhere="";
-		if(isset($_GET['sSearch'])){
-			$sSearch=$_GET['sSearch'];
+		if(isset($_GET['search']['value'])){
+			$sSearch=$_GET['search']['value'];
 			if((isset($sSearch))&&($sSearch!='')){
 				$sWhere=" where lower(nmtrans) like lower('".$sSearch."%') or lower(nmtrans) like lower('%".$sSearch."%')";
 			}

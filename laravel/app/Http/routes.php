@@ -352,6 +352,15 @@ Route::group(['middleware' => 'auth'], function(){
 			
 		});
 		
+		Route::group(['prefix' => 'alur'], function(){
+			
+			Route::get('', 'RefAlurController@index');
+			Route::get('/pilih/{param}', 'RefAlurController@pilih')->middleware('role:00');
+			Route::post('', 'RefAlurController@simpan')->middleware('role:00');
+			Route::post('/hapus', 'RefAlurController@hapus')->middleware('role:00');
+			
+		});
+		
 	});
 
 });
