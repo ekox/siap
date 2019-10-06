@@ -245,26 +245,9 @@
 			        "sortDescending": ": aktifkan untuk mengurutkan kolom (desc)"
 			    }
 			},
-			"columns": [
-				{},
-				{},
-				{},
-				{},
-				{},
-				{},
-				{},
-				{},
-				{},
-				{}
-			],
+			aaSorting: [],
 			bServerSide: true,
-			ajax:{
-				url: "pengeluaran/proses", // Change this URL to where your json data comes from
-				type: "GET"
-			},
-			fnCreatedRow: function( nRow, aData, iDataIndex ) {
-				jQuery(nRow).attr('id', aData[0]);
-			}
+			sAjaxSource: "pengeluaran/rekam"
 		});
 		
 		//validasi isian form
