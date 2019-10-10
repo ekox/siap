@@ -20,6 +20,13 @@ Route::group(['middleware' => 'auth'], function(){
 	Route::get('cek/level', 'AuthenticateController@cek_level');
 	Route::get('hapus/sesi/upload', 'AuthenticateController@hapus_sesi_upload');
 	
+	//Beranda
+	Route::group(['prefix' => 'home'], function(){
+		
+		Route::get('total', 'HomeController@total');
+		
+	});
+	
 	//Profile
 	Route::group(['prefix' => 'profile'], function(){
 		
