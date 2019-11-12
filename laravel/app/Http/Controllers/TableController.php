@@ -9,7 +9,8 @@ use App\Http\Controllers\Controller;
 
 class TableController extends Controller
 {
-    //
+
+    //wite code below
     //properties of class
     public static $css_style = '<style>
 		.ac {text-align:center;}
@@ -40,24 +41,34 @@ class TableController extends Controller
 	public $tahun;
 
 	// methods of class
+
+	/**
+	 * constructor 
+	 */
 	public function __construct()
 	{
-		
+		//wride code below
 	}
 
+	/**
+	 * SETTER 
+	 */
     public function setReportName($rName)
     {
 		$this->reportName = $rName;
     }
-    
+
+    /**
+	 * GETTER 
+	 */
     public function getReportName()
 	{
 		return $this->reportName;
 	}
 
-	//formatting number
 	/**
-	 * description 
+	/**
+	 * formatting number 
 	 */
 	public static function fornum($number)
 	{
@@ -71,9 +82,8 @@ class TableController extends Controller
 		return $number;
 	}
 
-	//check variabel type
 	/**
-	 * description 
+	 * check variabel type
 	 */
 	public static function cFmt($var)
 	{
@@ -98,7 +108,7 @@ class TableController extends Controller
 	}
 
 	/**
-	 * description 
+	 * header Of Report 
 	 */
 	public function headerOfReport($namaLaporan)
 	{
@@ -121,4 +131,29 @@ class TableController extends Controller
 		
 		return $html_out;
 	}
+
+	/**
+	 * description 
+	 */
+	public static function rowContent(Array $arr)
+	{
+		$n = count($arr);
+		
+		$html_out = '<tr>';
+
+		for($i = 0; $i < $n; $i++) {
+
+			if(is_numeric($arr[$i])) {
+				$html_out .= '<td class="pad2 ar">'. self::cFmt($arr[$i]) .'</td>';
+			} else {
+				$html_out .= '<td class="pad2">'. self::cFmt($arr[$i]) .'</td>';
+			}
+			
+		} 
+		
+		$html_out .= '</tr>';
+		
+		return $html_out;
+	}
+
 }

@@ -28,7 +28,9 @@ class Labarugi extends Model
 			  SELECT periode,
 					 kdakun1,
 					 'PENDAPATAN' AS nmakun1,
-					 SUM (kredit) AS nilai
+					 SUM (debet) AS debet,
+					 SUM (kredit) AS kredit,
+					 SUM ((debet-kredit)) AS nilai
 				FROM (  SELECT b.thang AS tahun,
 							   b.periode,
 							   SUBSTR (b.kdakun, 1, 1) kdakun1,
@@ -42,7 +44,7 @@ class Labarugi extends Model
 						 WHERE SUBSTR (b.kdakun, 1, 1) = '4'
 					  ORDER BY kdakun1,
 							   kdakun2,
-							   kdakun3,
+							   kdakun3, 
 							   kdakun)
 			   WHERE tahun = ?
 			GROUP BY periode, kdakun1, 'PENDAPATAN'
