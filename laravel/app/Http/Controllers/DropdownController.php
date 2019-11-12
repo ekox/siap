@@ -443,7 +443,7 @@ class DropdownController extends Controller {
 		$rows = DB::select("
 			select	*
 			from t_akun
-			where kddk is not null ".$and."
+			where lvl = 6 ".$and."
 			order by kdakun asc
 		");
 		

@@ -264,6 +264,7 @@ Route::group(['middleware' => 'auth'], function(){
 
 		Route::get('/laba-rugi', 'LaporanKeuanganController@incomeStatement');
 		Route::get('/neraca', 'LaporanKeuanganController@balanceSheet');
+		Route::get('/mutasi-ekuitas', 'LaporanKeuanganController@testing');
 	});
 	
 	//route for Dropdown
