@@ -9,7 +9,7 @@ class TagihanProsesController extends Controller {
 
 	public function index(Request $request)
 	{
-		$aColumns = array('id','nmunit','nama','nmtrans','pks','tgjtempo','uraian','nilai','status');
+		$aColumns = array('id','nmunit','nama','nmtrans','pks','nilai','status');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
 		/* DB table to use */
@@ -21,9 +21,8 @@ class TagihanProsesController extends Controller {
 								h.nmtrans,
 								a.nodok||'<br>'||to_char(a.tgdok,'dd-mm-yyyy') as pks,
 								to_char(a.tgdok1,'dd-mm-yyyy') as tgjtempo,
-								a.uraian,
 								nvl(f.nilai,0) as nilai,
-								b.nmalur||'<br>'||g.nmlevel||'<br>'||c.nmstatus as status,
+								c.nmstatus as status,
 								decode(c.is_unit,null,
 									1,
 									decode(substr(a.kdunit,1,c.is_unit),'".session('kdlevel')."',
@@ -154,8 +153,6 @@ class TagihanProsesController extends Controller {
 				$row->nama,
 				$row->nmtrans,
 				$row->pks,
-				$row->tgjtempo,
-				$row->uraian,
 				'<div style="text-align:right;">'.number_format($row->nilai).'</div>',
 				$row->status,
 				$aksi
@@ -167,7 +164,7 @@ class TagihanProsesController extends Controller {
 	
 	public function monitoring(Request $request)
 	{
-		$aColumns = array('id','nmunit','nama','nmtrans','pks','tgjtempo','uraian','nilai','status');
+		$aColumns = array('id','nmunit','nama','nmtrans','pks','nilai','status');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
 		/* DB table to use */
@@ -177,9 +174,8 @@ class TagihanProsesController extends Controller {
 							h.nmtrans,
 							a.nodok||'<br>'||to_char(a.tgdok,'dd-mm-yyyy') as pks,
 							to_char(a.tgdok1,'dd-mm-yyyy') as tgjtempo,
-							a.uraian,
 							nvl(f.nilai,0) as nilai,
-							b.nmalur||'<br>'||g.nmlevel||'<br>'||c.nmstatus as status
+							g.nmlevel||'/ '||c.nmstatus as status
 					from d_trans a
 					left outer join t_alur b on(a.id_alur=b.id)
 					left outer join t_alur_status c on(a.id_alur=c.id_alur and a.status=c.status)
@@ -195,6 +191,7 @@ class TagihanProsesController extends Controller {
 						group by id_trans
 					) f on(a.id=f.id_trans)
 					where b.menu=1 and a.thang='".session('tahun')."'
+					order by a.id desc
 					";
 		
 		/*
@@ -300,8 +297,6 @@ class TagihanProsesController extends Controller {
 				$row->nama,
 				$row->nmtrans,
 				$row->pks,
-				$row->tgjtempo,
-				$row->uraian,
 				'<div style="text-align:right;">'.number_format($row->nilai).'</div>',
 				$row->status,
 				$aksi

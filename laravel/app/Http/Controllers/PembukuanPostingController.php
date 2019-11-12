@@ -162,14 +162,14 @@ class PembukuanPostingController extends Controller {
 
 					union all
 
-					select  to_char(b.tgbukti,'YYYY') as thang,
-							to_char(b.tgbukti,'MM') as periode,
+					select  to_char(b.tgdok,'YYYY') as thang,
+							to_char(b.tgdok,'MM') as periode,
 							a.kdakun,
 							a.kddk,
 							a.nilai
 					from d_trans_akun a
 					left outer join d_trans b on(a.id_trans=b.id)
-					where b.thang='".session('tahun')."' and b.tgbukti<=last_day(to_date('01/".$periode."/".session('tahun')."','DD/MM/YYYY'))
+					where b.thang='".session('tahun')."' and b.tgdok<=last_day(to_date('01/".$periode."/".session('tahun')."','DD/MM/YYYY'))
 				) a
 				group by a.thang,
 						a.periode,

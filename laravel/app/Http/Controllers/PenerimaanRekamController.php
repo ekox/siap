@@ -9,7 +9,7 @@ class PenerimaanRekamController extends Controller {
 
 	public function index(Request $request)
 	{
-		$aColumns = array('id','nmunit','nama','nmtrans','pks','tgjtempo','uraian','nilai','status','lampiran');
+		$aColumns = array('id','nmunit','nama','nmtrans','pks','tgjtempo','nilai','status','lampiran');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
 		/* DB table to use */
@@ -21,7 +21,7 @@ class PenerimaanRekamController extends Controller {
 							to_char(a.tgdok1,'dd-mm-yyyy') as tgjtempo,
 							a.uraian,
 							nvl(f.nilai,0) as nilai,
-							b.nmalur||'<br>'||g.nmlevel||'<br>'||c.nmstatus as status,
+							c.nmstatus as status,
 							i.lampiran
 					from d_trans a
 					left outer join t_alur b on(a.id_alur=b.id)
@@ -177,7 +177,6 @@ class PenerimaanRekamController extends Controller {
 				$row->nama,
 				$row->nmtrans,
 				$row->pks,
-				$row->uraian,
 				'<div style="text-align:right;">'.number_format($row->nilai).'</div>',
 				$row->status,
 				$lampiran,
