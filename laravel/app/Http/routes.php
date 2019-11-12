@@ -267,6 +267,13 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get('/mutasi-ekuitas', 'LaporanKeuanganController@testing');
 	});
 	
+	//laporan
+	Route::group(['prefix' => 'laporan'], function () {
+		
+		Route::get('/keuangan/{param}', 'LaporanController@keuangan');
+		
+	});
+	
 	//route for Dropdown
 	Route::group(['prefix' => 'dropdown'], function(){
 		
