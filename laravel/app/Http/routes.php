@@ -258,6 +258,13 @@ Route::group(['middleware' => 'auth'], function(){
 		});
 		
 	});
+
+	//route for Reporting
+	Route::group(['prefix' => 'laporan'], function() {
+
+		Route::get('/laba-rugi', 'LaporanKeuanganController@incomeStatement');
+		Route::get('/neraca', 'LaporanKeuanganController@balanceSheet');
+	});
 	
 	//laporan
 	Route::group(['prefix' => 'laporan'], function () {
@@ -294,6 +301,7 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get('/akun/debet/{param}', 'DropdownController@akun_debet');
 		Route::get('/akun/kredit/{param}', 'DropdownController@akun_kredit');
 		Route::get('/periode', 'DropdownController@periode');
+		Route::get('/tahun', 'DropdownController@tahun');
 		
 	});
 	

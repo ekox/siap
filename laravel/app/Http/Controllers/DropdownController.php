@@ -4,9 +4,12 @@ use DB;
 use Session;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use App\Dropdown;
 
 class DropdownController extends Controller {
 
+	public static $html_out = '<option value="" style="display:none;">Pilih Data</option>';
+	
 	public function index(Request $request)
 	{
 	}
@@ -551,5 +554,18 @@ class DropdownController extends Controller {
 		return $data;
 		
 	}
-	
+
+	/**
+	 * description 
+	 */
+	public function tahun()
+	{
+		$rows = Dropdown::getTahun();
+		
+		$html_out = self::$html_out;
+		foreach($rows as $row) {
+			$html_out.= '<option value="'.$row->tahun.'">'.$row->tahun.'</option>';
+		}
+		return $html_out;
+	}
 }
