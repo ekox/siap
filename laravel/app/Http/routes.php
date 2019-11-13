@@ -24,6 +24,7 @@ Route::group(['middleware' => 'auth'], function(){
 	Route::group(['prefix' => 'home'], function(){
 		
 		Route::get('total', 'HomeController@total');
+		Route::get('data', 'HomeController@data');
 		
 	});
 	

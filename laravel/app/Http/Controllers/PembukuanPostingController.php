@@ -152,6 +152,7 @@ class PembukuanPostingController extends Controller {
 						sum(decode(a.kddk,'K',a.nilai,0)) as kredit,
 						".session('id_user')." as id_user
 				from(
+					/* ambil data saldo awal */
 					select  to_char(a.tgsawal,'YYYY') as thang,
 							to_char(a.tgsawal,'MM') as periode,
 							a.kdakun,
@@ -161,7 +162,8 @@ class PembukuanPostingController extends Controller {
 					where a.thang='".session('tahun')."' and a.tgsawal<=last_day(to_date('01/".$periode."/".session('tahun')."','DD/MM/YYYY'))
 
 					union all
-
+					
+					/* ambil data transaksi berjalan */
 					select  to_char(b.tgdok,'YYYY') as thang,
 							to_char(b.tgdok,'MM') as periode,
 							a.kdakun,
@@ -170,6 +172,63 @@ class PembukuanPostingController extends Controller {
 					from d_trans_akun a
 					left outer join d_trans b on(a.id_trans=b.id)
 					where b.thang='".session('tahun')."' and b.tgdok<=last_day(to_date('01/".$periode."/".session('tahun')."','DD/MM/YYYY'))
+					
+					union all
+					
+					/* cari equitas laba */
+					select  '".session('tahun')."' as thang,
+							'".$periode."' as periode,
+							a.kdakun,
+							'D' as kddk,
+							sum(a.nilai) as nilai
+					from d_trans_akun a
+					left outer join d_trans b on(a.id_trans=b.id)
+					where   b.thang='".session('tahun')."' and
+							b.tgdok<=last_day(to_date('01/".$periode."/".session('tahun')."','DD/MM/YYYY')) and
+							substr(a.kdakun,1,1) in('4','6','8')
+					group by a.kdakun,a.kddk
+
+					union all
+
+					select  '".session('tahun')."' as thang,
+							'".$periode."' as periode,
+							'322000' as kdakun,
+							'K' as kddk,
+							sum(a.nilai) as nilai
+					from d_trans_akun a
+					left outer join d_trans b on(a.id_trans=b.id)
+					where   b.thang='".session('tahun')."' and
+							b.tgdok<=last_day(to_date('01/".$periode."/".session('tahun')."','DD/MM/YYYY')) and
+							substr(a.kdakun,1,1) in('4','6','8')
+							
+					union all
+							
+					/* cari equitas rugi */
+					select  '".session('tahun')."' as thang,
+							'".$periode."' as periode,
+							a.kdakun,
+							'K' as kddk,
+							sum(a.nilai) as nilai
+					from d_trans_akun a
+					left outer join d_trans b on(a.id_trans=b.id)
+					where   b.thang='".session('tahun')."' and
+							b.tgdok<=last_day(to_date('01/".$periode."/".session('tahun')."','DD/MM/YYYY')) and
+							substr(a.kdakun,1,1) in('5','7')
+					group by a.kdakun,a.kddk
+
+					union all
+
+					select  '".session('tahun')."' as thang,
+							'".$periode."' as periode,
+							'322000' as kdakun,
+							'D' as kddk,
+							sum(a.nilai) as nilai
+					from d_trans_akun a
+					left outer join d_trans b on(a.id_trans=b.id)
+					where   b.thang='".session('tahun')."' and
+							b.tgdok<=last_day(to_date('01/".$periode."/".session('tahun')."','DD/MM/YYYY')) and
+							substr(a.kdakun,1,1) in('5','7')
+					
 				) a
 				group by a.thang,
 						a.periode,
