@@ -156,8 +156,9 @@ class RefTransaksiController extends Controller {
 			$detil = $rows[0];
 			
 			$rows = DB::select("
-				select	kdakun,
-						kddk
+				select	REPLACE(kdakun, 'x', '0') as kdakun,
+						kddk,
+						panjang
 				from t_trans_akun
 				where id_trans=?
 			",[
@@ -293,12 +294,20 @@ class RefTransaksiController extends Controller {
 				$id_trans = DB::table('t_trans')->insertGetId([
 					'id_alur' => $request->input('id_alur'),
 					'nmtrans' => $request->input('nmtrans'),
+					'is_parent' => $request->input('is_parent'),
+					'parent_id' => $request->input('id_trans'),
 				]);
 				
 				if($id_trans){
 					
 					foreach($request->input('rincian') as $input){
-						$arr_insert[] = "select ".$id_trans.",'".$input["'kdakun'"]."','".$input["'kddk'"]."' from dual";
+						
+						$panjang = (int)$input["'panjang'"];
+						$kdakun = str_replace("0","",$input["'kdakun'"]);
+						$kdakun = substr($kdakun,0,$panjang);
+						$kdakun = str_pad($kdakun,6,"x");
+						
+						$arr_insert[] = "select ".$id_trans.",'".$kdakun."','".$input["'kddk'"]."',".$panjang." from dual";
 					}
 					
 					$delete = DB::delete("
@@ -309,7 +318,7 @@ class RefTransaksiController extends Controller {
 					]);
 					
 					$insert = DB::insert("
-						insert into t_trans_akun(id_trans,kdakun,kddk)
+						insert into t_trans_akun(id_trans,kdakun,kddk,panjang)
 						".implode(" union all ", $arr_insert)."
 					");
 					
@@ -332,16 +341,26 @@ class RefTransaksiController extends Controller {
 				$update = DB::update("
 					update t_trans
 					set id_alur=?,
-						nmtrans=?
+						nmtrans=?,
+						is_parent=?,
+						parent_id=?
 					where id=?
 				",[
 					$request->input('id_alur'),
 					$request->input('nmtrans'),
+					$request->input('is_parent'),
+					$request->input('id_trans'),
 					$request->input('inp-id')
 				]);
 				
 				foreach($request->input('rincian') as $input){
-					$arr_insert[] = "select ".$request->input('inp-id').",'".$input["'kdakun'"]."','".$input["'kddk'"]."' from dual";
+					
+					$panjang = (int)$input["'panjang'"];
+					$kdakun = str_replace("0","",$input["'kdakun'"]);
+					$kdakun = substr($kdakun,0,$panjang);
+					$kdakun = str_pad($kdakun,6,"x");
+					
+					$arr_insert[] = "select ".$request->input('inp-id').",'".$kdakun."','".$input["'kddk'"]."',".$panjang." from dual";
 				}
 				
 				$delete = DB::delete("
@@ -352,7 +371,7 @@ class RefTransaksiController extends Controller {
 				]);
 				
 				$insert = DB::insert("
-					insert into t_trans_akun(id_trans,kdakun,kddk)
+					insert into t_trans_akun(id_trans,kdakun,kddk,panjang)
 					".implode(" union all ", $arr_insert)."
 				");
 				

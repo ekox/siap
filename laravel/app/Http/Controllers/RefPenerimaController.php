@@ -228,18 +228,33 @@ class RefPenerimaController extends Controller {
 	public function hapus(Request $request)
 	{
 		try{
-			$delete = DB::delete("
-				delete from t_penerima
-				where id=?
+			$rows = DB::select("
+				select	count(*) as jml
+				from d_trans
+				where id_penerima=?
 			",[
 				$request->input('id')
 			]);
 			
-			if($delete==true) {
-				return 'success';
+			if($rows[0]->jml==0){
+				
+				$delete = DB::delete("
+					delete from t_penerima
+					where id=?
+				",[
+					$request->input('id')
+				]);
+				
+				if($delete==true) {
+					return 'success';
+				}
+				else {
+					return 'Proses hapus gagal. Hubungi Administrator.';
+				}
+				
 			}
-			else {
-				return 'Proses hapus gagal. Hubungi Administrator.';
+			else{
+				return 'Data tidak dapat dihapus karena sudah digunakan di transaksi.';
 			}
 			
 		}

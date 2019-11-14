@@ -37,6 +37,14 @@
 									<label id="warning-kdunit" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="id_proyek">Proyek </label>
+									<div class="col-md-7">
+	                            		<select id="id_proyek" name="id_proyek" class="form-control chosen">
+										</select>
+	                            	</div>
+									<label id="warning-id_proyek" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="id_pelanggan">Pelanggan </label>
 									<div class="col-md-7">
 	                            		<select id="id_pelanggan" name="id_pelanggan" class="form-control chosen">
@@ -204,6 +212,10 @@
 			jQuery('#id_alur').html(result).trigger('chosen:updated');
 		});
 		
+		jQuery.get('dropdown/proyek', function(result){
+			jQuery('#id_proyek').html(result).trigger('chosen:updated');
+		});
+		
 		jQuery.get('dropdown/penerima', function(result){
 			jQuery('#id_pelanggan').html(result).trigger('chosen:updated');
 		});
@@ -223,6 +235,11 @@
 			jQuery.get('dropdown/transaksi/'+id_alur, function(result){
 				jQuery('#kdtran').html(result).trigger('chosen:updated');
 			});
+		});
+		
+		jQuery('#id_proyek').change(function(){
+			var arr_id = jQuery(this).val().split('-');
+			jQuery('#id_pelanggan').val(arr_id[1]).trigger('chosen:updated');
 		});
 		
 		jQuery('#kdtran').change(function(){
@@ -318,6 +335,7 @@
 					jQuery('#inp-rekambaru').val('0');
 					jQuery('#kdunit').val(result.message.kdunit);
 					jQuery('#id_alur').val(result.message.id_alur).prop('disabled',true);
+					jQuery('#id_proyek').val(result.message.id_proyek);
 					jQuery('#id_pelanggan').val(result.message.id_pelanggan);
 					jQuery('#nopks').val(result.message.nopks);
 					jQuery('#tgpks').val(result.message.tgpks);
