@@ -173,45 +173,116 @@ class LaporanKeuanganController extends TableController
 			<th>%</th>
 		</tr>';
 		$html_out.= self::$thead_close;
-		//get content
-		/*$rows = array(
-			'kas_dan_setara_kas' => \App\Neraca::getKasDanSetaraKas($this->tahun, $periode),
-			'piutang_usaha' => \App\Neraca::getKasDanSetaraKas($this->tahun, $periode),
-			'pajak_dimuka' => \App\Neraca::getKasDanSetaraKas($this->tahun, $periode),
-			'biaya_dimuka' => \App\Neraca::getKasDanSetaraKas($this->tahun, $periode),
-			'aset_real_estate' => \App\Neraca::getKasDanSetaraKas($this->tahun, $periode),
-			'aset_lancar' => \App\Neraca::getKasDanSetaraKas($this->tahun, $periode),
-			'invest_ventura' => 0,
-			'invest_asosiasi' => 0,
-			'aset_ventura' => 0,
-			'properti_inves' => 0,
-			'aset_tetap_susut' => 0,
-			'aset_lain_lain' => 0,
-			'aset_tidak_lancar' => \App\Neraca::getKasDanSetaraKas($this->tahun, $periode),
-		);*/
 
-		$arr = array(
-			'a111' => \App\Neraca::akunAsetDetil($this->tahun, '111', 'KAS DAN SETARA KAS')[0],
-			'n111' => \App\Neraca::akunAsetDetil($this->tahun, '111', 'KAS DAN SETARA KAS')[1],
-			's111' => \App\Neraca::akunAsetDetil($this->tahun, '111', 'KAS DAN SETARA KAS')[2],
+		// get data of content
+		$data = [
+			'ca' => \App\Neraca::nrcAkun2('11', $this->tahun), // return kdakun2, nmakun, saldo
+			'fa' => \App\Neraca::nrcAkun2('12', $this->tahun),
+			'stl' => \App\Neraca::nrcAkun2('21', $this->tahun),
+			'ltl' => \App\Neraca::nrcAkun2('22', $this->tahun),
+			'sc' => \App\Neraca::nrcAkun2('31', $this->tahun),
+			're' => \App\Neraca::nrcAkun2('32', $this->tahun),
+		];
 
-			'a112' => \App\Neraca::akunAsetDetil($this->tahun, '112', 'PIUTANG')[0],
-			'n112' => \App\Neraca::akunAsetDetil($this->tahun, '112', 'PIUTANG')[1],
-			's112' => \App\Neraca::akunAsetDetil($this->tahun, '112', 'PIUTANG')[2],
-			
-			'113' => \App\Neraca::akunAsetDetil($this->tahun, '113', 'PAJAK DIBAYAR DIMUKA'),
-			'114' => \App\Neraca::akunAsetDetil($this->tahun, '114', 'BEBAN DIBAYAR DIMUKA'),
-			'115' => \App\Neraca::akunAsetDetil($this->tahun, '115', 'JAMINAN'),
-			'116' => \App\Neraca::akunAsetDetil($this->tahun, '116', 'ASET REAL ESTATE'),
-		);
-		
-		$dummy['111'] = array( $arr['n111'],$arr['s111'], 0, 0, 0, 0);
 		// content of report
-		$html_out.= self::$tbody_open;
-		$html_out.= self::rowContent($dummy['111']);
-		$html_out.= self::rowContent($dummy['112']);
-		$html_out.= self::$tbody_close;
-		$html_out.= self::$table_close;
+		$html_out.= self::$tbody_open; // <tbody>
+
+		// list of account
+		$nrc = array(
+			'11' => array( $nbsp.'JUMLAH '.$data['ca']->nmakun, $data['ca']->saldo, 0, 0, 0, 0 ),
+			'12' => array( $nbsp.'JUMLAH '.$data['fa']->nmakun, $data['fa']->saldo, 0, 0, 0, 0 ),
+			'A'  => array( $nbsp.'JUMLAH ASET ', $data['ca']->saldo + $data['fa']->saldo, 0, 0, 0, 0 ),
+			'21' => array( $nbsp.'JUMLAH '.$data['stl']->nmakun, $data['stl']->saldo, 0, 0, 0, 0 ),
+			'22' => array( $nbsp.'JUMLAH '.$data['ltl']->nmakun, $data['ltl']->saldo, 0, 0, 0, 0 ),
+			'L'  => array( $nbsp.'JUMLAH KEWAJIBAN ', $data['stl']->saldo + $data['ltl']->saldo, 0, 0, 0, 0 ),
+			'31' => array( $nbsp.'JUMLAH '.$data['sc']->nmakun, $data['sc']->saldo, 0, 0, 0, 0 ),
+			'32' => array( $nbsp.'JUMLAH '.$data['re']->nmakun, $data['re']->saldo, 0, 0, 0, 0 ),
+			'E'  => array( $nbsp.'JUMLAH EKUITAS ', $data['sc']->saldo + $data['re']->saldo, 0, 0, 0, 0 ),
+			'LE'  => array( $nbsp.'JUMLAH EKUITAS ', ($data['stl']->saldo + $data['ltl']->saldo + $data['sc']->saldo + $data['re']->saldo), 0, 0, 0, 0 ),
+		);
+
+		// CURRENT ASSETS
+		$html_out.= self::rowContent(['ASET', '', '', '', '', '']);
+		$html_out.= self::rowContent(['ASET LANCAR', '', '', '', '', '']);
+		$akun11 = \App\Neraca::nrcAkun3($data['ca']->kdakun2, $this->tahun);
+		foreach($akun11 as $a11) {
+			if((int) $a11->saldo != 0) {
+				$html_out.= self::rowContent([$nbsp.$a11->nmakun, $a11->saldo, 0, 0, 0, 0]);
+			} 
+		}
+		$html_out.= self::rowContent($nrc['11']);
+
+		$html_out.= self::rowContent(['&nbsp;', '', '', '', '', '']);
+
+		// FIXED ASSETS
+		$html_out.= self::rowContent(['ASET TIDAK LANCAR', '', '', '', '', '']);
+		$akun12 = \App\Neraca::nrcAkun3($data['fa']->kdakun2, $this->tahun);
+		foreach($akun12 as $a12) {
+			if((int) $a12->saldo != 0) {
+				$html_out.= self::rowContent([$nbsp.$a12->nmakun, $a12->saldo, 0, 0, 0, 0]);
+			}
+		}
+		$html_out.= self::rowContent($nrc['12']);
+		
+		// TOTAL ASSETS
+		$html_out.= self::rowContent($nrc['A']);
+		$html_out.= self::rowContent(['&nbsp;', '', '', '', '', '']);
+		
+		// LIABILITIES & EQUITY
+		// LIABILITIES
+		// SHORT TERM LIABILITIES
+		$html_out.= self::rowContent(['KEWAJIBAN DAN EKUITAS', '', '', '', '', '']);
+		$html_out.= self::rowContent(['KEWAJIBAN', '', '', '', '', '']);
+		$html_out.= self::rowContent(['KEWAJIBAN JANGKA PENDEK', '', '', '', '', '']);
+		$akun21 = \App\Neraca::nrcAkun3($data['stl']->kdakun2, $this->tahun);
+		foreach($akun21 as $a21) {
+			if((int) $a21->saldo != 0) {
+				$html_out.= self::rowContent([$nbsp.$a21->nmakun, $a21->saldo, 0, 0, 0, 0]);
+			}
+		}
+		$html_out.= self::rowContent($nrc['21']);
+		$html_out.= self::rowContent(['&nbsp;', '', '', '', '', '']);
+
+		// LONG TERM LIABILITIES
+		$html_out.= self::rowContent(['KEWAJIBAN JANGKA PANJANG', '', '', '', '', '']);
+		$akun22 = \App\Neraca::nrcAkun3($data['ltl']->kdakun2, $this->tahun);
+		foreach($akun22 as $a22) {
+			if((int) $a22->saldo != 0) {
+				$html_out.= self::rowContent([$nbsp.$a22->nmakun, $a22->saldo, 0, 0, 0, 0]);
+			}
+		}
+		$html_out.= self::rowContent($nrc['22']);
+		$html_out.= self::rowContent($nrc['L']);
+		$html_out.= self::rowContent(['&nbsp;', '', '', '', '', '']);
+
+		// EQUITY
+		// SHARE CAPITAL
+		$html_out.= self::rowContent(['EKUITAS', '', '', '', '', '']);
+		$html_out.= self::rowContent(['MODAL SAHAM DISETOR', '', '', '', '', '']);
+		$akun31 = \App\Neraca::nrcAkun3($data['sc']->kdakun2, $this->tahun);
+		foreach($akun31 as $a31) {
+			if((int) $a31->saldo != 0) {
+				$html_out.= self::rowContent([$nbsp.$a31->nmakun, $a31->saldo, 0, 0, 0, 0]);
+			}
+		}
+		$html_out.= self::rowContent($nrc['31']);
+		$html_out.= self::rowContent(['&nbsp;', '', '', '', '', '']);
+		
+		// RETAINED EARNINGS
+		$html_out.= self::rowContent(['SALDO LABA', '', '', '', '', '']);
+		$akun32 = \App\Neraca::nrcAkun3($data['re']->kdakun2, $this->tahun);
+		foreach($akun32 as $a32) {
+			if((int) $a32->saldo != 0) {
+				$html_out.= self::rowContent([$nbsp.$a32->nmakun, $a32->saldo, 0, 0, 0, 0]);
+			}
+		}
+		$html_out.= self::rowContent($nrc['32']);
+		$html_out.= self::rowContent(['&nbsp;', '', '', '', '', '']);
+		$html_out.= self::rowContent($nrc['LE']);
+
+		// closed <tbody>
+		$html_out.= self::$tbody_close; // </tbody>
+		$html_out.= self::$table_close; // </table>
 		return $html_out;
 	}
 
