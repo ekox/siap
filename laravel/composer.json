@@ -9,7 +9,7 @@
         "laravel/framework": "5.2.*",
         "yajra/laravel-oci8": "^5.2",
         "yajra/laravel-datatables-oracle": "^6.29",
-		"mpdf/mpdf": "^6.1",
+		"mpdf/mpdf": "^7.1",
         "elmarculino/tinybutstrong": "^3.10",
         "barryvdh/laravel-cors": "0.9.*"
     },
