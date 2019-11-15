@@ -162,6 +162,7 @@ class TagihanRekamController extends Controller {
 					a.kdunit,
 					a.id_alur,
 					a.kdtran,
+					a.id_proyek||'-'||a.id_penerima as id_proyek,
 					a.id_penerima as id_pelanggan,
 					a.nodok as nopks,
 					to_char(a.tgdok,'yyyy-mm-dd') as tgpks,
@@ -261,7 +262,13 @@ class TagihanRekamController extends Controller {
 	public function simpan(Request $request)
 	{
 		DB::beginTransaction();
-			
+		
+		$id_proyek = '';
+		if($request->input('id_proyek')!==''){
+			$arr_proyek = explode("-", $request->input('id_proyek'));
+			$id_proyek = $arr_proyek[0];
+		}
+		
 		if($request->input('inp-rekambaru')=='1'){
 			
 			$id_trans = DB::table('d_trans')->insertGetId([
@@ -269,6 +276,7 @@ class TagihanRekamController extends Controller {
 				'thang' => session('tahun'),
 				'id_alur' => $request->input('id_alur'),
 				'kdtran' => $request->input('kdtran'),
+				'id_proyek' => $id_proyek,
 				'id_penerima' => $request->input('id_pelanggan'),
 				'nodok' => $request->input('nopks'),
 				'tgdok' => $request->input('tgpks'),
@@ -320,6 +328,7 @@ class TagihanRekamController extends Controller {
 			$update = DB::update("
 				update d_trans
 				set kdtran=?,
+					id_proyek=?,
 					id_penerima=?,
 					nodok=?,
 					tgdok=?,
@@ -330,6 +339,7 @@ class TagihanRekamController extends Controller {
 				where id=?
 			",[
 				$request->input('kdtran'),
+				$id_proyek,
 				$request->input('id_pelanggan'),
 				$request->input('nopks'),
 				$request->input('tgpks'),

@@ -53,6 +53,14 @@
 									<label id="warning-parent_id" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="id_proyek">Proyek </label>
+									<div class="col-md-7">
+	                            		<select id="id_proyek" name="id_proyek" class="form-control chosen">
+										</select>
+	                            	</div>
+									<label id="warning-id_proyek" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="id_pelanggan">Pelanggan </label>
 									<div class="col-md-7">
 	                            		<select id="id_pelanggan" name="id_pelanggan" class="form-control chosen">
@@ -269,13 +277,6 @@
 		
 		jQuery('#kdtran').change(function(){
 			var kdtran = jQuery(this).val();
-			jQuery('#id_pelanggan,#kredit').prop('disabled', false).trigger('chosen:updated');
-			jQuery.get('dropdown/akun/debet/'+kdtran, function(result){
-				jQuery('#debet').html(result).trigger('chosen:updated');
-			});
-			jQuery.get('dropdown/akun/kredit/'+kdtran, function(result){
-				jQuery('#kredit').html(result).trigger('chosen:updated');
-			});
 			jQuery.getJSON('penerimaan/rekam/tagihan/'+kdtran, function(result){
 				if(result.error==false){
 					jQuery('#parent_id').html(result.dropdown).trigger('chosen:updated');
@@ -285,16 +286,27 @@
 					jQuery('#parent_id').html('').trigger('chosen:updated');
 					jQuery('#div-tagihan').hide();
 				}
+				jQuery('#id_proyek,#id_pelanggan,#kredit').prop('disabled', false).trigger('chosen:updated');
+				jQuery.get('dropdown/proyek', function(result){
+					jQuery('#id_proyek').html(result).trigger('chosen:updated');
+				});
+				jQuery.get('dropdown/akun/debet/'+kdtran, function(result){
+					jQuery('#debet').html(result).trigger('chosen:updated');
+				});
+				jQuery.get('dropdown/akun/kredit/'+kdtran, function(result){
+					jQuery('#kredit').html(result).trigger('chosen:updated');
+				});
 			});
 		});
 		
 		jQuery('#parent_id').change(function(){
 			var data = jQuery(this).val().split('|');
+			jQuery('#id_proyek').val(data[5]).trigger('chosen:updated');
 			jQuery('#id_pelanggan').val(data[1]).trigger('chosen:updated');
 			jQuery('#uraian').val(data[2]);
 			jQuery('#nilai').val(digit_grouping(data[3]));
 			jQuery('#kredit').val(data[4]).trigger('chosen:updated');
-			jQuery('#id_pelanggan,#kredit').prop('disabled', true).trigger('chosen:updated');
+			jQuery('#id_proyek,#id_pelanggan,#kredit').prop('disabled', true).trigger('chosen:updated');
 		});
 		
 		jQuery('#id_dok').change(function(){
@@ -304,9 +316,14 @@
 			});
 		});
 		
+		jQuery('#id_proyek').change(function(){
+			var arr_id = jQuery(this).val().split('-');
+			jQuery('#id_pelanggan').val(arr_id[1]).trigger('chosen:updated');
+		});
+		
 		//tampilan default
 		function form_default() {
-			jQuery('#id_pelanggan,#kredit').prop('disabled', false).trigger('chosen:updated');
+			jQuery('#id_proyek,#id_pelanggan,#kredit').prop('disabled', false).trigger('chosen:updated');
 			jQuery('input,select,textarea').val('');
 			jQuery('.warning, #div-form, #div-tagihan, #div-form-detil').hide();
 			jQuery('#div-tabel').show();
@@ -381,12 +398,17 @@
 						jQuery('#kdtran').val(result.message.kdtran).trigger('chosen:updated');
 					});
 					
-					if(result.message.parent_id!==''){
+					if(result.message.parent_id!=='0'){
 						jQuery('#parent_id').html(result.tagihan).trigger('chosen:updated');
 						jQuery('#div-tagihan').show();
 						jQuery('#id_pelanggan,#kredit').prop('disabled', true).trigger('chosen:updated');
 					}
+					else{
+						jQuery('#div-tagihan').hide();
+						jQuery('#id_pelanggan,#kredit').prop('disabled', false).trigger('chosen:updated');
+					}
 					
+					jQuery('#id_proyek').html(result.dropdown_p).trigger('chosen:updated');
 					jQuery('#debet').html(result.dropdown_d).trigger('chosen:updated');
 					jQuery('#kredit').html(result.dropdown_k).trigger('chosen:updated');
 					
@@ -394,6 +416,7 @@
 					jQuery('#inp-rekambaru').val('0');
 					jQuery('#kdunit').val(result.message.kdunit);
 					jQuery('#id_alur').val(result.message.id_alur).prop('disabled',true);
+					jQuery('#id_proyek').val(result.message.id_proyek+'-'+result.message.id_pelanggan);
 					jQuery('#id_pelanggan').val(result.message.id_pelanggan);
 					jQuery('#nopks').val(result.message.nopks);
 					jQuery('#tgpks').val(result.message.tgpks);

@@ -29,12 +29,30 @@
 							<input type="hidden" id="inp-akun">
 							<div class="form-body">
 								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="nmtrans">Jenis </label>
+	                            	<label class="col-md-2 label-control" for="nmtrans">Jenis Kegiatan</label>
 									<div class="col-md-7">
 	                            		<select id="id_alur" name="id_alur" class="form-control chosen">
 										</select>
 	                            	</div>
 									<label id="warning-id_alur" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="nmtrans">Punya Induk </label>
+									<div class="col-md-7">
+	                            		<select id="is_parent" name="is_parent" class="form-control chosen">
+											<option value="0">Tidak</option>
+											<option value="1">Ya</option>
+										</select>
+	                            	</div>
+									<label id="warning-is_parent" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="nmtrans">Transaksi Induk </label>
+									<div class="col-md-7">
+	                            		<select id="id_trans" name="id_trans" class="form-control chosen">
+										</select>
+	                            	</div>
+									<label id="warning-id_trans" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="nmtrans">Uraian </label>
@@ -49,8 +67,9 @@
 	                            		<table class="table table-bordered">
 											<thead>
 												<tr>
-													<th style="width:250px;">Akun</th>
-													<th style="width:200px;">D/K</th>
+													<th style="width:400px;">Akun</th>
+													<th style="width:100px;">D/K</th>
+													<th style="width:100px;">Level</th>
 													<th>Aksi</th>
 												</tr>
 											</thead>
@@ -150,6 +169,10 @@
 			jQuery('#id_alur').html(result).trigger('chosen:updated');
 		});
 		
+		jQuery.get('dropdown/transaksi', function(result){
+			jQuery('#id_trans').html(result).trigger('chosen:updated');
+		});
+		
 		jQuery.getJSON('dropdown/akun/json', function(result){
 			var akun='';
 			jQuery.each(result, function(i,field){
@@ -190,6 +213,9 @@
 						'</select>'+
 					'</td>'+
 					'<td>'+
+						'<input type="text" id="panjang-0" class="form-control" name="rincian[0][\'panjang\']">'+
+					'</td>'+
+					'<td>'+
 						'<center><a href="javascript:;" id="0" class="btn btn-sm btn-danger hapus-detil"><i class="fa fa-minus"></i></a></center>'+
 					'</td>'+
 				'</tr>'
@@ -213,6 +239,9 @@
 							'<option value="D">Debet</option>'+
 							'<option value="K">Kredit</option>'+
 						'</select>'+
+					'</td>'+
+					'<td>'+
+						'<input id="panjang-'+x+'" class="form-control" name="rincian['+x+'][\'panjang\']">'+
 					'</td>'+
 					'<td>'+
 						'<center><a href="javascript:;" id="'+x+'" class="btn btn-sm btn-danger hapus-detil"><i class="fa fa-minus"></i></a></center>'+
@@ -334,6 +363,8 @@
 					jQuery('#inp-rekambaru').val('0');
 					jQuery('#id_alur').val(result.message.id_alur);
 					jQuery('#nmtrans').val(result.message.nmtrans);
+					jQuery('#is_parent').val(result.message.is_parent);
+					jQuery('#id_trans').val(result.message.parent_id);
 					
 					jQuery('#tabel-rincian').html('');
 					jQuery.each(result.akun, function(x,row){
@@ -349,6 +380,9 @@
 										'<option value="D">Debet</option>'+
 										'<option value="K">Kredit</option>'+
 									'</select>'+
+								'</td>'+
+								'<td>'+
+									'<input id="panjang-'+x+'" class="form-control" name="rincian['+x+'][\'panjang\']" value="'+row.panjang+'">'+
 								'</td>'+
 								'<td>'+
 									'<center><a href="javascript:;" id="'+x+'" class="btn btn-sm btn-danger hapus-detil"><i class="fa fa-minus"></i></a></center>'+

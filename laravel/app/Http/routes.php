@@ -46,6 +46,7 @@ Route::group(['middleware' => 'auth'], function(){
 			
 				Route::get('', 'AnggaranPaguUnitController@index');
 				Route::get('/pilih/{param}', 'AnggaranPaguUnitController@pilih')->middleware('role:00');
+				Route::get('/sisa', 'AnggaranPaguUnitController@sisaPagu');
 				Route::post('', 'AnggaranPaguUnitController@simpan')->middleware('role:00');
 				Route::post('/hapus', 'AnggaranPaguUnitController@hapus')->middleware('role:00');
 				
@@ -306,6 +307,7 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get('/akun/kredit/{param}', 'DropdownController@akun_kredit');
 		Route::get('/periode', 'DropdownController@periode');
 		Route::get('/tahun', 'DropdownController@tahun');
+		Route::get('/proyek', 'DropdownController@proyek');
 		
 	});
 	
@@ -384,6 +386,15 @@ Route::group(['middleware' => 'auth'], function(){
 			Route::get('/pilih/{param}', 'RefAlurController@pilih')->middleware('role:00');
 			Route::post('', 'RefAlurController@simpan')->middleware('role:00');
 			Route::post('/hapus', 'RefAlurController@hapus')->middleware('role:00');
+			
+		});
+		
+		Route::group(['prefix' => 'proyek'], function(){
+			
+			Route::get('', 'RefProyekController@index');
+			Route::get('/pilih/{param}', 'RefProyekController@pilih')->middleware('role:00.01');
+			Route::post('', 'RefProyekController@simpan')->middleware('role:00.01');
+			Route::post('/hapus', 'RefProyekController@hapus')->middleware('role:00.01');
 			
 		});
 		

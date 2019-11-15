@@ -79,6 +79,27 @@
 									<label id="warning-debet" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="pagu">Total Pagu </label>
+									<div class="col-md-7">
+	                            		<input type="text" id="pagu" name="pagu" class="form-control val_num" style="text-align:right;" readonly>
+	                            	</div>
+									<label id="warning-pagu" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="realisasi">Total Realisasi </label>
+									<div class="col-md-7">
+	                            		<input type="text" id="realisasi" name="realisasi" class="form-control val_num" style="text-align:right;" readonly>
+	                            	</div>
+									<label id="warning-realisasi" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="sisa">Sisa Pagu </label>
+									<div class="col-md-7">
+	                            		<input type="text" id="sisa" name="sisa" class="form-control val_num" style="text-align:right;" readonly>
+	                            	</div>
+									<label id="warning-sisa" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="nobukti">Nilai </label>
 									<div class="col-md-7">
 	                            		<input type="text" id="nilai" name="nilai" class="form-control val_num" style="text-align:right;" maxlength="19">
@@ -319,6 +340,15 @@
 		
 		//klik tambah
 		jQuery('#tambah').click(function(){
+			
+			jQuery.getJSON('anggaran/pagu/unit/sisa', function(result){
+				if(result){
+					jQuery('#pagu').val(digit_grouping(result.pagu));
+					jQuery('#realisasi').val(digit_grouping(result.realisasi));
+					jQuery('#sisa').val(digit_grouping(result.sisa));
+				}
+			});
+			
 			jQuery('#div-tabel').hide();
 			jQuery('#inp-rekambaru').val('1');
 			jQuery('#div-form').show();

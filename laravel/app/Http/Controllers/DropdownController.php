@@ -568,4 +568,21 @@ class DropdownController extends Controller {
 		}
 		return $html_out;
 	}
+	
+	public function proyek()
+	{
+		$rows = DB::select("
+			select	*
+			from t_proyek
+			order by nmproyek asc
+		");
+		
+		$data = '<option value="" style="display:none;">Pilih Data</option>';
+		foreach($rows as $row){
+			$data .= '<option value="'.$row->id.'-'.$row->id_penerima.'"> '.$row->nmproyek.' : Rp.'.number_format($row->nilai).',-</option>';
+		}
+		
+		return $data;
+		
+	}
 }
