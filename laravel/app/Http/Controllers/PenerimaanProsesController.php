@@ -312,6 +312,7 @@ class PenerimaanProsesController extends Controller {
 			select  a.id,
 					b.nmalur,
 					c.nmunit,
+					k.nmproyek,
 					d.nama as nmpelanggan,
 					f.nmtrans,
 					a.nodok as nopks,
@@ -353,6 +354,7 @@ class PenerimaanProsesController extends Controller {
 			) j on(a.id=j.id_trans)
 			left outer join t_akun f on(g.kdakun=f.kdakun)
 			left outer join t_akun i on(h.kdakun=i.kdakun)
+			left join t_proyek k on(a.id_proyek=k.id)
 			where a.id=?
 		",[
 			$id

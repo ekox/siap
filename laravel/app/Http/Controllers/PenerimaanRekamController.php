@@ -194,6 +194,7 @@ class PenerimaanRekamController extends Controller {
 					a.kdunit,
 					a.id_alur,
 					a.kdtran,
+					nvl(a.id_proyek,'') as id_proyek,
 					a.id_penerima as id_pelanggan,
 					a.nodok as nopks,
 					to_char(a.tgdok,'yyyy-mm-dd') as tgpks,
@@ -202,7 +203,7 @@ class PenerimaanRekamController extends Controller {
 					nvl(b.nilai,0) as nilai,
 					nvl(b.kdakun,'') as debet,
 					nvl(c.kdakun,'') as kredit,
-					a.parent_id
+					nvl(a.parent_id,0) as parent_id
 			from d_trans a
 			left outer join(
 				select	id_trans,
@@ -279,6 +280,19 @@ class PenerimaanRekamController extends Controller {
 			
 			$data['dropdown_k'] = $dropdown;
 			
+			$rows = DB::select("
+				select	*
+				from t_proyek
+				order by nmproyek asc
+			");
+			
+			$dropdown = '<option value="" style="display:none;">Pilih Data</option>';
+			foreach($rows as $row){
+				$dropdown .= '<option value="'.$row->id.'-'.$row->id_penerima.'"> '.$row->nmproyek.' : Rp.'.number_format($row->nilai).',-</option>';
+			}
+			
+			$data['dropdown_p'] = $dropdown;
+			
 			$dropdown = '';
 			
 			if($detil->parent_id!==''){
@@ -289,7 +303,8 @@ class PenerimaanRekamController extends Controller {
 							a.id_penerima as id_pelanggan,
 							a.uraian,
 							nvl(c.nilai,0) as nilai,
-							c.kdakun
+							c.kdakun,
+							a.id_proyek
 					from d_trans a
 					left outer join d_trans_akun c on(a.id=c.id_trans)
 					where a.id=? and c.kddk='D'
@@ -299,7 +314,7 @@ class PenerimaanRekamController extends Controller {
 				
 				$dropdown = '<option value="" style="display:none;">Pilih Data</option>';
 				foreach($rows as $row){
-					$dropdown .= '<option value="'.$row->id.'|'.$row->id_pelanggan.'|'.$row->uraian.'|'.$row->nilai.'|'.$row->kdakun.'" selected> PKS : '.$row->nopks.', '.$row->tgpks.', Rp. '.number_format($row->nilai).',-</option>';
+					$dropdown .= '<option value="'.$row->id.'|'.$row->id_pelanggan.'|'.$row->uraian.'|'.$row->nilai.'|'.$row->kdakun.'|'.$row->id_proyek.'-'.$row->id_pelanggan.'" selected> PKS : '.$row->nopks.', '.$row->tgpks.', Rp. '.number_format($row->nilai).',-</option>';
 				}
 			}
 			
@@ -320,6 +335,12 @@ class PenerimaanRekamController extends Controller {
 	public function simpan(Request $request)
 	{
 		DB::beginTransaction();
+		
+		$id_proyek = '';
+		if($request->input('id_proyek')!==''){
+			$arr_proyek = explode("-", $request->input('id_proyek'));
+			$id_proyek = $arr_proyek[0];
+		}
 			
 		if($request->input('inp-rekambaru')=='1'){
 			
@@ -331,6 +352,7 @@ class PenerimaanRekamController extends Controller {
 				'thang' => session('tahun'),
 				'id_alur' => $request->input('id_alur'),
 				'kdtran' => $request->input('kdtran'),
+				'id_proyek' => $id_proyek,
 				'id_penerima' => $request->input('id_pelanggan'),
 				'nodok' => $request->input('nopks'),
 				'tgdok' => $request->input('tgpks'),
@@ -383,6 +405,7 @@ class PenerimaanRekamController extends Controller {
 			$update = DB::update("
 				update d_trans
 				set kdtran=?,
+					id_proyek=?,
 					id_penerima=?,
 					nodok=?,
 					tgdok=?,
@@ -393,6 +416,7 @@ class PenerimaanRekamController extends Controller {
 				where id=?
 			",[
 				$request->input('kdtran'),
+				$id_proyek,
 				$request->input('id_pelanggan'),
 				$request->input('nopks'),
 				$request->input('tgpks'),
@@ -558,7 +582,8 @@ class PenerimaanRekamController extends Controller {
 							a.id_penerima as id_pelanggan,
 							a.uraian,
 							nvl(c.nilai,0) as nilai,
-							c.kdakun
+							c.kdakun,
+							a.id_proyek
 					from d_trans a
 					left outer join d_trans_akun c on(a.id=c.id_trans)
 					where a.id_alur=? and c.kddk='D'
@@ -568,7 +593,7 @@ class PenerimaanRekamController extends Controller {
 				
 				$dropdown = '<option value="" style="display:none;">Pilih Data</option>';
 				foreach($rows as $row){
-					$dropdown .= '<option value="'.$row->id.'|'.$row->id_pelanggan.'|'.$row->uraian.'|'.$row->nilai.'|'.$row->kdakun.'"> PKS : '.$row->nopks.', '.$row->tgpks.', Rp. '.number_format($row->nilai).',-</option>';
+					$dropdown .= '<option value="'.$row->id.'|'.$row->id_pelanggan.'|'.$row->uraian.'|'.$row->nilai.'|'.$row->kdakun.'|'.$row->id_proyek.'-'.$row->id_pelanggan.'"> PKS : '.$row->nopks.', '.$row->tgpks.', Rp. '.number_format($row->nilai).',-</option>';
 				}
 				
 				$data['dropdown'] = $dropdown;

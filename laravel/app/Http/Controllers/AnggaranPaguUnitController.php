@@ -10,8 +10,11 @@ class AnggaranPaguUnitController extends Controller {
 	public function index(Request $request)
 	{
 		$where = "";
-		if(session('kdlevel')!=='00'){
+		if(session('kdlevel')=='04'||session('kdlevel')=='05'){
 			$where = " and a.kdunit='".session('kdunit')."' ";
+		}
+		elseif(session('kdlevel')=='06'||session('kdlevel')=='07'||session('kdlevel')=='08'||session('kdlevel')=='11'){
+			$where = " and a.kdunit='".substr(session('kdunit'),0,4)."' ";
 		}
 		
 		$aColumns = array('id','thang','nmunit','uraian','nilai');
@@ -250,6 +253,30 @@ class AnggaranPaguUnitController extends Controller {
 		catch(\Exception $e){
 			return 'Terdapat kesalahan lainnya, hubungi Administrator!';
 		}		
+	}
+	
+	public function sisaPagu()
+	{
+		$rows = DB::select("
+			select  nvl(a.nilai,0) as pagu,
+					nvl(b.nilai,0) as realisasi,
+					nvl(a.nilai,0)-nvl(b.nilai,0) as sisa
+			from(
+				select  sum(nilai) as nilai
+				from d_pagu
+				where kdunit='".session('kdunit')."' and thang='".session('tahun')."'
+			) a,
+			(
+				select  sum(a.nilai) as nilai
+				from d_trans_akun a
+				left join d_trans b on(a.id_trans=b.id)
+				where b.kdunit='".session('kdunit')."' and b.thang='".session('tahun')."' and substr(a.kdakun,1,1) in('5','7') and a.kddk='D'
+			) b
+		");
+		
+		if(count($rows)>0) {
+			return response()->json($rows[0]);
+		}
 	}
 	
 }

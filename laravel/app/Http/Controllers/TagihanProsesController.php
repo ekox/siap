@@ -311,6 +311,7 @@ class TagihanProsesController extends Controller {
 			select  a.id,
 					b.nmalur,
 					c.nmunit,
+					j.nmproyek,
 					d.nama as nmpelanggan,
 					f.nmtrans,
 					a.nodok as nopks,
@@ -343,6 +344,7 @@ class TagihanProsesController extends Controller {
 			) h on(a.id=h.id_trans)
 			left outer join t_akun f on(g.kdakun=f.kdakun)
 			left outer join t_akun i on(h.kdakun=i.kdakun)
+			left outer join t_proyek j on(a.id_proyek=j.id)
 			where a.id=?
 		",[
 			$id

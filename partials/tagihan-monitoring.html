@@ -36,6 +36,13 @@
 									<label id="warning-nmunit" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="nmproyek">Proyek </label>
+									<div class="col-md-7">
+	                            		<input id="nmproyek" name="nmproyek" class="form-control" readonly>
+	                            	</div>
+									<label id="warning-nmproyek" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="nmpelanggan">Pelanggan </label>
 									<div class="col-md-7">
 	                            		<input id="nmpelanggan" name="nmpelanggan" class="form-control" readonly>
@@ -247,6 +254,7 @@
 					jQuery('#nmtrans').val(result.message.nmtrans);
 					jQuery('#debet').val(result.message.debet);
 					jQuery('#kredit').val(result.message.kredit);
+					jQuery('#nmproyek').val(result.message.nmproyek);
 					jQuery('#nmpelanggan').val(result.message.nmpelanggan);
 					jQuery('#nopks').val(result.message.nopks);
 					jQuery('#tgpks').val(result.message.tgpks);
