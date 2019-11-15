@@ -264,8 +264,10 @@ Route::group(['middleware' => 'auth'], function(){
 	Route::group(['prefix' => 'laporan'], function() {
 
 		Route::get('/laba-rugi', 'LaporanKeuanganController@incomeStatement');
+		Route::get('/prb-ekuitas', 'LaporanKeuanganController@changeOnEquity');
 		Route::get('/neraca', 'LaporanKeuanganController@balanceSheet');
-		Route::get('/mutasi-ekuitas', 'LaporanKeuanganController@testing');
+		Route::get('/arus-kas', 'LaporanKeuanganController@cashFlow');
+		
 	});
 	
 	//laporan

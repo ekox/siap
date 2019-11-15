@@ -32,6 +32,7 @@ class TableController extends Controller
     public static $info_laporan = "(Disajikan dalam jutaan Rupiah)";
     public static $table_open = '<br/><table border="1" cellspacing="0" cellpadding="0" style="border: 1px solid; width:100%">';
     public static $table_open_nb = '<br/><table border="0" cellspacing="0" cellpadding="0" style="border: 0px solid; width:100%">';
+    public static $table_open_nb1 = '<br/><table border="0" cellspacing="0" cellpadding="0" style="border: 1px solid; width:100%">';
     public static $table_close = '</table>';
     public static $thead_open = '<thead>';
     public static $thead_close = '</thead>';
@@ -74,11 +75,12 @@ class TableController extends Controller
 	{
 		$absNumber = abs($number);
 		
-		if((int) $number < 0) {
+		if( $number < 0 ) {
 			$number = '('.number_format($absNumber, 0, ',' ,'.').')';
 		} else {
 			$number = number_format($absNumber, 0, ',' ,'.');
 		}
+		
 		return $number;
 	}
 
@@ -87,21 +89,22 @@ class TableController extends Controller
 	 */
 	public static function cFmt($var)
 	{
+		$value = $var;
+		
 		if($var == '') {
 
-			//var is empty
+			//var is empty and var is not numeric type
 			$value = $var;
+			
 		} else {
 
-			//var is not empy
-			$obj = new LaporanKeuanganController();
-			$value = $var;
-
+			//var is not empty and var is not numeric type
 			if(is_numeric($var)) {
 
-				//var is numeric
-				$value = $obj::fornum($var);
-			}
+				//var is numeric type
+				$value = self::fornum($var);
+				
+			} 
 		}
 
 		return $value;

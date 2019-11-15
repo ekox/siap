@@ -21,118 +21,62 @@ class Neraca extends Model
 	/**
 	 * description 
 	 */
-	/*public function akunAset()
+	public static function getParam($kode, Array $arrParam)
 	{
-		$rows = DB::select("
-			  SELECT SUBSTR (kdakun, 1, 2) kdakun2,
-					 SUBSTR (kdakun, 1, 3) kdakun3,
-					 kdakun,
-					 nmakun,
-					 kdlap,
-					 kddk,
-					 DECODE (
-						SUBSTR (kdakun, 2, 1),
-						0, 1,
-						DECODE (SUBSTR (kdakun, 3, 1),
-								0, 2,
-								DECODE (SUBSTR (kdakun, 4, 1), 0, 3, 6)))
-						kdlv
-				FROM t_akun a
-			   WHERE kdlap = 'NR' AND SUBSTR (kdakun, 1, 1) = 1
-			ORDER BY 1, 2, 3
-		");
-		
-		foreach($rows as $row) {
-			$this->kdakun2[] = array($row->kdakun2);
-			$this->kdakun3[] = array($row->kdakun3);
-			$this->nmakun[] = array($row->nmakun);
+		if(isset($arrParam['tahun'])) {
+			$tahun = htmlentities($arrParam['tahun']);
+			$arrWhere['tahun'] = " AND thang = '".$tahun."' ";
+		}
+		 
+		if(isset($arrParam['periode'])) {
+			$periode = htmlentities($arrParam['periode']);
+			$arrWhere['periode'] = " AND periode <= '".$periode."' ";
 		}
 		
-		return $this;
-	}*/
+		$kdakun2 = htmlentities($kode);
+		$nmakun2 = htmlentities(self::nmAkun2($kode));
+
+		$andWhere = implode("", $arrWhere);
+
+		return $andWhere;
+	}
 
 	/**
 	 * description 
 	 */
-	/*public static function akunAsetDetil($tahun, $kdakun3, $nmakun3)
+	public static function getAkun2($kdakun2, Array $arrParam)
 	{
+		$andWhere = self::getParam($kdakun2, $arrParam);
+		$nmakun2 = self::nmAkun2($kdakun2);
+
+		if(substr($kdakun2, 0, 1) == '1') {
+			$dk_saldo = " debet - kredit ";
+		} else {
+			$dk_saldo = " kredit - debet ";
+		}
+		
 		$rows = DB::select("
-				  SELECT '".htmlentities($kdakun3)."' AS kdakun, '".htmlentities($nmakun3)."' AS nmakun, SUM (saldo) AS saldo
-					FROM (SELECT thang AS tahun,
-								 periode,
-								 kdakun,
-								 debet,
-								 kredit,
-								 (debet - kredit) AS saldo
-							FROM d_buku_besar
-						   WHERE thang = ? AND kdakun LIKE '".htmlentities($kdakun3)."%')
-				GROUP BY '111', 'KAS DAN SETARA KAS'
-			", [$tahun]);
+			SELECT '".$kdakun2."' AS kdakun2, '".$nmakun2."' AS nmakun, NVL (SUM (".$dk_saldo."), 0) AS saldo
+			  FROM d_buku_besar
+			 WHERE SUBSTR (kdakun, 1, 2) = ? ".$andWhere."
+		", [$kdakun2]);
 
-		if(count($rows)==0) {
-			$rows = DB::select("
-				SELECT '".htmlentities($kdakun3)."' AS kdakun, '".htmlentities($nmakun3)."' AS nmakun, 0 AS saldo
-				  FROM DUAL
-			");
-		} 
-
-		return array($rows[0]->kdakun, $rows[0]->nmakun, $rows[0]->saldo);
-	}*/
-
-	/**
-	 * description 
-	 */
- 	/*public static function mainQuery()
-	{
-		return "
-			  SELECT b.thang AS tahun,
-					 b.periode,
-					 SUBSTR (b.kdakun, 1, 1) kdakun1,
-					 SUBSTR (b.kdakun, 1, 2) kdakun2,
-					 SUBSTR (b.kdakun, 1, 3) kdakun3,
-					 SUBSTR (b.kdakun, 1, 4) kdakun4,
-					 b.kdakun,
-					 k.nmakun,
-					 b.debet,
-					 b.kredit,
-					 (b.debet - b.kredit) AS saldo
-				FROM d_buku_besar b LEFT JOIN t_akun K ON b.kdakun = k.kdakun
-			   WHERE SUBSTR (b.kdakun, 1, 1) = '1'
-		";
-	}*/
-	
-    /**
-	 * description 
-	 */
-	/*public static function getKasDanSetaraKas($tahun, $periode)
-	{
-		$query = DB::select("
-			  SELECT kdakun3 AS akun, 'KAS DAN SETARA KAS' AS nmakun, SUM (saldo) AS saldo
-				FROM (".self::mainQuery().")
-			   WHERE kdakun3 = '111' AND tahun = ?
-			GROUP BY kdakun3, 'KAS DAN SETARA KAS'
-		", [$tahun]);
-
-		if(count($query) == 0) {
-			$query = $this->emptyRows();
-		} 
-
-		return $query[0];
-	}*/
+		return $rows[0];
+	}
 
 	/**
 	 * description 
 	 */
 	public static function nrcAkun2($kdakun2, $tahun)
 	{
+		$kdakun2 = htmlentities($kdakun2);
+		$tahun = htmlentities($tahun);
+
 		if(substr($kdakun2, 0, 1) == '1') {
 			$dk_saldo = " debet - kredit ";
 		} else {
 			$dk_saldo = " kredit - debet ";
 		}
-
-		$kdakun2 = htmlentities($kdakun2);
-		$tahun = htmlentities($tahun);
 		
 		$rows = DB::select("
 			  SELECT a.kdakun2, nmakun, NVL (saldo, 0) saldo
@@ -166,16 +110,18 @@ class Neraca extends Model
 	/**
 	 * description 
 	 */
-	public static function nrcAkun3($kdakun2, $tahun)
+	public static function nrcAkun3($kdakun2, Array $arrParam)
 	{
+		$kdakun2 = htmlentities($kdakun2);
+		$tahun = htmlentities($arrParam['tahun']);
+
 		if(substr($kdakun2, 0, 1) == '1') {
 			$dk_saldo = " debet - kredit ";
 		} else {
 			$dk_saldo = " kredit - debet ";
 		}
-		
-		$kdakun2 = htmlentities($kdakun2);
-		$tahun = htmlentities($tahun);
+
+		$andWhere = self::getParam($kdakun2, $arrParam);
 		
 		$rows = DB::select("
 			  SELECT a.kdakun3, nmakun, NVL (saldo, 0) saldo
@@ -190,11 +136,11 @@ class Neraca extends Model
 						(  SELECT SUBSTR (kdakun, 1, 3) AS kdakun3,
 								  SUM ( (".$dk_saldo.")) AS saldo
 							 FROM d_buku_besar
-							WHERE kdakun LIKE '".$kdakun2."%' AND thang = ?
+							WHERE kdakun LIKE '".$kdakun2."%' ".$andWhere."
 						 GROUP BY SUBSTR (kdakun, 1, 3)) b
 					 ON (a.kdakun3 = b.kdakun3)
 			ORDER BY 1
-		", [$kdakun2, $tahun]);
+		", [$kdakun2]);
 
 		if(count($rows) < 1) {
 			$rows = DB::select("
