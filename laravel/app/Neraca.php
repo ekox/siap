@@ -21,6 +21,23 @@ class Neraca extends Model
 	/**
 	 * description 
 	 */
+	public static function nmAkun2($param)
+	{
+		$arr = [
+			'11' => 'ASET LANCAR',
+			'12' => 'ASET TIDAK LANCAR',
+			'21' => 'KEWAJIBAN JANGKA PENDEK',
+			'22' => 'KEWAJIBAN JANGKA PANJANG',
+			'31' => 'MODAL SAHAM DISETOR',
+			'32' => 'SALDO LABA',
+		];
+
+		return $arr[$param];
+	}	
+
+	/**
+	 * description 
+	 */
 	public static function getParam($kode, Array $arrParam)
 	{
 		if(isset($arrParam['tahun'])) {
@@ -66,7 +83,7 @@ class Neraca extends Model
 
 	/**
 	 * description 
-	 */
+	 *//*
 	public static function nrcAkun2($kdakun2, $tahun)
 	{
 		$kdakun2 = htmlentities($kdakun2);
@@ -105,12 +122,12 @@ class Neraca extends Model
 		} 
 		
 		return $rows[0];
-	}
+	}*/
 
 	/**
 	 * description 
 	 */
-	public static function nrcAkun3($kdakun2, Array $arrParam)
+	public static function getAkun3($kdakun2, Array $arrParam)
 	{
 		$kdakun2 = htmlentities($kdakun2);
 		$tahun = htmlentities($arrParam['tahun']);
@@ -151,20 +168,4 @@ class Neraca extends Model
 		return $rows;
 	}
 
-	/**
-	 * description 
-	 */
-	public static function nmAkun2($param)
-	{
-		$arr = [
-			'11' => 'ASET LANCAR',
-			'12' => 'ASET TIDAK LANCAR',
-			'21' => 'KEWAJIBAN JANGKA PENDEK',
-			'22' => 'KEWAJIBAN JANGKA PANJANG',
-			'31' => 'MODAL SAHAM DISETOR',
-			'32' => 'SALDO LABA',
-		];
-
-		return $arr[$param];
-	}
 }
