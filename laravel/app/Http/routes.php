@@ -268,6 +268,7 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get('/prb-ekuitas', 'LaporanKeuanganController@changeOnEquity');
 		Route::get('/neraca', 'LaporanKeuanganController@balanceSheet');
 		Route::get('/arus-kas', 'LaporanKeuanganController@cashFlow');
+		Route::get('/rkey', 'LaporanKeuanganController@rKey');
 		
 	});
 	
