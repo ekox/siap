@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use Session;
 
 class TableController extends Controller
 {
@@ -29,7 +30,7 @@ class TableController extends Controller
 	</style>';
 
 	public static $entitas = "PERUMDA PEMBANGUNAN SARANA JAYA";
-    public static $info_laporan = "(Disajikan dalam jutaan Rupiah)";
+    public static $infoLaporan = "(Disajikan dalam jutaan Rupiah)";
     public static $table_open = '<br/><table border="1" cellspacing="0" cellpadding="0" style="border: 1px solid; width:100%">';
     public static $table_open_nb = '<br/><table border="0" cellspacing="0" cellpadding="0" style="border: 0px solid; width:100%">';
     public static $table_open_nb1 = '<br/><table border="0" cellspacing="0" cellpadding="0" style="border: 1px solid; width:100%">';
@@ -49,6 +50,7 @@ class TableController extends Controller
 	public function __construct()
 	{
 		//wride code below
+		$this->tahun = session('tahun');
 	}
 
 	/**
@@ -113,8 +115,12 @@ class TableController extends Controller
 	/**
 	 * header Of Report 
 	 */
-	public function headerOfReport($namaLaporan)
+	public function headerOfReport(Array $arrParam)
 	{
+		$tahun = session('tahun');
+		$namaLaporan = $arrParam['nmlap'];
+		$periode = $arrParam['periode'];
+		
 		// header of report
 		$html_out = self::$css_style;
 		$html_out.= self::$table_open_nb;
@@ -126,7 +132,10 @@ class TableController extends Controller
 						<th>'.$namaLaporan.'</th>
 					</tr>
 					<tr>
-						<td class="ac">'.self::$info_laporan.'</td>
+						<th class="ac">Per '.self::eofLaporan($periode).' '.$tahun.'</th>
+					</tr>
+					<tr>
+						<td class="ac">'.self::$infoLaporan.'</td>
 					</tr>
 					';
 		$html_out.= self::$thead_close;
@@ -157,6 +166,27 @@ class TableController extends Controller
 		$html_out .= '</tr>';
 		
 		return $html_out;
+	}
+
+	/**
+	 * description 
+	 */
+	public static function eofLaporan($periode)
+	{
+		$year = session('tahun');
+		$isLeapYear = false;
+		$eofFebruary = '28 Februari ';
+		$remain = $year % 4;
+		if($remain == 0) {
+			$isLeapYear = !$isLeapYear;
+			$eofFebruary = '29 Februari ';
+		}
+		
+		$arrPeriode = array(
+			'01'=>'31 Januari ', '02'=>$eofFebruary, '03'=>' 31 Maret ', '04'=>' 30 April ', '05'=>'31 Mei ', '06'=>'30 Juni ', '07'=>'31 Juli ', '08'=>'31 Agustus ', '09'=>'30 September ', '10'=>'31 Oktober ', '11'=>'30 November ', '12'=>'31 Desember '
+		);
+
+		return $arrPeriode[$periode];
 	}
 
 }

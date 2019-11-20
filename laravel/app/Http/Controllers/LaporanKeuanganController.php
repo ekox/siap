@@ -25,15 +25,18 @@ class LaporanKeuanganController extends TableController
 	//LAPORAN LABA(RUGI)
 	public function incomeStatement()
 	{
+		$arrParam = [];
 		$periode = '01';
 		$tahun = $this->tahun;
+		
 		if(isset($_GET['periode'])) {
 			$periode = htmlentities($_GET['periode']);
 		}
 		
 		$this->setReportName('LABA (RUGI) REALISASI RKAP TRIWULAN III TAHUN 2019');
 		$namaLaporan = $this->getReportName();
-		$html_out = $this->headerOfReport($namaLaporan);
+		$arrParamLaporan = ['nmlap'=>$namaLaporan, 'periode'=>$periode];
+		$html_out = $this->headerOfReport($arrParamLaporan);
 		$nbsp = $this->nbsp;
 		
 		// content of report
@@ -175,18 +178,27 @@ class LaporanKeuanganController extends TableController
 	public function balanceSheet()
 	{
 		$arrParam = [];
-		$periode = '12';
+		$periode = '01';
 		$tahun = $this->tahun;
 		$arrParam['tahun'] = $tahun;
 		
 		if(isset($_GET['periode'])) {
 			$periode = htmlentities($_GET['periode']);
 			$arrParam['periode'] = $periode;
+
+			$rkey = md5($_GET['periode'].csrf_token());
+
+			if(isset($_GET['rkey'])) {
+				if($rkey != $_GET['rkey']) {
+					return '<script>alert("periode tidak valid"); window.close();</script>';
+				}
+			}
 		}
 		
 		$this->setReportName('LAPORAN REALISASI POSISI KEUANGAN');
 		$namaLaporan = $this->getReportName();
-		$html_out = $this->headerOfReport($namaLaporan);
+		$arrParamLaporan = ['nmlap'=>$namaLaporan, 'periode'=>$periode];
+		$html_out = $this->headerOfReport($arrParamLaporan);
 		$nbsp = str_repeat('&nbsp;', 4);
 
 		// content of report
@@ -210,7 +222,7 @@ class LaporanKeuanganController extends TableController
 
 		// get data of content
 		$data = [
-			'ca' => \App\Neraca::getAkun2('11', $arrParam), // return kdakun2, nmakun, saldo
+			'ca' => \App\Neraca::getAkun2('11', $arrParam), // return value : kdakun2, nmakun, saldo
 			'fa' => \App\Neraca::getAkun2('12', $arrParam),
 			'stl' => \App\Neraca::getAkun2('21', $arrParam),
 			'ltl' => \App\Neraca::getAkun2('22', $arrParam),
@@ -239,7 +251,7 @@ class LaporanKeuanganController extends TableController
 		// CURRENT ASSETS
 		$html_out.= self::rowContent(['ASET', '', '', '', '', '']);
 		$html_out.= self::rowContent([$nbsp.'ASET LANCAR', '', '', '', '', '']);
-		$akun11 = \App\Neraca::nrcAkun3($data['ca']->kdakun2, $arrParam);
+		$akun11 = \App\Neraca::getAkun3($data['ca']->kdakun2, $arrParam);
 		foreach($akun11 as $a11) {
 			if($a11->saldo != 0) {
 				$html_out.= self::rowContent([$nbsp.$nbsp.$a11->nmakun, $a11->saldo, 0, 0, 0, 0]);
@@ -251,7 +263,7 @@ class LaporanKeuanganController extends TableController
 
 		// FIXED ASSETS
 		$html_out.= self::rowContent([$nbsp.'ASET TIDAK LANCAR', '', '', '', '', '']);
-		$akun12 = \App\Neraca::nrcAkun3($data['fa']->kdakun2, $arrParam);
+		$akun12 = \App\Neraca::getAkun3($data['fa']->kdakun2, $arrParam);
 		foreach($akun12 as $a12) {
 			if( $a12->saldo != 0) {
 				$html_out.= self::rowContent([$nbsp.$nbsp.$a12->nmakun, $a12->saldo, 0, 0, 0, 0]);
@@ -269,7 +281,7 @@ class LaporanKeuanganController extends TableController
 		$html_out.= self::rowContent(['KEWAJIBAN DAN EKUITAS', '', '', '', '', '']);
 		$html_out.= self::rowContent(['KEWAJIBAN', '', '', '', '', '']);
 		$html_out.= self::rowContent([$nbsp.'KEWAJIBAN JANGKA PENDEK', '', '', '', '', '']);
-		$akun21 = \App\Neraca::nrcAkun3($data['stl']->kdakun2, $arrParam);
+		$akun21 = \App\Neraca::getAkun3($data['stl']->kdakun2, $arrParam);
 		foreach($akun21 as $a21) {
 			if( $a21->saldo != 0) {
 				$html_out.= self::rowContent([$nbsp.$nbsp.$a21->nmakun, $a21->saldo, 0, 0, 0, 0]);
@@ -280,7 +292,7 @@ class LaporanKeuanganController extends TableController
 
 		// LONG TERM LIABILITIES
 		$html_out.= self::rowContent([$nbsp.'KEWAJIBAN JANGKA PANJANG', '', '', '', '', '']);
-		$akun22 = \App\Neraca::nrcAkun3($data['ltl']->kdakun2, $arrParam);
+		$akun22 = \App\Neraca::getAkun3($data['ltl']->kdakun2, $arrParam);
 		foreach($akun22 as $a22) {
 			if( $a22->saldo != 0) {
 				$html_out.= self::rowContent([$nbsp.$nbsp.$a22->nmakun, $a22->saldo, 0, 0, 0, 0]);
@@ -294,7 +306,7 @@ class LaporanKeuanganController extends TableController
 		// SHARE CAPITAL
 		$html_out.= self::rowContent(['EKUITAS', '', '', '', '', '']);
 		$html_out.= self::rowContent([$nbsp.'MODAL SAHAM DISETOR', '', '', '', '', '']);
-		$akun31 = \App\Neraca::nrcAkun3($data['sc']->kdakun2, $arrParam);
+		$akun31 = \App\Neraca::getAkun3($data['sc']->kdakun2, $arrParam);
 		foreach($akun31 as $a31) {
 			if( $a31->saldo != 0) {
 				$html_out.= self::rowContent([$nbsp.$nbsp.$a31->nmakun, $a31->saldo, 0, 0, 0, 0]);
@@ -305,7 +317,7 @@ class LaporanKeuanganController extends TableController
 		
 		// RETAINED EARNINGS
 		$html_out.= self::rowContent([$nbsp.'SALDO LABA', '', '', '', '', '']);
-		$akun32 = \App\Neraca::nrcAkun3($data['re']->kdakun2, $arrParam);
+		$akun32 = \App\Neraca::getAkun3($data['re']->kdakun2, $arrParam);
 		foreach($akun32 as $a32) {
 			if( $a32->saldo != 0) {
 				$html_out.= self::rowContent([$nbsp.$nbsp.$a32->nmakun, $a32->saldo, 0, 0, 0, 0]);
@@ -350,13 +362,16 @@ class LaporanKeuanganController extends TableController
 		$arrParam = [];
 		$periode = '01';
 		$tahun = $this->tahun;
+		$arrParam['tahun'] = $tahun;
 		if(isset($_GET['periode'])) {
 			$periode = htmlentities($_GET['periode']);
+			$arrParam['periode'] = $periode;
 		}
 		
 		$this->setReportName('LAPORAN PERUBAHAN EKUITAS TRIWULAN III TAHUN 2019');
 		$namaLaporan = $this->getReportName();
-		$html_out = $this->headerOfReport($namaLaporan);
+		$arrParamLaporan = ['nmlap'=>$namaLaporan, 'periode'=>$periode];
+		$html_out = $this->headerOfReport($arrParamLaporan);
 		$nbsp = str_repeat('&nbsp;', 4);
 
 		// content of report
@@ -383,6 +398,11 @@ class LaporanKeuanganController extends TableController
 
 		$html_out.= self::$thead_close;
 		
+		$data = array(
+			'SLTL' => \App\Prbekuitas::ekuitasAwal('3', $arrParam),
+			'LBTB' => \App\Labarugi::getLabaBersih($tahun, $periode),
+		);
+		
 		$prb = array(
 			'Z' => array('&nbsp;', '', '', '', '', ''),
 			'M' => array('MODAL ', '', '', '', '', ''),
@@ -390,13 +410,13 @@ class LaporanKeuanganController extends TableController
 			'312' => array($this->nbsp.'Modal yang berlum disetor', 0, 0, 0, 0, 0),
 			'JM' => array($this->nbsp.'Jumlah Modal ditempatkan dan disetor ', 0, 0, 0, 0, 0),
 			'SL' => array('SALDO LABA ', '', '', '', '', ''),
-			'321' => array($this->nbsp.'Saldo Laba Tahun Lalu ', 0, 0, 0, 0, 0),
-			'322' => array($this->nbsp.'Laba Bersih Tahun Berjalan ', 0, 0, 0, 0, 0),
+			'321' => array($this->nbsp.'Saldo Laba Tahun Lalu ', $data['SLTL']->saldo, 0, 0, 0, 0),
+			'322' => array($this->nbsp.'Laba Bersih Tahun Berjalan ', $data['LBTB']->nilai, 0, 0, 0, 0),
 			'323' => array($this->nbsp.'Kewajiban Imbalan Kerja ', 0, 0, 0, 0, 0),
 			'324' => array($this->nbsp.'Kewajiban Pendapatan Anggaran Daerah ', 0, 0, 0, 0, 0),
 			'325' => array($this->nbsp.'Dana Sosial dan Dana Pensiun ', 0, 0, 0, 0, 0),
 			'JSL' => array($this->nbsp.'Jumlah Saldo Laba ', 0, 0, 0, 0, 0),
-			'JE' => array($this->nbsp.'JUMLAH EKUTAS ', 0, 0, 0, 0, 0),
+			'JE' => array($this->nbsp.'JUMLAH EKUITAS ', 0, 0, 0, 0, 0),
 		);
 
 		$html_out.= self::$tbody_open;
@@ -448,6 +468,7 @@ class LaporanKeuanganController extends TableController
 	 */
 	public function cashFlow()
 	{
+		$arrParam = [];
 		$periode = '01';
 		$tahun = $this->tahun;
 		if(isset($_GET['periode'])) {
@@ -456,7 +477,8 @@ class LaporanKeuanganController extends TableController
 		
 		$this->setReportName('LAPORAN ARUS KAS TRIWULAN III TAHUN 2019');
 		$namaLaporan = $this->getReportName();
-		$html_out = $this->headerOfReport($namaLaporan);
+		$arrParamLaporan = ['nmlap'=>$namaLaporan, 'periode'=>$periode];
+		$html_out = $this->headerOfReport($arrParamLaporan);
 		$nbsp = str_repeat('&nbsp;', 4);
 
 		// content of report
@@ -541,6 +563,20 @@ class LaporanKeuanganController extends TableController
 		$mpdf->writeHTML($html_out);
 		$mpdf->Output('Laporan Arus Kas.pdf', 'I');
 		exit;
+	}
+
+	/**
+	 * description 
+	 */
+	public function rKey()
+	{
+		$rKey = md5(csrf_token());
+		
+		if(isset($_GET['periode'])) {
+			$rKey = md5($_GET['periode'].csrf_token());
+		}
+
+		return $rKey;
 	}
 
 	/**
