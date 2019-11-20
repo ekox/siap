@@ -527,18 +527,69 @@ class LaporanKeuanganController extends TableController
 			'KAK' => array('KAS DAN SETARA KAS PADA AKHIR PERIODE ', 0, 0, 0, 0, 0, 0, 0),
 		);
 
+		$opr = array(
+			'MDB' => array($this->nbsp.'Penerimaan dari Pengembangan Lingkungan', 0, 0, 0, 0, 0, 0, 0),
+			'MPK' => array($this->nbsp.'Penerimaan dari Pengelolaan Aktiva', 0, 0, 0, 0, 0, 0, 0),
+			'MPJ' => array($this->nbsp.'Penerimaan dari Jasa', 0, 0, 0, 0, 0, 0, 0),
+			'MPL' => array($this->nbsp.'Penerimaan Lainnya', 0, 0, 0, 0, 0, 0, 0),
+			'KBO' => array($this->nbsp.'Pembayaran Biaya Operasional', 0, 0, 0, 0, 0, 0, 0),
+			'KBP' => array($this->nbsp.'Pembayaran Biaya Pemasaan, Kantor, dan Pemeliharaan Umum', 0, 0, 0, 0, 0, 0, 0),
+			'KBJ' => array($this->nbsp.'Pembayaran Biaya Jasa Produksi', 0, 0, 0, 0, 0, 0, 0),
+			'KDS' => array($this->nbsp.'Pembayaran Dana Pensiun, THT, Pendidikan, dan Sosial', 0, 0, 0, 0, 0, 0, 0),
+			'KDG' => array($this->nbsp.'Pembayaran kepada Pegawai', 0, 0, 0, 0, 0, 0, 0),
+		);
+
+		$inv = array(
+			'MDE' => array($this->nbsp.'Penerimaan Dividen dari entitas asosiasi', 0, 0, 0, 0, 0, 0, 0),
+			'MIV' => array($this->nbsp.'Penempatan Investasi Ventura Bersama', 0, 0, 0, 0, 0, 0, 0),
+			'MAR' => array($this->nbsp.'Penambahan Aset Real Estate', 0, 0, 0, 0, 0, 0, 0),
+			'MPP' => array($this->nbsp.'Penempatan Properti Investasi', 0, 0, 0, 0, 0, 0, 0),
+			'MPA' => array($this->nbsp.'Perolehan Aset Tetap', 0, 0, 0, 0, 0, 0, 0),
+			'MPM' => array($this->nbsp.'Penempatan Modal pada entitas asosiasi', 0, 0, 0, 0, 0, 0, 0),
+		);
+
+		$fnd = array(
+			'PMD' => array($this->nbsp.'Penyertaan Modal Daerah/Pinjaman',0 ,0, 0, 0, 0, 0, 0),
+			'PAD' => array($this->nbsp.'Pembayaran PAD',0 ,0, 0, 0, 0, 0, 0),
+		);
+
 		$html_out.= self::$tbody_open;
 
 		$html_out.= self::rowContent($cfl['Z']);
+		
 		$html_out.= self::rowContent($cfl['AO']);
+		$html_out.= self::rowContent($opr['MDB']);
+		$html_out.= self::rowContent($opr['MPK']);
+		$html_out.= self::rowContent($opr['MPJ']);
+		$html_out.= self::rowContent($opr['MPL']);
+		$html_out.= self::rowContent($opr['KBO']);
+		$html_out.= self::rowContent($opr['KBP']);
+		$html_out.= self::rowContent($opr['KBJ']);
+		$html_out.= self::rowContent($opr['KDS']);
+		$html_out.= self::rowContent($opr['KDG']);
 		$html_out.= self::rowContent($cfl['JAO']);
 		$html_out.= self::rowContent($cfl['Z']);
+		
 		$html_out.= self::rowContent($cfl['AI']);
+		$html_out.= self::rowContent($inv['MDE']);
+		$html_out.= self::rowContent($inv['MIV']);
+		$html_out.= self::rowContent($inv['MAR']);
+		$html_out.= self::rowContent($inv['MPP']);
+		$html_out.= self::rowContent($inv['MPA']);
+		$html_out.= self::rowContent($inv['MPM']);
 		$html_out.= self::rowContent($cfl['JAI']);
 		$html_out.= self::rowContent($cfl['Z']);
+		
 		$html_out.= self::rowContent($cfl['AP']);
+		$html_out.= self::rowContent($fnd['PMD']);
+		$html_out.= self::rowContent($fnd['PAD']);
 		$html_out.= self::rowContent($cfl['JAP']);
 		$html_out.= self::rowContent($cfl['Z']);
+		$html_out.= self::rowContent($cfl['NT']);
+		$html_out.= self::rowContent($cfl['Z']);
+		$html_out.= self::rowContent($cfl['KAW']);
+		$html_out.= self::rowContent($cfl['Z']);
+		$html_out.= self::rowContent($cfl['KAK']);
 
 		$html_out.= self::$tbody_close;
 		$html_out.= self::$table_close;
@@ -563,6 +614,14 @@ class LaporanKeuanganController extends TableController
 		$mpdf->writeHTML($html_out);
 		$mpdf->Output('Laporan Arus Kas.pdf', 'I');
 		exit;
+	}
+
+	/**
+	 * description 
+	 */
+	public function realisasi()
+	{
+		return response()->json(['error' => true, 'message' => 'under construction']);
 	}
 
 	/**

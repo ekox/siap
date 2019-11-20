@@ -270,6 +270,10 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get('/arus-kas', 'LaporanKeuanganController@cashFlow');
 		Route::get('/rkey', 'LaporanKeuanganController@rKey');
 		
+		Route::group(['prefix' =>'realisasi'], function() {
+			Route::get('/', 'LaporanKeuanganController@realisasi');
+		});
+		
 	});
 	
 	//laporan
