@@ -473,6 +473,24 @@ class DropdownController extends Controller {
 		
 	}
 	
+	public function akun_belanja()
+	{
+		$rows = DB::select("
+			select	*
+			from t_akun
+			where substr(kdakun,1,1)='5' and lvl=6
+			order by kdakun asc
+		");
+		
+		$data = '<option value="" style="display:none;">Pilih Data</option>';
+		foreach($rows as $row){
+			$data .= '<option value="'.$row->kdakun.'"> '.$row->nmakun.' | '.$row->kdakun.'</option>';
+		}
+		
+		return $data;
+		
+	}
+	
 	public function akun_json()
 	{
 		$rows = DB::select("

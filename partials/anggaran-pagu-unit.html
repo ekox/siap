@@ -43,6 +43,14 @@
 									<label id="warning-id_output" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
+	                            	<label class="col-md-3 label-control" for="id_output">Akun </label>
+									<div class="col-md-7">
+	                            		<select id="kdakun" name="kdakun" class="form-control chosen">
+										</select>
+	                            	</div>
+									<label id="warning-kdakun" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
 	                            	<label class="col-md-3 label-control" for="nilai">Nilai </label>
 									<div class="col-md-7">
 	                            		<input type="text" id="nilai" name="nilai" class="form-control val_num" style="text-align:right;" maxlength="19">
@@ -91,6 +99,7 @@
 										<th>Tahun</th>
 										<th>Unit</th>
 										<th>Program</th>
+										<th>Akun</th>
 										<th>Nilai</th>
 										<th>Aksi</th>
 									</tr>
@@ -137,6 +146,10 @@
 			jQuery('#id_output').html(result).trigger('chosen:updated');
 		});
 		
+		jQuery.get('dropdown/akun/belanja', function(result){
+			jQuery('#kdakun').html(result).trigger('chosen:updated');
+		});
+		
 		jQuery.get('cek/level', function(result){
 			if(result=='00'){ //admin
 				jQuery('#tambah').show();
@@ -148,7 +161,7 @@
 			jQuery('input,textarea,select').val('');
 			jQuery('.warning, #div-form').hide();
 			jQuery('#div-tabel').show();
-			jQuery('#kdunit,#id_output').prop('disabled', false);
+			jQuery('#kdunit,#id_output,#kdakun').prop('disabled', false);
 			jQuery('#simpan').prop('disabled', false);
 			jQuery('.chosen').trigger('chosen:updated');
 		}
@@ -218,6 +231,7 @@
 					jQuery('#id_output').val(result.id_output).prop('disabled', true);
 					jQuery('#kdunit').val(result.kdunit).prop('disabled', true);
 					jQuery('#nilai').val(digit_grouping(result.nilai));
+					jQuery('#kdakun').val(result.kdakun).prop('disabled', true);
 					jQuery('.chosen').trigger('chosen:updated');
 				}
 			});
@@ -240,7 +254,7 @@
 		jQuery('#simpan').click(function(){
 			jQuery(this).html('<span class="loading"><i class="fa fa-refresh"></i> Loading.....</span>');
 			jQuery(this).prop('disabled',true);
-			var next = form_valid('kdunit,kdoutput,nilai');
+			var next = form_valid('kdunit,kdoutput,nilai,kdakun');
 			if(next==true){
 				jQuery.get('token', function(token){
 					if(token){

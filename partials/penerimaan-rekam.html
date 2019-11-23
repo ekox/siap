@@ -94,6 +94,20 @@
 									<label id="warning-nilai" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="ppn">PPN </label>
+									<div class="col-md-7">
+	                            		<input type="text" id="ppn" name="ppn" class="form-control val_num" style="text-align:right;" maxlength="19">
+	                            	</div>
+									<label id="warning-ppn" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="total">Total </label>
+									<div class="col-md-7">
+	                            		<input type="text" id="total" name="total" class="form-control val_num" style="text-align:right;" maxlength="19" readonly>
+	                            	</div>
+									<label id="warning-total" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="nobukti">No.Bukti </label>
 									<div class="col-md-7">
 	                            		<input type="text" id="nopks" name="nopks" class="form-control" maxlength="255">
@@ -230,7 +244,11 @@
 
 <script>
 	jQuery(document).ready(function(){
-	
+		
+		function numberWithCommas(x) {
+			return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+		}
+		
 		function digit_grouping(nStr){
 			nStr += '';
 			x = nStr.split('.');
@@ -339,6 +357,7 @@
 		jQuery('#tambah').click(function(){
 			jQuery('#div-tabel').hide();
 			jQuery('#inp-rekambaru').val('1');
+			jQuery('#nilai,#ppn,#total').val(0);
 			jQuery('#div-form').show();
 		});
 		
@@ -423,6 +442,8 @@
 					jQuery('#tgjtempo').val(result.message.tgjtempo);
 					jQuery('#uraian').val(result.message.uraian);
 					jQuery('#nilai').val(digit_grouping(result.message.nilai));
+					jQuery('#ppn').val(digit_grouping(result.message.ppn));
+					jQuery('#total').val(digit_grouping(result.message.total));
 					jQuery('.chosen').trigger('chosen:updated');
 				}
 				else{
@@ -617,6 +638,44 @@
 					});
 				} 
 			});
+		});
+		
+		jQuery('#nilai').keyup(function (e){
+			var nilai = jQuery('#nilai').val().replace(/,/g, '');
+			
+			if(nilai==''){
+				nilai = 0;
+			}
+			else{
+				nilai = parseInt(nilai);
+			}
+			
+			var ppn = parseInt(10*nilai/100);
+			var total = nilai+ppn;
+			jQuery('#ppn').val(numberWithCommas(ppn));
+			jQuery('#total').val(numberWithCommas(total));
+		});
+		
+		jQuery('#ppn').keyup(function (e){
+			var nilai = jQuery('#nilai').val().replace(/,/g, '');
+			var ppn = jQuery('#ppn').val().replace(/,/g, '');
+			
+			if(nilai==''){
+				nilai = 0;
+			}
+			else{
+				nilai = parseInt(nilai);
+			}
+			
+			if(ppn==''){
+				ppn = 0;
+			}
+			else{
+				ppn = parseInt(ppn);
+			}
+			
+			var total = nilai+ppn;
+			jQuery('#total').val(numberWithCommas(total));
 		});
 		
 	});

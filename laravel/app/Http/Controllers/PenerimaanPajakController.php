@@ -261,7 +261,7 @@ class PenerimaanPajakController extends Controller {
 			$rows = DB::select("
 				select  *
 				from t_akun
-				where substr(kdakun,1,1)='7' and lvl=6
+				where substr(kdakun,1,2)='72' and lvl=6
 			");
 			
 			$pajak = '<option value="">Pilih Data</option>';

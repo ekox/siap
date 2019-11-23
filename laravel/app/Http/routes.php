@@ -310,6 +310,7 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get('/akun/html/all', 'DropdownController@akun_html_all');
 		Route::get('/akun/debet/{param}', 'DropdownController@akun_debet');
 		Route::get('/akun/kredit/{param}', 'DropdownController@akun_kredit');
+		Route::get('/akun/belanja', 'DropdownController@akun_belanja');
 		Route::get('/periode', 'DropdownController@periode');
 		Route::get('/tahun', 'DropdownController@tahun');
 		Route::get('/proyek', 'DropdownController@proyek');

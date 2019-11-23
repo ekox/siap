@@ -42,7 +42,7 @@ class PenerimaanProsesController extends Controller {
 							select	id_trans,
 									sum(nilai) as nilai
 							from d_trans_akun
-							where kddk='D' and grup is null
+							where kddk='D'
 							group by id_trans
 						) f on(a.id=f.id_trans)
 						where b.menu=2 and a.thang='".session('tahun')."' and c.kdlevel='".session('kdlevel')."'
@@ -189,7 +189,7 @@ class PenerimaanProsesController extends Controller {
 						select	id_trans,
 								sum(nilai) as nilai
 						from d_trans_akun
-						where kddk='D' and grup is null
+						where kddk='D'
 						group by id_trans
 					) f on(a.id=f.id_trans)
 					where b.menu=2 and a.thang='".session('tahun')."'

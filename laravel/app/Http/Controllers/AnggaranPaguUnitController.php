@@ -17,7 +17,7 @@ class AnggaranPaguUnitController extends Controller {
 			$where = " and a.kdunit='".substr(session('kdunit'),0,4)."' ";
 		}
 		
-		$aColumns = array('id','thang','nmunit','uraian','nilai');
+		$aColumns = array('id','thang','nmunit','uraian','kdakun','nilai');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
 		/* DB table to use */
@@ -25,6 +25,7 @@ class AnggaranPaguUnitController extends Controller {
 							a.thang,
 							c.nmunit,
 							b.uraian,
+							a.kdakun,
 							a.nilai
 					from d_pagu a
 					left outer join t_output b on(a.id_output=b.id)
@@ -138,6 +139,7 @@ class AnggaranPaguUnitController extends Controller {
 				$row->thang,
 				$row->nmunit,
 				$row->uraian,
+				$row->kdakun,
 				'<div style="text-align:right;">'.number_format($row->nilai).'</div>',
 				$aksi
 			);
@@ -153,7 +155,8 @@ class AnggaranPaguUnitController extends Controller {
 				select  id,
 						kdunit,
 						id_output,
-						nilai
+						nilai,
+						kdakun
 				from d_pagu a
 				where a.id=?
 			",[
@@ -178,11 +181,12 @@ class AnggaranPaguUnitController extends Controller {
 				$rows = DB::select("
 					SELECT	count(*) AS jml
 					from d_pagu
-					where thang=? and kdunit=? and id_output=?
+					where thang=? and kdunit=? and id_output=? and kdakun=?
 				",[
 					session('tahun'),
 					$request->input('kdunit'),
 					$request->input('id_output'),
+					$request->input('kdakun'),
 				]);
 				
 				if($rows[0]->jml==0){
@@ -191,6 +195,7 @@ class AnggaranPaguUnitController extends Controller {
 						'thang' => session('tahun'),
 						'kdunit' => $request->input('kdunit'),
 						'id_output' => $request->input('id_output'),
+						'kdakun' => $request->input('kdakun'),
 						'nilai' => str_replace(",", "", $request->input('nilai'))
 					]);
 					
