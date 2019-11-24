@@ -29,6 +29,14 @@
 							<input type="hidden" id="inp-akun">
 							<div class="form-body">
 								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="id_output">Jenis Program </label>
+									<div class="col-md-7">
+	                            		<select id="id_output" name="id_output" class="form-control chosen">
+										</select>
+	                            	</div>
+									<label id="warning-id_output" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="id_alur">Jenis Kegiatan </label>
 									<div class="col-md-7">
 	                            		<select id="id_alur" name="id_alur" class="form-control chosen">
@@ -107,6 +115,20 @@
 									<label id="warning-nilai" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="ppn">PPN </label>
+									<div class="col-md-7">
+	                            		<input type="text" id="ppn" name="ppn" class="form-control val_num" style="text-align:right;" maxlength="19">
+	                            	</div>
+									<label id="warning-ppn" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="total">Total </label>
+									<div class="col-md-7">
+	                            		<input type="text" id="total" name="total" class="form-control val_num" style="text-align:right;" maxlength="19" readonly>
+	                            	</div>
+									<label id="warning-total" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="nobukti">No.Bukti </label>
 									<div class="col-md-7">
 	                            		<input type="text" id="nopks" name="nopks" class="form-control" maxlength="255">
@@ -121,7 +143,7 @@
 									<label id="warning-tgpks" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="tgbukti">Tgl.Setor </label>
+	                            	<label class="col-md-2 label-control" for="tgbukti">Tgl.Bayar </label>
 									<div class="col-md-7">
 	                            		<input type="date" id="tgjtempo" name="tgjtempo" class="form-control" maxlength="10">
 	                            	</div>
@@ -243,7 +265,11 @@
 
 <script>
 	jQuery(document).ready(function(){
-	
+		
+		function numberWithCommas(x) {
+			return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+		}
+		
 		function digit_grouping(nStr){
 			nStr += '';
 			x = nStr.split('.');
@@ -273,6 +299,10 @@
 		
 		jQuery.get('dropdown/transaksi', function(result){
 			jQuery('#kdtran').html(result).trigger('chosen:updated');
+		});
+		
+		jQuery.get('dropdown/output', function(result){
+			jQuery('#id_output').html(result).trigger('chosen:updated');
 		});
 		
 		jQuery.get('cek/level', function(result){
@@ -340,18 +370,10 @@
 		
 		//klik tambah
 		jQuery('#tambah').click(function(){
-			
-			jQuery.getJSON('anggaran/pagu/unit/sisa', function(result){
-				if(result){
-					jQuery('#pagu').val(digit_grouping(result.pagu));
-					jQuery('#realisasi').val(digit_grouping(result.realisasi));
-					jQuery('#sisa').val(digit_grouping(result.sisa));
-				}
-			});
-			
 			jQuery('#div-tabel').hide();
 			jQuery('#inp-rekambaru').val('1');
 			jQuery('#div-form').show();
+			jQuery('#nilai,#ppn,#total,#pagu,#realisasi,#sisa').val(0);
 		});
 		
 		//data tabel
@@ -424,11 +446,14 @@
 					jQuery('#kdunit').val(result.message.kdunit);
 					jQuery('#id_alur').val(result.message.id_alur).prop('disabled',true);
 					jQuery('#id_pelanggan').val(result.message.id_pelanggan);
+					jQuery('#id_output').val(result.message.id_output);
 					jQuery('#nopks').val(result.message.nopks);
 					jQuery('#tgpks').val(result.message.tgpks);
 					jQuery('#tgjtempo').val(result.message.tgjtempo);
 					jQuery('#uraian').val(result.message.uraian);
 					jQuery('#nilai').val(digit_grouping(result.message.nilai));
+					jQuery('#ppn').val(digit_grouping(result.message.ppn));
+					jQuery('#total').val(digit_grouping(result.message.total));
 					jQuery('.chosen').trigger('chosen:updated');
 				}
 				else{
@@ -455,7 +480,7 @@
 			jQuery(this).html('<span class="loading"><i class="fa fa-refresh"></i> Loading.....</span>');
 			jQuery(this).prop('disabled',true);
 			jQuery('#id_pelanggan,#kredit').prop('disabled', false).trigger('chosen:updated');
-			var next = form_valid('kdunit,id_alur,id_pelanggan,kdtran,nopks,tgpks,uraian,tgjtempo,nilai,debet,kredit');
+			var next = form_valid('kdunit,id_alur,id_output,id_pelanggan,kdtran,nopks,tgpks,uraian,tgjtempo,nilai,debet,kredit');
 			if(next==true){
 				jQuery.get('token', function(token){
 					if(token){
@@ -623,6 +648,67 @@
 					});
 				} 
 			});
+		});
+		
+		jQuery('#id_output,#debet').change(function(){
+			
+			var id_output = jQuery('#id_output').val();
+			var kdakun = jQuery('#debet').val();
+			
+			if(id_output!=='' && kdakun!==''){
+				
+				jQuery.getJSON('anggaran/pagu/unit/sisa?id_output='+id_output+'&kdakun='+kdakun, function(result){
+					if(result){
+						jQuery('#pagu').val(digit_grouping(result.pagu));
+						jQuery('#realisasi').val(digit_grouping(result.realisasi));
+						jQuery('#sisa').val(digit_grouping(result.sisa));
+					}
+					else{
+						alertify.log('Pagu dan realisasi tidak ditemukan!');
+						jQuery('#pagu,#realisasi,#sisa').val(0);
+					}
+				});
+				
+			}
+			
+		});
+		
+		jQuery('#nilai').keyup(function (e){
+			var nilai = jQuery('#nilai').val().replace(/,/g, '');
+			
+			if(nilai==''){
+				nilai = 0;
+			}
+			else{
+				nilai = parseInt(nilai);
+			}
+			
+			var ppn = parseInt(10*nilai/100);
+			var total = nilai+ppn;
+			jQuery('#ppn').val(numberWithCommas(ppn));
+			jQuery('#total').val(numberWithCommas(total));
+		});
+		
+		jQuery('#ppn').keyup(function (e){
+			var nilai = jQuery('#nilai').val().replace(/,/g, '');
+			var ppn = jQuery('#ppn').val().replace(/,/g, '');
+			
+			if(nilai==''){
+				nilai = 0;
+			}
+			else{
+				nilai = parseInt(nilai);
+			}
+			
+			if(ppn==''){
+				ppn = 0;
+			}
+			else{
+				ppn = parseInt(ppn);
+			}
+			
+			var total = nilai+ppn;
+			jQuery('#total').val(numberWithCommas(total));
 		});
 		
 	});

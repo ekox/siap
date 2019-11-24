@@ -440,7 +440,6 @@ class PenerimaanRekamController extends Controller {
 						return 'Pajak gagal disimpan!';
 					}
 					
-					
 				}
 				else{
 					return 'Data detil akun gagal disimpan!';

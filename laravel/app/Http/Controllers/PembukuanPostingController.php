@@ -265,7 +265,7 @@ class PembukuanPostingController extends Controller {
 					
 					$delete = DB::delete("
 						delete from d_buku_besar
-						where thang='".session('tahun')."' and periode<='".$periode."'
+						where thang='".session('tahun')."' and periode='".$periode."'
 					");
 					
 					$insert = DB::insert("

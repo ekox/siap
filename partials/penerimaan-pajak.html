@@ -126,6 +126,13 @@
 	                            	</div>
 									<label id="warning-nilai1" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="nilai1">Total </label>
+									<div class="col-md-7">
+	                            		<input id="total" name="total" class="form-control val_num" style="text-align:right;" readonly>
+	                            	</div>
+									<label id="warning-total" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
 								
 							</div>
 	                        <div class="form-actions">
@@ -167,9 +174,9 @@
 										<th>Pelanggan</th>
 										<th>Transaksi</th>
 										<th>Uraian</th>
-										<th>Nilai Bruto</th>
-										<th>Pajak</th>
-										<th>Nilai Netto</th>
+										<th>Nilai</th>
+										<th>PPN</th>
+										<th>Total</th>
 										<th>Aksi</th>
 									</tr>
 								</thead>
@@ -200,6 +207,10 @@
 				x1 = x1.replace(rgx, '$1' + ',' + '$2');
 			}
 			return x1 + x2;
+		}
+		
+		function numberWithCommas(x) {
+			return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 		}
 		
 		jQuery('.val_num').mask('000,000,000,000,000', {reverse: true});
@@ -301,6 +312,8 @@
 					jQuery('#tgjtempo').val(result.message.tgjtempo);
 					jQuery('#uraian').val(result.message.uraian);
 					jQuery('#nilai').val(digit_grouping(result.message.nilai));
+					jQuery('#nilai1').val(digit_grouping(result.message.ppn));
+					jQuery('#total').val(digit_grouping(result.message.total));
 					jQuery('#div-lampiran').html(result.lampiran);
 					jQuery('#pajak').html(result.pajak).trigger('chosen:updated');
 				}
@@ -402,6 +415,28 @@
 					});
 				} 
 			});
+		});
+		
+		jQuery('#nilai1').keyup(function (e){
+			var nilai = jQuery('#nilai').val().replace(/,/g, '');
+			var ppn = jQuery('#nilai1').val().replace(/,/g, '');
+			
+			if(nilai==''){
+				nilai = 0;
+			}
+			else{
+				nilai = parseInt(nilai);
+			}
+			
+			if(ppn==''){
+				ppn = 0;
+			}
+			else{
+				ppn = parseInt(ppn);
+			}
+			
+			var total = nilai+ppn;
+			jQuery('#total').val(numberWithCommas(total));
 		});
 		
 	});

@@ -262,22 +262,45 @@ class AnggaranPaguUnitController extends Controller {
 	
 	public function sisaPagu()
 	{
+		$id_output = "";
+		if(isset($_GET['id_output'])){
+			$id_output = " and a.id_output='".$_GET['id_output']."' ";
+		}
+		
+		$kdakun = "";
+		if(isset($_GET['kdakun'])){
+			$kdakun = " and a.kdakun='".$_GET['kdakun']."' ";
+		}
+		
 		$rows = DB::select("
-			select  nvl(a.nilai,0) as pagu,
+			select  a.pagu,
 					nvl(b.nilai,0) as realisasi,
-					nvl(a.nilai,0)-nvl(b.nilai,0) as sisa
+					a.pagu-nvl(b.nilai,0) as sisa
 			from(
-				select  sum(nilai) as nilai
-				from d_pagu
-				where kdunit='".session('kdunit')."' and thang='".session('tahun')."'
-			) a,
-			(
-				select  sum(a.nilai) as nilai
+				select  substr(a.kdunit,1,4) as kdunit,
+						a.thang,
+						a.id_output,
+						a.kdakun,
+						sum(a.nilai) as pagu
+				from d_pagu a
+				group by substr(a.kdunit,1,4),a.thang,a.id_output,a.kdakun
+			) a
+			left join(
+				select  substr(b.kdunit,1,4) as kdunit,
+						b.thang,
+						b.id_output,
+						a.kdakun,
+						sum(a.nilai) as nilai
 				from d_trans_akun a
 				left join d_trans b on(a.id_trans=b.id)
-				where b.kdunit='".session('kdunit')."' and b.thang='".session('tahun')."' and substr(a.kdakun,1,1) in('5','7') and a.kddk='D'
-			) b
-		");
+				where a.kddk='D'
+				group by substr(b.kdunit,1,4),b.thang,b.id_output,a.kdakun
+			) b on(a.kdunit=b.kdunit and a.thang=b.thang and a.id_output=b.id_output and a.kdakun=b.kdakun)
+			where a.kdunit=? and a.thang=? ".$id_output." ".$kdakun."
+		",[
+			substr(session('kdunit'),0,4),
+			session('tahun')
+		]);
 		
 		if(count($rows)>0) {
 			return response()->json($rows[0]);

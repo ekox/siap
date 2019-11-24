@@ -325,7 +325,7 @@ class PenerimaanProsesController extends Controller {
 					a.id_alur,
 					a.status,
 					nvl(j.nilai,0) as pajak,
-					nvl(g.nilai,0)-nvl(j.nilai,0) as total
+					nvl(g.nilai,0)+nvl(j.nilai,0) as total
 			from d_trans a
 			left outer join t_alur b on(a.id_alur=b.id)
 			left outer join t_unit c on(a.kdunit=c.kdunit)
@@ -349,7 +349,7 @@ class PenerimaanProsesController extends Controller {
 				select  a.id_trans,
 						sum(a.nilai) as nilai
 				from d_trans_akun a
-				where substr(a.kdakun,1,1)='7'
+				where kddk='D' and grup is not null
 				group by a.id_trans
 			) j on(a.id=j.id_trans)
 			left outer join t_akun f on(g.kdakun=f.kdakun)

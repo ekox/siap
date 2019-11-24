@@ -193,6 +193,7 @@ class PengeluaranRekamController extends Controller {
 			select  a.id,
 					a.kdunit,
 					a.id_alur,
+					a.id_output,
 					a.kdtran,
 					a.id_penerima as id_pelanggan,
 					a.nodok as nopks,
@@ -200,6 +201,8 @@ class PengeluaranRekamController extends Controller {
 					to_char(a.tgdok1,'yyyy-mm-dd') as tgjtempo,
 					a.uraian,
 					nvl(b.nilai,0) as nilai,
+					nvl(d.nilai,0) as ppn,
+					nvl(b.nilai,0)+nvl(d.nilai,0) as total,
 					nvl(b.kdakun,'') as debet,
 					nvl(c.kdakun,'') as kredit,
 					a.parent_id
@@ -209,7 +212,7 @@ class PengeluaranRekamController extends Controller {
 						kdakun,
 						nilai
 				from d_trans_akun
-				where kddk='D'
+				where kddk='D' and grup is null
 			) b on(a.id=b.id_trans)
 			left outer join(
 				select	id_trans,
@@ -218,6 +221,13 @@ class PengeluaranRekamController extends Controller {
 				from d_trans_akun
 				where kddk='K'
 			) c on(a.id=c.id_trans)
+			left outer join(
+				select	id_trans,
+						kdakun,
+						nilai
+				from d_trans_akun
+				where kddk='D' and grup is not null
+			) d on(a.id=d.id_trans)
 			where a.id=?
 		",[
 			$id
@@ -329,6 +339,7 @@ class PengeluaranRekamController extends Controller {
 			$id_trans = DB::table('d_trans')->insertGetId([
 				'kdunit' => session('kdunit'),
 				'thang' => session('tahun'),
+				'id_output' => $request->input('id_output'),
 				'id_alur' => $request->input('id_alur'),
 				'kdtran' => $request->input('kdtran'),
 				'id_penerima' => $request->input('id_pelanggan'),
@@ -366,8 +377,49 @@ class PengeluaranRekamController extends Controller {
 				]);
 				
 				if($insert){
-					DB::commit();
-					return 'success';
+					
+					$ppn = (int)str_replace(',', '', $request->input('ppn'));
+					if($ppn>0){
+						
+						$now = new \DateTime();
+						$grup = $now->format('YmdHis');
+						
+						$insert = DB::insert("
+							insert into d_trans_akun(id_trans,kdakun,kddk,nilai,grup)
+							select	?,
+									?,
+									'D',
+									?,
+									?
+							from dual
+							union all
+							select	?,
+									?,
+									'K',
+									?,
+									?
+							from dual
+						",[
+							$id_trans,
+							'721000',
+							$ppn,
+							$grup,
+							$id_trans,
+							$request->input('kredit'),
+							$ppn,
+							$grup
+						]);
+						
+					}
+					
+					if($insert){
+						DB::commit();
+						return 'success';
+					}
+					else{
+						return 'Pajak gagal disimpan!';
+					}
+					
 				}
 				else{
 					return 'Data detil akun gagal disimpan!';
@@ -382,7 +434,8 @@ class PengeluaranRekamController extends Controller {
 		else{
 			$update = DB::update("
 				update d_trans
-				set kdtran=?,
+				set id_output=?,
+					kdtran=?,
 					id_penerima=?,
 					nodok=?,
 					tgdok=?,
@@ -392,6 +445,7 @@ class PengeluaranRekamController extends Controller {
 					updated_at=sysdate
 				where id=?
 			",[
+				$request->input('id_output'),
 				$request->input('kdtran'),
 				$request->input('id_pelanggan'),
 				$request->input('nopks'),
@@ -436,8 +490,49 @@ class PengeluaranRekamController extends Controller {
 					]);
 					
 					if($insert){
-						DB::commit();
-						return 'success';
+						
+						$ppn = (int)str_replace(',', '', $request->input('ppn'));
+						if($ppn>0){
+							
+							$now = new \DateTime();
+							$grup = $now->format('YmdHis');
+							
+							$insert = DB::insert("
+								insert into d_trans_akun(id_trans,kdakun,kddk,nilai,grup)
+								select	?,
+										?,
+										'D',
+										?,
+										?
+								from dual
+								union all
+								select	?,
+										?,
+										'K',
+										?,
+										?
+								from dual
+							",[
+								$request->input('inp-id'),
+								'721000',
+								$ppn,
+								$grup,
+								$request->input('inp-id'),
+								$request->input('kredit'),
+								$ppn,
+								$grup
+							]);
+							
+						}
+						
+						if($insert){
+							DB::commit();
+							return 'success';
+						}
+						else{
+							return 'Pajak gagal disimpan!';
+						}
+						
 					}
 					else{
 						return 'Data detil akun gagal disimpan!';

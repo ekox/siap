@@ -182,6 +182,15 @@ Route::group(['middleware' => 'auth'], function(){
 			
 		});
 		
+		Route::group(['prefix' => 'pajak'], function () {
+			
+			Route::get('', 'PengeluaranPajakController@index');
+			Route::get('/pilih/{param}', 'PengeluaranPajakController@pilih');
+			Route::post('', 'PengeluaranPajakController@simpan');
+			Route::post('/hapus', 'PengeluaranPajakController@hapus');
+			
+		});
+		
 		Route::group(['prefix' => 'rekam'], function () {
 			
 			Route::get('', 'PengeluaranRekamController@index');

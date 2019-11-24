@@ -5,7 +5,7 @@ use Session;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class PenerimaanPajakController extends Controller {
+class PengeluaranPajakController extends Controller {
 
 	public function index(Request $request)
 	{
@@ -53,7 +53,7 @@ class PenerimaanPajakController extends Controller {
 						where kddk='D' and grup is not null
 						group by a.id_trans
 					) j on(a.id=j.id_trans)
-					where b.menu=2 and a.thang='".session('tahun')."' and c.is_pajak1='1'
+					where b.menu=4 and a.thang='".session('tahun')."' and c.is_pajak1='1'
 					";
 		
 		/*

@@ -71,11 +71,46 @@
 									<label id="warning-debet" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="pagu">Total Pagu </label>
+									<div class="col-md-7">
+	                            		<input type="text" id="pagu" name="pagu" class="form-control val_num" style="text-align:right;" readonly>
+	                            	</div>
+									<label id="warning-pagu" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="realisasi">Total Realisasi </label>
+									<div class="col-md-7">
+	                            		<input type="text" id="realisasi" name="realisasi" class="form-control val_num" style="text-align:right;" readonly>
+	                            	</div>
+									<label id="warning-realisasi" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="sisa">Sisa Pagu </label>
+									<div class="col-md-7">
+	                            		<input type="text" id="sisa" name="sisa" class="form-control val_num" style="text-align:right;" readonly>
+	                            	</div>
+									<label id="warning-sisa" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="nilai">Nilai </label>
 									<div class="col-md-7">
 	                            		<input id="nilai" name="nilai" class="form-control" readonly style="text-align:right;">
 	                            	</div>
 									<label id="warning-nilai" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="nilai">PPN</label>
+									<div class="col-md-7">
+	                            		<input id="pajak" name="pajak" class="form-control" readonly style="text-align:right;">
+	                            	</div>
+									<label id="warning-pajak" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="nilai">Total</label>
+									<div class="col-md-7">
+	                            		<input id="total" name="total" class="form-control" readonly style="text-align:right;">
+	                            	</div>
+									<label id="warning-total" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="nopks">No.Bukti </label>
@@ -118,7 +153,7 @@
 		                            <label class="col-md-2 label-control" for="projectinput4"></label>
 		                            <div class="col-md-7">
 		                            	<button type="button" class="btn btn-raised btn-warning mr-1 batal">
-											<i class="ft-x"></i> Batal
+											<i class="ft-x"></i> Kembali
 										</button>
 		                            </div>
 		                        </div>
@@ -258,7 +293,12 @@
 					jQuery('#tgpks').val(result.message.tgpks);
 					jQuery('#tgjtempo').val(result.message.tgjtempo);
 					jQuery('#uraian').val(result.message.uraian);
+					jQuery('#pagu').val(digit_grouping(result.pagu));
+					jQuery('#realisasi').val(digit_grouping(result.realisasi));
+					jQuery('#sisa').val(digit_grouping(result.sisa));
 					jQuery('#nilai').val(digit_grouping(result.message.nilai));
+					jQuery('#pajak').val(digit_grouping(result.message.pajak));
+					jQuery('#total').val(digit_grouping(result.message.total));
 					jQuery('#div-lampiran').html(result.lampiran);					
 				}
 				else{

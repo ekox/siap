@@ -311,29 +311,35 @@ class PengeluaranProsesController extends Controller {
 		$rows = DB::select("
 			select  a.id,
 					b.nmalur,
+					a.id_output,
+					a.kdunit,
+					a.thang,
 					c.nmunit,
 					d.nama as nmpelanggan,
-					f.nmtrans,
+					k.nmtrans,
 					a.nodok as nopks,
 					to_char(a.tgdok,'yyyy-mm-dd') as tgpks,
 					to_char(a.tgdok1,'yyyy-mm-dd') as tgjtempo,
 					a.uraian,
 					nvl(g.nilai,0) as nilai,
+					nvl(j.nilai,0) as pajak,
+					nvl(g.nilai,0)+nvl(j.nilai,0) as total,
 					nvl(f.nmakun,0) as debet,
 					nvl(i.nmakun,0) as kredit,
 					a.id_alur,
-					a.status
+					a.status,
+					g.kdakun
 			from d_trans a
 			left outer join t_alur b on(a.id_alur=b.id)
 			left outer join t_unit c on(a.kdunit=c.kdunit)
 			left outer join t_penerima d on(a.id_penerima=d.id)
-			left outer join t_trans f on(a.kdtran=f.id)
+			left outer join t_trans k on(a.kdtran=k.id)
 			left outer join(
 				select	id_trans,
 						kdakun,
 						nilai
 				from d_trans_akun
-				where kddk='D'
+				where kddk='D' and grup is null
 			) g on(a.id=g.id_trans)
 			left outer join(
 				select	id_trans,
@@ -342,6 +348,13 @@ class PengeluaranProsesController extends Controller {
 				from d_trans_akun
 				where kddk='K'
 			) h on(a.id=h.id_trans)
+			left outer join(
+				select  a.id_trans,
+						sum(a.nilai) as nilai
+				from d_trans_akun a
+				where kddk='D' and grup is not null
+				group by a.id_trans
+			) j on(a.id=j.id_trans)
 			left outer join t_akun f on(g.kdakun=f.kdakun)
 			left outer join t_akun i on(h.kdakun=i.kdakun)
 			where a.id=?
@@ -396,6 +409,48 @@ class PengeluaranProsesController extends Controller {
 			$lampiran .= '</ul>';
 			
 			$data['lampiran'] = $lampiran;
+			
+			$rows = DB::select("
+				select  a.pagu,
+						nvl(b.nilai,0) as realisasi,
+						a.pagu-nvl(b.nilai,0) as sisa
+				from(
+					select  substr(a.kdunit,1,4) as kdunit,
+							a.thang,
+							a.id_output,
+							a.kdakun,
+							sum(a.nilai) as pagu
+					from d_pagu a
+					group by substr(a.kdunit,1,4),a.thang,a.id_output,a.kdakun
+				) a
+				left join(
+					select  substr(b.kdunit,1,4) as kdunit,
+							b.thang,
+							b.id_output,
+							a.kdakun,
+							sum(a.nilai) as nilai
+					from d_trans_akun a
+					left join d_trans b on(a.id_trans=b.id)
+					where a.kddk='D' and b.id<>?
+					group by substr(b.kdunit,1,4),b.thang,b.id_output,a.kdakun
+				) b on(a.kdunit=b.kdunit and a.thang=b.thang and a.id_output=b.id_output and a.kdakun=b.kdakun)
+				where a.kdunit=? and a.thang=? and a.id_output=? and a.kdakun=?
+			",[
+				$id,
+				substr($detil->kdunit,0,4),
+				$detil->thang,
+				$detil->id_output,
+				$detil->kdakun
+			]);
+			
+			$data['pagu'] = 0;
+			$data['realisasi'] = 0;
+			$data['sisa'] = 0;
+			if(count($rows)>0){
+				$data['pagu'] = $rows[0]->pagu;
+				$data['realisasi'] = $rows[0]->realisasi;
+				$data['sisa'] = $rows[0]->sisa;
+			}
 			
 		}
 		else{
