@@ -291,6 +291,15 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get('/keuangan/{param}', 'LaporanController@keuangan');
 		
 	});
+
+	//route for Bukti
+	Route::group(['prefix' => 'bukti'], function() {
+	
+		Route::get('/umk', 'BuktiTransaskiController@pengeluaranUangMukaKerja');
+		Route::get('/uang-masuk', 'BuktiTransaskiController@penerimaan');
+		Route::get('/uang-keluar', 'BuktiTransaskiController@pengeluaran');
+		
+	});
 	
 	//route for Dropdown
 	Route::group(['prefix' => 'dropdown'], function(){
