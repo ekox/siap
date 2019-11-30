@@ -232,6 +232,14 @@
 	<script src="{{ asset('plugins/alertify/lib/alertify.min.js') }}"></script>
 	<script src="{{ asset('plugins/jquery-file-upload/js/jquery.fileupload.js') }}"></script>
 	<script src="{{ asset('plugins/jQueryMaskPlugin/src/jquery.mask.js') }}"></script>
+	
+	<!-- Highcharts -->
+    <script src="{{ asset('plugins/highcharts/highcharts.js') }}"></script>
+    <script src="{{ asset('plugins/highcharts/highcharts-more.js') }}"></script>
+    <script src="{{ asset('plugins/highcharts/highcharts-3d.js') }}"></script>
+    <script src="{{ asset('plugins/highcharts/modules/exporting.js') }}"></script>
+	<script src="{{ asset('plugins/pdfobject/pdfobject.min.js') }}"></script>
+	
     <!-- BEGIN VENDOR JS-->
     <!-- BEGIN PAGE VENDOR JS-->
     <!-- END PAGE VENDOR JS-->

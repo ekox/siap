@@ -20,7 +20,7 @@ class PengeluaranRekamController extends Controller {
 							a.nodok||'<br>'||to_char(a.tgdok,'dd-mm-yyyy') as pks,
 							to_char(a.tgdok1,'dd-mm-yyyy') as tgjtempo,
 							a.uraian,
-							nvl(f.nilai,0) as nilai,
+							nvl(f.nilai,0)+nvl(j.nilai,0) as nilai,
 							c.nmstatus as status,
 							i.lampiran
 					from d_trans a
@@ -34,7 +34,7 @@ class PengeluaranRekamController extends Controller {
 						select	id_trans,
 								sum(nilai) as nilai
 						from d_trans_akun
-						where kddk='D'
+						where kddk='D' and grup is null
 						group by id_trans
 					) f on(a.id=f.id_trans)
 					left outer join(
@@ -44,6 +44,14 @@ class PengeluaranRekamController extends Controller {
 						left outer join t_dok b on(a.id_dok=b.id)
 						group by a.id_trans
 					) i on(a.id=i.id_trans)
+					left outer join(
+						select  a.id_trans,
+								a.kdakun,
+								sum(a.nilai) as nilai
+						from d_trans_akun a
+						where kddk='D' and grup is not null and substr(kdakun,1,2)='72'
+						group by a.id_trans,a.kdakun
+					) j on(a.id=j.id_trans)
 					where b.menu=4 and a.thang='".session('tahun')."' and a.kdunit='".session('kdunit')."'
 					order by a.id desc
 					";

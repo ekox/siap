@@ -22,7 +22,7 @@ class PengeluaranProsesController extends Controller {
 								a.nodok||'<br>'||to_char(a.tgdok,'dd-mm-yyyy') as pks,
 								to_char(a.tgdok1,'dd-mm-yyyy') as tgjtempo,
 								a.uraian,
-								nvl(f.nilai,0) as nilai,
+								nvl(f.nilai,0)+nvl(j.nilai,0) as nilai,
 								c.nmstatus as status,
 								decode(c.is_unit,null,
 									1,
@@ -42,9 +42,17 @@ class PengeluaranProsesController extends Controller {
 							select	id_trans,
 									sum(nilai) as nilai
 							from d_trans_akun
-							where kddk='D'
+							where kddk='D' and grup is null
 							group by id_trans
 						) f on(a.id=f.id_trans)
+						left outer join(
+							select  a.id_trans,
+									a.kdakun,
+									sum(a.nilai) as nilai
+							from d_trans_akun a
+							where kddk='D' and grup is not null and substr(kdakun,1,2)='72'
+							group by a.id_trans,a.kdakun
+						) j on(a.id=j.id_trans)
 						where b.menu=4 and a.thang='".session('tahun')."' and c.kdlevel='".session('kdlevel')."'
 					) a
 					where a.akses=1
@@ -176,7 +184,7 @@ class PengeluaranProsesController extends Controller {
 							a.nodok||'<br>'||to_char(a.tgdok,'dd-mm-yyyy') as pks,
 							to_char(a.tgdok1,'dd-mm-yyyy') as tgjtempo,
 							a.uraian,
-							nvl(f.nilai,0) as nilai,
+							nvl(f.nilai,0)+nvl(j.nilai,0) as nilai,
 							g.nmlevel||'/ '||c.nmstatus as status
 					from d_trans a
 					left outer join t_alur b on(a.id_alur=b.id)
@@ -189,9 +197,17 @@ class PengeluaranProsesController extends Controller {
 						select	id_trans,
 								sum(nilai) as nilai
 						from d_trans_akun
-						where kddk='D'
+						where kddk='D' and grup is null
 						group by id_trans
 					) f on(a.id=f.id_trans)
+					left outer join(
+						select  a.id_trans,
+								a.kdakun,
+								sum(a.nilai) as nilai
+						from d_trans_akun a
+						where kddk='D' and grup is not null and substr(kdakun,1,2)='72'
+						group by a.id_trans,a.kdakun
+					) j on(a.id=j.id_trans)
 					where b.menu=4 and a.thang='".session('tahun')."'
 					";
 		
@@ -352,7 +368,7 @@ class PengeluaranProsesController extends Controller {
 				select  a.id_trans,
 						sum(a.nilai) as nilai
 				from d_trans_akun a
-				where kddk='D' and grup is not null
+				where kddk='D' and grup is not null and substr(kdakun,1,2)='72'
 				group by a.id_trans
 			) j on(a.id=j.id_trans)
 			left outer join t_akun f on(g.kdakun=f.kdakun)
@@ -487,15 +503,36 @@ class PengeluaranProsesController extends Controller {
 				
 				$lanjut = true;
 				
-				if($rows[0]->is_valid=='1'){
+				if($rows[0]->is_pajak=='1'){
 					
-					if(count($request->input('pilih'))>0){
-						
-						
-						
-					}
-					else{
+					$rows_pajak = DB::select("
+						select	id
+						from d_trans_akun
+						where id_trans=? and substr(kdakun,1,1)='7'
+					",[
+						$request->input('inp-id')
+					]);
+					
+					if(count($rows_pajak)==0){
 						$lanjut = false;
+						$error = $rows[0]->ket;
+					}
+					
+				}
+				
+				if($rows[0]->is_bayar=='1'){
+					
+					$rows_bayar = DB::select("
+						select	nvl(nocek,'') as nocek
+						from d_trans
+						where id_=?
+					",[
+						$request->input('inp-id')
+					]);
+					
+					if($rows_bayar[0]->nocek==''){
+						$lanjut = false;
+						$error = $rows[0]->ket;
 					}
 					
 				}

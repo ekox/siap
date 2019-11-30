@@ -5,11 +5,11 @@ use Session;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class PengeluaranPajakController extends Controller {
+class PengeluaranBayarController extends Controller {
 
 	public function index(Request $request)
 	{
-		$aColumns = array('id','nmunit','nama','nmtrans','uraian','nilai','pajak','total');
+		$aColumns = array('id','nmunit','nama','nmtrans','uraian','nilai','pajak','total','nocek');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
 		/* DB table to use */
@@ -23,7 +23,8 @@ class PengeluaranPajakController extends Controller {
 							nvl(f.nilai,0) as nilai,
 							b.nmalur||'<br>'||g.nmlevel||'<br>'||c.nmstatus as status,
 							nvl(i.pajak,0) as pajak,
-							nvl(f.nilai,0)+nvl(j.pajak1,0) as total
+							nvl(f.nilai,0)+nvl(j.pajak1,0) as total,
+							nvl(a.nocek,'') as nocek
 					from d_trans a
 					left outer join t_alur b on(a.id_alur=b.id)
 					left outer join t_alur_status c on(a.id_alur=c.id_alur and a.status=c.status)
@@ -53,7 +54,7 @@ class PengeluaranPajakController extends Controller {
 						where kddk='D' and grup is not null and substr(kdakun,1,2)='72'
 						group by a.id_trans
 					) j on(a.id=j.id_trans)
-					where b.menu=4 and a.thang='".session('tahun')."' and c.is_pajak1='1'
+					where b.menu=4 and a.thang='".session('tahun')."' and c.is_bayar='1'
 					";
 		
 		/*
@@ -155,9 +156,7 @@ class PengeluaranPajakController extends Controller {
 					$arr_pajak1 = explode('|', $arr_pajak[$i]);
 					if(count($arr_pajak1)>1){
 						
-						$pajak .= '<li>'.$arr_pajak1[1].' '.number_format($arr_pajak1[2]).'
-										<a id="'.$row->id.'-'.$arr_pajak1[3].'" href="javascript:;" class="hapus-pajak" title="Hapus Pajak"><i class="fa fa-times"></i></a>
-									 </li>';
+						$pajak .= '<li>'.$arr_pajak1[1].' '.number_format($arr_pajak1[2]).'</li>';
 						
 					}
 					
@@ -169,7 +168,7 @@ class PengeluaranPajakController extends Controller {
 			$aksi='<center>
 						<button type="button" class="btn btn-raised btn-sm btn-icon btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-check"></i></button>
 						<div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
-							<a id="'.$row->id.'" class="dropdown-item proses" href="javascript:;">Hitung Pajak</a>
+							<a id="'.$row->id.'" class="dropdown-item proses" href="javascript:;">Bayar</a>
 						</div>
 					</center>';
 			
@@ -208,7 +207,11 @@ class PengeluaranPajakController extends Controller {
 					nvl(i.nmakun,0) as kredit,
 					nvl(j.kdakun,'') as kdakun,
 					a.id_alur,
-					a.status
+					a.status,
+					a.nocek,
+					to_char(a.tgcek,'yyyy-mm-dd') as tgcek,
+					k.kdakun as bayar,
+					k.grup
 			from d_trans a
 			left outer join t_alur b on(a.id_alur=b.id)
 			left outer join t_unit c on(a.kdunit=c.kdunit)
@@ -236,6 +239,15 @@ class PengeluaranPajakController extends Controller {
 				where kddk='D' and grup is not null and substr(kdakun,1,2)='72'
 				group by a.id_trans,a.kdakun
 			) j on(a.id=j.id_trans)
+			left outer join(
+				select  a.id_trans,
+						a.grup,
+						a.kdakun,
+						sum(a.nilai) as nilai
+				from d_trans_akun a
+				where kddk='K' and grup is not null and substr(kdakun,1,3)='111'
+				group by a.id_trans,a.grup,a.kdakun
+			) k on(a.id=k.id_trans)
 			left outer join t_akun f on(g.kdakun=f.kdakun)
 			left outer join t_akun i on(h.kdakun=i.kdakun)
 			where a.id=?
@@ -272,13 +284,13 @@ class PengeluaranPajakController extends Controller {
 			$rows = DB::select("
 				select  *
 				from t_akun
-				where substr(kdakun,1,2)='72' and lvl=6
+				where lvl=6 and substr(kdakun,1,3)='111' and substr(kdakun,1,4)<>'1112'
 			");
 			
 			$pajak = '<option value="">Pilih Data</option>';
 			foreach($rows as $row){
 				$selected = '';
-				if($row->kdakun==$detil->kdakun){
+				if($row->kdakun==$detil->bayar){
 					$selected = 'selected';
 				}
 				$pajak .= '<option value="'.$row->kdakun.'" '.$selected.'>'.$row->nmakun.'</option>';
@@ -302,7 +314,7 @@ class PengeluaranPajakController extends Controller {
 			from d_trans_akun a
 			left outer join d_trans b on(a.id_trans=b.id)
 			left outer join t_alur_status c on(b.id_alur=c.id_alur and b.status=c.status)
-			where a.id_trans=? and a.kddk='D' and c.is_pajak1='1' and a.grup is null
+			where a.id_trans=? and a.kddk='K' and c.is_bayar='1' and a.grup is null
 		",[
 			$request->input('inp-id')
 		]);
@@ -315,6 +327,14 @@ class PengeluaranPajakController extends Controller {
 			
 			$now = new \DateTime();
 			$grup = $now->format('YmdHis');
+			
+			$delete = DB::delete("
+				delete from d_trans_akun
+				where id_trans=? and grup=?
+			",[
+				$request->input('inp-id'),
+				$request->input('grup'),
+			]);
 			
 			$insert = DB::insert("
 				insert into d_trans_akun(id_trans,kdakun,kddk,nilai,grup)
@@ -333,18 +353,36 @@ class PengeluaranPajakController extends Controller {
 				from dual
 			",[
 				$request->input('inp-id'),
-				$request->input('pajak'),
-				str_replace(',', '', $request->input('nilai1')),
+				$kredit,
+				str_replace(',', '', $request->input('nilai')),
 				$grup,
 				$request->input('inp-id'),
-				$kredit,
-				str_replace(',', '', $request->input('nilai1')),
+				$request->input('bayar'),
+				str_replace(',', '', $request->input('nilai')),
 				$grup
 			]);
 			
 			if($insert){
-				DB::commit();
-				return 'success';
+				
+				$update = DB::update("
+					update d_trans
+					set nocek=?,
+						tgcek=to_date(?,'yyyy-mm-dd')
+					where id=?
+				",[
+					$request->input('nocek'),
+					$request->input('tgcek'),
+					$request->input('inp-id'),
+				]);
+				
+				if($update){
+					DB::commit();
+					return 'success';
+				}
+				else{
+					return 'Nomor dokumen gagal disimpan!';
+				}
+				
 			}
 			else{
 				return 'Data gagal disimpan!';

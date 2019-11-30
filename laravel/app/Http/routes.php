@@ -54,6 +54,15 @@ Route::group(['middleware' => 'auth'], function(){
 			
 		});
 		
+		Route::group(['prefix' => 'target'], function () {
+			
+			Route::get('', 'AnggaranTargetController@index');
+			Route::get('/pilih/{param}', 'AnggaranTargetController@pilih')->middleware('role:00');
+			Route::post('', 'AnggaranTargetController@simpan')->middleware('role:00');
+			Route::post('/hapus', 'AnggaranTargetController@hapus')->middleware('role:00');
+			
+		});
+		
 	});
 	
 	//tagihan
@@ -191,6 +200,15 @@ Route::group(['middleware' => 'auth'], function(){
 			
 		});
 		
+		Route::group(['prefix' => 'bayar'], function () {
+			
+			Route::get('', 'PengeluaranBayarController@index');
+			Route::get('/pilih/{param}', 'PengeluaranBayarController@pilih');
+			Route::post('', 'PengeluaranBayarController@simpan');
+			Route::post('/hapus', 'PengeluaranBayarController@hapus');
+			
+		});
+		
 		Route::group(['prefix' => 'rekam'], function () {
 			
 			Route::get('', 'PengeluaranRekamController@index');
@@ -289,6 +307,23 @@ Route::group(['middleware' => 'auth'], function(){
 	Route::group(['prefix' => 'laporan'], function () {
 		
 		Route::get('/keuangan/{param}', 'LaporanController@keuangan');
+		
+	});
+	
+	Route::group(['prefix' => 'monitoring'], function () {
+		
+		Route::group(['prefix' => 'realisasi'], function () {
+		
+			Route::get('/pendapatan/{param}', 'MonitoringController@realPendapatan');
+			Route::get('/belanja/{param}', 'MonitoringController@realBelanja');
+			
+		});
+		
+		Route::group(['prefix' => 'saldokas'], function () {
+			
+			Route::get('/{param}', 'MonitoringController@saldoKas');
+			
+		});
 		
 	});
 	
