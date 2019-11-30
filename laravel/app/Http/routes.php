@@ -309,6 +309,15 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get('/keuangan/{param}', 'LaporanController@keuangan');
 		
 	});
+
+	//route for Bukti
+	Route::group(['prefix' => 'bukti'], function() {
+	
+		Route::get('/uang-muka', 'BuktiTransaksiController@uangMukaKerja');
+		Route::get('/uang-masuk', 'BuktiTransaksiController@uangMasuk');
+		Route::get('/uang-keluar', 'BuktiTransaksiController@uangKeluar');
+		
+	});
 	
 	Route::group(['prefix' => 'monitoring'], function () {
 		
