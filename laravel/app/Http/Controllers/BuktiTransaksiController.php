@@ -6,137 +6,209 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\TableController as TBL;
+use App\Http\Controllers\ConvertController as KNV;
+use Mpdf\Mpdf;
+use App\Bukti;
 
-class BuktiTransaksiController extends Controller
+class BuktiTransaksiController extends TableController
 {
     //
+    public static $style = '<style>
+		.ac {text-align:center;}
+		.al {text-align:left;}
+		.aj {text-align:justify;}
+		.ar {text-align:right;}
+		.ball {border:1px solid;}
+		.blr {border-left:1px solid; border-right:1px solid;}
+		.btb {border-top:1px solid; border-bottom:1px solid;}
+		.bl {border-left:1px solid;}
+		.bt {border-top:1px solid;}
+		.br {border-right:1px solid;}
+		.bb {border-bottom:1px solid;}
+		.bo {font-weight:bold;}
+		.pad2 {padding:2px 2px 2px 2px;}
+	</style>';
+	
     public static $perusahaan = 'PERUSAHAAN DAERAH PEMBANGUNAN<br>SARANA JAYA';
 
     public function __construct()
 	{
-		$this->thead_open = TBL::$thead_open;
-		$this->thead_close = TBL::$thead_close;
-		$this->tbody_open = TBL::$tbody_open;
-		$this->tbody_close = TBL::$tbody_close;
+		//
 	}
 
-	public function penerimaan()
+	/**
+	 * description 
+	 */
+	public function uangMasuk()
 	{
-		return '';
+		$angka = 987654321987654;
+		return strlen($angka).' digit <br>'.number_format($angka, 0, ',', '.')." terbilang ( ".KNV::terbilang($angka)." )";
 	}
 
-	public function pengeluaran()
+	/**
+	 * description 
+	 */
+	public function uangKeluar()
 	{
-		return '';
+		//~ $obj = new Bukti;
+		//~ dd($obj->queryUangMukaKerja(112));
+		$id = htmlentities($_GET['id']);
+		dd(Bukti::queryUangMukaKerja($id));
 	}
 
-    public function pengeluaranUangMukaKerja()
+    /**
+	 * description 
+	 */
+	public function uangMukaKerja()
     {
-		$namaBerkas = 'Pengeluaran Kas/Bank untuk Uang Muka Kerja';
-		$noDokumen = 'No.:    PSJ/FM/DKA/MRI/01';
-		$tglBerlaku = '';
-
-		$html_out = '';
-		$html_out.= '<table border="0" cellspacing="0" cellpadding="1" width="100%">';
-		$html_out.= $this->tbody_open;
-
-		$html_out.= '<tr>
-			<td colspan="5" class="">Sudah diterima dari P.D. Pembangunan Sarana Jaya :</td>
-		</tr>';
-
-		$html_out.= '<tr>
-			<td colspan="5">&nbsp;</td>
-		</tr>';
-
-		$html_out.= '<tr>
-			<td width="15%" class="">Sebesar</td>
-			<td width="2%" class="">:</td>
-			<td colspan="3" class="">&nbsp;</td>
-		</tr>';
-
-		$html_out.= '<tr>
-			<td>Terbilang</td>
-			<td>:</td>
-			<td colspan="3">&nbsp;</td>
-		</tr>';
-
-		$html_out.= '<tr>
-			<td>Untuk Keperluan</td>
-			<td>:</td>
-			<td colspan="3">&nbsp;</td>
-		</tr>';
-
-		$html_out.= '<tr>
-			<td>Nomor Mata Anggaran</td>
-			<td>:</td>
-			<td colspan="3">&nbsp;</td>
-		</tr>';
-
-		$html_out.= '<tr>
-			<td>&nbsp</td>
-			<td></td>
-			<td width="10%">RKAP</td>
-			<td width="2%">:</td>
-			<td></td>
-		</tr>';
-
-		$html_out.= '<tr>
-			<td>&nbsp</td>
-			<td></td>
-			<td width="10%">Realisasi</td>
-			<td width="2%">:</td>
-			<td></td>
-		</tr>';
-
-		$html_out.= '<tr>
-			<td>&nbsp</td>
-			<td></td>
-			<td width="10%">Sisa</td>
-			<td width="2%">:</td>
-			<td></td>
-		</tr>';
-
-		$html_out.= '<tr>
-			<td colspan="5">&nbsp;</td>
-		</tr>';
-
-		$html_out.= '<tr>
-			<td colspan="4">Uang tersebut kami pertanggungjawabkan pada tanggal :</td>
-			<td colspan="1"></td>
-		</tr>';
-
-		$html_out.= $this->tbody_close;	
-		$html_out.= '</table>';
-
-		$html_out.= '<br><br>';
+		if(!isset($_GET['id'])) {
+			return '<script type="text/javascript">alert(\'ID tidak ditemukan\');window.open(\'/siap\', \'_blank\')</script>';
+		} else {
+			$id = htmlentities($_GET['id']);
 		
-		$html_out.= '<table width="100%">';
-		$html_out.= $this->tbody_open;
-		$html_out.= '<tr>
-			<td colspan="2" width="70%">&nbsp;</td>
-			<td width="" style="padding-right:1em;">Jakarta, ..................... 20..</td>
-		</tr>';
+			$namaBerkas = 'Pengeluaran Kas/Bank untuk Uang Muka Kerja';
+			$noDokumen = 'No.:    PSJ/FM/DKA/MRI/01';
+			$tglBerlaku = '';
 
-		$html_out.= '<tr>
-			<td colspan="3">&nbsp;</td>
-		</tr>';
+			$data = Bukti::queryUangMukaKerja($id);
 
-		$html_out.= '<tr>
-			<td>Menyetujui,</td>
-			<td>Pemohon</td>
-			<td>Penerima,</td>
-		</tr>';
-		
-		$html_out.= '<tr>
-			<td>SM Divisi Keuangan & Akt.</td>
-			<td>SM Divisi Umum & SDM</td>
-			<td>&nbsp;</td>
-		</tr>';
-		$html_out.= $this->tbody_close;
-		$html_out.= '</table>';
+			$html_out = self::$style;
+			$html_out.= '<table border="0" cellspacing="0" cellpadding="1" width="100%" style="font-size:10px;">';
+			$html_out.= self::$tbody_open;
 
-		return $html_out;
+			$html_out.= '<tr>
+				<td colspan="7" class="">Sudah diterima dari P.D. Pembangunan Sarana Jaya :</td>
+			</tr>';
+
+			$html_out.= '<tr>
+				<td colspan="7">&nbsp;</td>
+			</tr>';
+
+			$html_out.= '<tr>
+				<td width="20%" class="">Sebesar</td>
+				<td width="2%" class="">:</td>
+				<td colspan="5" class="">'.self::cFmt($data->nilai).'</td>
+			</tr>';
+
+			$html_out.= '<tr>
+				<td>Terbilang</td>
+				<td>:</td>
+				<td colspan="5">'.KNV::terbilang($data->nilai).' rupiah'.'</td>
+			</tr>';
+
+			$html_out.= '<tr>
+				<td>Untuk Keperluan</td>
+				<td>:</td>
+				<td colspan="5">'.$data->uraian.'</td>
+			</tr>';
+
+			$html_out.= '<tr>
+				<td>Nomor Mata Anggaran</td>
+				<td>:</td>
+				<td colspan="5">'.$data->kdakun.' ('.$data->nmakun.')</td>
+			</tr>';
+
+			$html_out.= '<tr>
+				<td>&nbsp;</td>
+				<td></td>
+				<td width="10%">RKAP</td>
+				<td width="2%">:</td>
+				<td colspan="3"></td>
+			</tr>';
+
+			$html_out.= '<tr>
+				<td>&nbsp;</td>
+				<td></td>
+				<td width="10%">Realisasi</td>
+				<td width="2%">:</td>
+				<td colspan="3"></td>
+			</tr>';
+
+			$html_out.= '<tr>
+				<td>&nbsp;</td>
+				<td></td>
+				<td width="10%">Sisa</td>
+				<td width="2%">:</td>
+				<td colspan="3"></td>
+			</tr>';
+
+			$html_out.= '<tr>
+				<td colspan="7">&nbsp;</td>
+			</tr>';
+
+			$html_out.= '<tr>
+				<td colspan="5">Uang tersebut kami pertanggungjawabkan pada tanggal :</td>
+				<td colspan="2"></td>
+			</tr>';
+
+			$html_out.= self::$tbody_close;	
+			$html_out.= '</table>';
+
+			$html_out.= '<br><br>';
+			
+			$html_out.= '<table border="0" cellspacing="0" cellpadding="3" width="100%" style="font-size:10px;">';
+			$html_out.= self::$tbody_open;
+			$html_out.= '<tr>
+				<td colspan="2" width="70%">&nbsp;</td>
+				<td width="30%" style="padding-right:1em;" class="ac">Jakarta, ..................... '.$data->thang.'</td>
+			</tr>';
+
+			$html_out.= '<tr>
+				<td colspan="3">&nbsp;</td>
+			</tr>';
+
+			$html_out.= '<tr>
+				<td class="ac">Menyetujui,</td>
+				<td class="ac">Pemohon</td>
+				<td class="ac">Penerima,</td>
+			</tr>';
+			
+			$html_out.= '<tr>
+				<td class="ac">SM. Divisi Keuangan & Akt.</td>
+				<td class="ac">SM. Divisi Umum & SDM/td>
+				<td class="ac">&nbsp;</td>
+			</tr>';
+			
+			$html_out.= '<tr>
+				<td colspan="3">&nbsp;</td>
+			</tr>';
+
+			$html_out.= '<tr>
+				<td colspan="3">&nbsp;</td>
+			</tr>';
+
+			$html_out.= '<tr>
+				<td colspan="3">&nbsp;</td>
+			</tr>';
+
+			$html_out.= '<tr>
+				<td class="ac">..........</td>
+				<td class="ac">..........</td>
+				<td class="ac">..........</td>
+			</tr>';
+			
+			$html_out.= self::$tbody_close;
+			$html_out.= '</table>';
+
+			//~ return $html_out;
+			//~ require_once 'laravel/vendor/autoload.php';
+			$mpdf = new Mpdf([
+				'mode' => 'utf-8',
+				'format' => 'A4-P',
+				'margin_left' => 15,
+				'margin_right' => 15,
+				'margin_top' => 18,
+				'margin_bottom' => 18,
+			]);
+
+			//mode portrait or landscape
+			$mpdf->AddPage('P');
+
+			//write content to PDF
+			$mpdf->writeHTML($html_out);
+			$mpdf->Output('Bukti Uang Muka Kerja.pdf', 'I');
+			exit;
+		}
     }
 
 }

@@ -295,9 +295,9 @@ Route::group(['middleware' => 'auth'], function(){
 	//route for Bukti
 	Route::group(['prefix' => 'bukti'], function() {
 	
-		Route::get('/umk', 'BuktiTransaksiController@pengeluaranUangMukaKerja');
-		Route::get('/uang-masuk', 'BuktiTransaksiController@penerimaan');
-		Route::get('/uang-keluar', 'BuktiTransaksiController@pengeluaran');
+		Route::get('/uang-muka', 'BuktiTransaksiController@uangMukaKerja');
+		Route::get('/uang-masuk', 'BuktiTransaksiController@uangMasuk');
+		Route::get('/uang-keluar', 'BuktiTransaksiController@uangKeluar');
 		
 	});
 	
