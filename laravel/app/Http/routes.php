@@ -278,6 +278,16 @@ Route::group(['middleware' => 'auth'], function(){
 			
 		});
 		
+		Route::group(['prefix' => 'jurnal-penyesuaian'], function () {
+			
+			Route::get('', 'PembukuanJurnalPController@index');
+			Route::get('/pilih/{param}', 'PembukuanJurnalPController@pilih')->middleware('role:00');
+			Route::get('/detil/{param}', 'PembukuanJurnalPController@detil');
+			Route::post('', 'PembukuanJurnalPController@simpan')->middleware('role:00');
+			Route::post('/hapus', 'PembukuanJurnalPController@hapus')->middleware('role:00');
+			
+		});
+		
 		Route::group(['prefix' => 'posting'], function () {
 		
 			Route::get('', 'PembukuanPostingController@index');
