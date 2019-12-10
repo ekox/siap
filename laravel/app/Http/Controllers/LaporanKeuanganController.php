@@ -12,14 +12,12 @@ class LaporanKeuanganController extends TableController
 {
     //
 	public $tahun;
-	public $nbsp;
     
 	// methods of class
 	public function __construct()
 	{
 		parent::__construct();
 		$this->tahun = session('tahun');
-		$this->nbsp = str_repeat('&nbsp;', 4);
 	}
 
 	//LAPORAN LABA(RUGI)
@@ -33,9 +31,9 @@ class LaporanKeuanganController extends TableController
 			$periode = htmlentities($_GET['periode']);
 		}
 		
-		$this->setReportName('LABA (RUGI) REALISASI RKAP TRIWULAN III TAHUN 2019');
+		$this->setReportName('LAPORAN LABA RUGI'); //REALISASI RKAP').strtoupper(self::getPeriode($periode)).' TAHUN 2019');
 		$namaLaporan = $this->getReportName();
-		$arrParamLaporan = ['nmlap'=>$namaLaporan, 'periode'=>$periode];
+		$arrParamLaporan = ['nmlap'=>$namaLaporan, 'periode'=>$periode, 'jnslap'=>'lbr'];
 		$html_out = $this->headerOfReport($arrParamLaporan);
 		$nbsp = $this->nbsp;
 		
@@ -46,10 +44,10 @@ class LaporanKeuanganController extends TableController
 		//header of content
 		$html_out.= '<tr>
 			<th rowspan="2">URAIAN</th>
-			<th rowspan="2">RKAP 2019</th>
-			<th colspan="3">TRIWULAN III</th>
-			<th colspan="3">s.d TRIWULAN III</th>
-			<th rowspan="2">% thd RKAP 2019</th>
+			<th rowspan="2">RKAP '.$tahun.'</th>
+			<th colspan="3">'.self::getPeriode($periode).' '.$tahun.'</th>
+			<th colspan="3">s.d '.self::getPeriode($periode).' '.$tahun.'</th>
+			<th rowspan="2">% thd RKAP '.$tahun.'</th>
 		</tr>';
 		
 		$html_out.= '<tr>
@@ -197,7 +195,7 @@ class LaporanKeuanganController extends TableController
 		
 		$this->setReportName('LAPORAN REALISASI POSISI KEUANGAN');
 		$namaLaporan = $this->getReportName();
-		$arrParamLaporan = ['nmlap'=>$namaLaporan, 'periode'=>$periode];
+		$arrParamLaporan = ['nmlap'=>$namaLaporan, 'periode'=>$periode, 'jnslap'=>'nrc'];
 		$html_out = $this->headerOfReport($arrParamLaporan);
 		$nbsp = str_repeat('&nbsp;', 4);
 
@@ -208,7 +206,7 @@ class LaporanKeuanganController extends TableController
 		$html_out.= '<tr>
 			<th rowspan="2">URAIAN</th>
 			<th rowspan="2">RKAP '.$tahun.'</th>
-			<th colspan="3">s.d Triwulan III '.$tahun.'</th>
+			<th colspan="3">s.d '.self::getPeriode($periode).' '.$tahun.'</th>
 			<th rowspan="2">%</th>
 		</tr>';
 		
@@ -368,9 +366,9 @@ class LaporanKeuanganController extends TableController
 			$arrParam['periode'] = $periode;
 		}
 		
-		$this->setReportName('LAPORAN PERUBAHAN EKUITAS TRIWULAN III TAHUN 2019');
+		$this->setReportName('LAPORAN PERUBAHAN EKUITAS '.self::getPeriode($periode).' TAHUN 2019');
 		$namaLaporan = $this->getReportName();
-		$arrParamLaporan = ['nmlap'=>$namaLaporan, 'periode'=>$periode];
+		$arrParamLaporan = ['nmlap'=>$namaLaporan, 'periode'=>$periode, 'jnslap'=>'prb'];
 		$html_out = $this->headerOfReport($arrParamLaporan);
 		$nbsp = str_repeat('&nbsp;', 4);
 
@@ -381,8 +379,8 @@ class LaporanKeuanganController extends TableController
 		$html_out.= '<tr>
 			<th style="padding-top:1em;padding-bottom:1em;">URAIAN</th>
 			<th style="padding-top:1em;padding-bottom:1em;">RKAP 2019</th>
-			<th style="padding-top:1em;padding-bottom:1em;">RKAP TRIWULAN III 2019</th>
-			<th style="padding-top:1em;padding-bottom:1em;">Realisasi TRIWULAN III 2019</th>
+			<th style="padding-top:1em;padding-bottom:1em;">RKAP '.self::getPeriode($periode).' '.$tahun.'</th>
+			<th style="padding-top:1em;padding-bottom:1em;">Realisasi '.self::getPeriode($periode).' '.$tahun.'</th>
 			<th style="padding-top:1em;padding-bottom:1em;">%</th>
 			<th style="padding-top:1em;padding-bottom:1em;">%</th>
 		</tr>';
@@ -475,9 +473,9 @@ class LaporanKeuanganController extends TableController
 			$periode = htmlentities($_GET['periode']);
 		}
 		
-		$this->setReportName('LAPORAN ARUS KAS TRIWULAN III TAHUN 2019');
+		$this->setReportName('LAPORAN ARUS KAS'); //.strtoupper(self::getPeriode($periode)).' TAHUN 2019');
 		$namaLaporan = $this->getReportName();
-		$arrParamLaporan = ['nmlap'=>$namaLaporan, 'periode'=>$periode];
+		$arrParamLaporan = ['nmlap'=>$namaLaporan, 'periode'=>$periode, 'jnslap'=>'cfl'];
 		$html_out = $this->headerOfReport($arrParamLaporan);
 		$nbsp = str_repeat('&nbsp;', 4);
 
@@ -488,8 +486,8 @@ class LaporanKeuanganController extends TableController
 		$html_out.= '<tr>
 			<th rowspan="2" style="">URAIAN</th>
 			<th rowspan="2" style="">RKAP 2019</th>
-			<th colspan="2" style="">RKAP TRIWULAN III 2019</th>
-			<th colspan="2" style="">Realisasi TRIWULAN III 2019</th>
+			<th colspan="2" style="">RKAP '.self::getPeriode($periode).' '.$tahun.'</th>
+			<th colspan="2" style="">Realisasi '.self::getPeriode($periode).' '.$tahun.'</th>
 			<th rowspan="2" style="">%</th>
 			<th rowspan="2" style="">%</th>
 		</tr>';
