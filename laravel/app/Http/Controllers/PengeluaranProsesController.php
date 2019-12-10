@@ -525,7 +525,7 @@ class PengeluaranProsesController extends Controller {
 					$rows_bayar = DB::select("
 						select	nvl(nocek,'') as nocek
 						from d_trans
-						where id_=?
+						where id=?
 					",[
 						$request->input('inp-id')
 					]);
@@ -583,7 +583,7 @@ class PengeluaranProsesController extends Controller {
 					
 				}
 				else{
-					return 'Anda belum melakukan validasi data!';
+					return $error;
 				}
 				
 			}

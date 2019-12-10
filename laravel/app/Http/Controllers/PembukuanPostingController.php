@@ -145,13 +145,13 @@ class PembukuanPostingController extends Controller {
 		if($periode!==''){
 			
 			$where = '';
-			if($periode=='12'){
+			//if($periode=='12'){
 				$where = "
 					union all
 					
 					/* cari equitas laba */
-					select  '".session('tahun')."' as thang,
-							'".$periode."' as periode,
+					select  to_char(b.tgdok,'YYYY') as thang,
+							to_char(b.tgdok,'MM') as periode,
 							a.kdakun,
 							'D' as kddk,
 							sum(a.nilai) as nilai
@@ -160,12 +160,15 @@ class PembukuanPostingController extends Controller {
 					where   b.thang='".session('tahun')."' and
 							b.tgdok<=last_day(to_date('01/".$periode."/".session('tahun')."','DD/MM/YYYY')) and
 							substr(a.kdakun,1,1) in('4','6','8')
-					group by a.kdakun,a.kddk
+					group by to_char(b.tgdok,'YYYY'),
+							to_char(b.tgdok,'MM'),
+							a.kdakun,
+							a.kddk
 
 					union all
 
-					select  '".session('tahun')."' as thang,
-							'".$periode."' as periode,
+					select  to_char(b.tgdok,'YYYY') as thang,
+							to_char(b.tgdok,'MM') as periode,
 							'322000' as kdakun,
 							'K' as kddk,
 							sum(a.nilai) as nilai
@@ -174,12 +177,16 @@ class PembukuanPostingController extends Controller {
 					where   b.thang='".session('tahun')."' and
 							b.tgdok<=last_day(to_date('01/".$periode."/".session('tahun')."','DD/MM/YYYY')) and
 							substr(a.kdakun,1,1) in('4','6','8')
+					group by to_char(b.tgdok,'YYYY'),
+							to_char(b.tgdok,'MM'),
+							a.kdakun,
+							a.kddk
 							
 					union all
 							
 					/* cari equitas rugi */
-					select  '".session('tahun')."' as thang,
-							'".$periode."' as periode,
+					select  to_char(b.tgdok,'YYYY') as thang,
+							to_char(b.tgdok,'MM') as periode,
 							a.kdakun,
 							'K' as kddk,
 							sum(a.nilai) as nilai
@@ -188,12 +195,15 @@ class PembukuanPostingController extends Controller {
 					where   b.thang='".session('tahun')."' and
 							b.tgdok<=last_day(to_date('01/".$periode."/".session('tahun')."','DD/MM/YYYY')) and
 							substr(a.kdakun,1,1) in('5','7')
-					group by a.kdakun,a.kddk
+					group by to_char(b.tgdok,'YYYY'),
+							to_char(b.tgdok,'MM'),
+							a.kdakun,
+							a.kddk
 
 					union all
 
-					select  '".session('tahun')."' as thang,
-							'".$periode."' as periode,
+					select  to_char(b.tgdok,'YYYY') as thang,
+							to_char(b.tgdok,'MM') as periode,
 							'322000' as kdakun,
 							'D' as kddk,
 							sum(a.nilai) as nilai
@@ -202,8 +212,12 @@ class PembukuanPostingController extends Controller {
 					where   b.thang='".session('tahun')."' and
 							b.tgdok<=last_day(to_date('01/".$periode."/".session('tahun')."','DD/MM/YYYY')) and
 							substr(a.kdakun,1,1) in('5','7')
+					group by to_char(b.tgdok,'YYYY'),
+							to_char(b.tgdok,'MM'),
+							a.kdakun,
+							a.kddk
 				";
-			}
+			//}
 			
 			$query = "
 				select  a.thang,
@@ -265,7 +279,7 @@ class PembukuanPostingController extends Controller {
 					
 					$delete = DB::delete("
 						delete from d_buku_besar
-						where thang='".session('tahun')."' and periode='".$periode."'
+						where thang='".session('tahun')."' and periode<='".$periode."'
 					");
 					
 					$insert = DB::insert("
