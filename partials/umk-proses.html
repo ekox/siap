@@ -29,6 +29,12 @@
 							<input type="hidden" id="status" name="status">
 							<div class="form-body">
 								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="nourut">No.Transaksi </label>
+									<div class="col-md-7">
+	                            		<input type="text" id="nourut" name="nourut" class="form-control" readonly>
+	                            	</div>
+		                        </div>
+								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="nmunit">Divisi/ Unit </label>
 									<div class="col-md-7">
 	                            		<input id="nmunit" name="nmunit" class="form-control" readonly>
@@ -157,6 +163,7 @@
 								<thead>
 									<tr>
 										<th>No</th>
+										<th>No.Trans</th>
 										<th>Divisi</th>
 										<th>Penerima</th>
 										<th>Transaksi</th>
@@ -282,6 +289,7 @@
 					jQuery('#inp-rekambaru').val('0');
 					jQuery('#nmunit').val(result.message.nmunit);
 					jQuery('#id_alur').val(result.message.id_alur);
+					jQuery('#nourut').val(result.message.nourut);
 					jQuery('#status').val(result.message.status);
 					jQuery('#nmunit').val(result.message.nmunit);
 					jQuery('#nmalur').val(result.message.nmalur);

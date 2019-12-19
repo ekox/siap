@@ -29,6 +29,13 @@
 							<input type="hidden" id="inp-akun">
 							<div class="form-body">
 								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="nourut">No.Transaksi </label>
+									<div class="col-md-7">
+	                            		<input type="text" id="nourut" name="nourut" class="form-control" readonly>
+	                            	</div>
+									<button id="cari-nourut" class="btn btn-xs btn-raised btn-warning mr-1"><i class="fa fa-refresh"></i></button>
+		                        </div>
+								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="id_alur">Jenis Kegiatan </label>
 									<div class="col-md-7">
 	                            		<select id="id_alur" name="id_alur" class="form-control chosen">
@@ -99,6 +106,34 @@
 	                            		<input type="text" id="ppn" name="ppn" class="form-control val_num" style="text-align:right;" maxlength="19">
 	                            	</div>
 									<label id="warning-ppn" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="pph21">PPh 21 </label>
+									<div class="col-md-7">
+	                            		<input type="text" id="pph21" name="pph21" class="form-control val_num" style="text-align:right;" maxlength="19">
+	                            	</div>
+									<label id="warning-pph21" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="pph22">PPh 22 </label>
+									<div class="col-md-7">
+	                            		<input type="text" id="pph22" name="pph22" class="form-control val_num" style="text-align:right;" maxlength="19">
+	                            	</div>
+									<label id="warning-pph22" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="pph23">PPh 23 </label>
+									<div class="col-md-7">
+	                            		<input type="text" id="pph23" name="pph23" class="form-control val_num" style="text-align:right;" maxlength="19">
+	                            	</div>
+									<label id="warning-pph23" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="pph25">PPh 25 </label>
+									<div class="col-md-7">
+	                            		<input type="text" id="pph25" name="pph25" class="form-control val_num" style="text-align:right;" maxlength="19">
+	                            	</div>
+									<label id="warning-pph25" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="total">Total </label>
@@ -220,7 +255,7 @@
 								<thead>
 									<tr>
 										<th>No</th>
-										<th>Divisi</th>
+										<th>No.Trans</th>
 										<th>Pelanggan</th>
 										<th>Transaksi</th>
 										<th>Bukti</th>
@@ -259,6 +294,12 @@
 				x1 = x1.replace(rgx, '$1' + ',' + '$2');
 			}
 			return x1 + x2;
+		}
+		
+		function cariNourut(){
+			jQuery.get('dropdown/nourut/2', function(result){
+				jQuery('#nourut').val(result);
+			});
 		}
 	
 		jQuery.fn.dataTable.ext.errMode = 'none';
@@ -343,7 +384,7 @@
 		function form_default() {
 			jQuery('#id_proyek,#id_pelanggan,#kredit').prop('disabled', false).trigger('chosen:updated');
 			jQuery('input,select,textarea').val('');
-			jQuery('.warning, #div-form, #div-tagihan, #div-form-detil').hide();
+			jQuery('.warning, #div-form, #div-tagihan, #div-form-detil, #cari-nourut').hide();
 			jQuery('#div-tabel').show();
 			jQuery('.chosen').prop('disabled', false).trigger('chosen:updated');
 			jQuery('#simpan').prop('disabled', false);
@@ -357,8 +398,9 @@
 		jQuery('#tambah').click(function(){
 			jQuery('#div-tabel').hide();
 			jQuery('#inp-rekambaru').val('1');
-			jQuery('#nilai,#ppn,#total').val(0);
-			jQuery('#div-form').show();
+			jQuery('#nilai,#ppn,#pph21,#pph22,#pph23,#pph25,#total').val(0);
+			jQuery('#div-form,#cari-nourut').show();
+			cariNourut();
 		});
 		
 		//data tabel
@@ -441,8 +483,13 @@
 					jQuery('#tgpks').val(result.message.tgpks);
 					jQuery('#tgjtempo').val(result.message.tgjtempo);
 					jQuery('#uraian').val(result.message.uraian);
+					jQuery('#nourut').val(result.message.nourut);
 					jQuery('#nilai').val(digit_grouping(result.message.nilai));
 					jQuery('#ppn').val(digit_grouping(result.message.ppn));
+					jQuery('#pph21').val(digit_grouping(result.message.pph21));
+					jQuery('#pph22').val(digit_grouping(result.message.pph22));
+					jQuery('#pph23').val(digit_grouping(result.message.pph23));
+					jQuery('#pph25').val(digit_grouping(result.message.pph25));
 					jQuery('#total').val(digit_grouping(result.message.total));
 					jQuery('.chosen').trigger('chosen:updated');
 				}
@@ -465,12 +512,17 @@
 			form_default();
 		});
 		
+		//klik refresh nomor transaksi
+		jQuery('#cari-nourut').click(function(){
+			cariNourut();
+		});
+		
 		//klik simpan
 		jQuery('#simpan').click(function(){
 			jQuery(this).html('<span class="loading"><i class="fa fa-refresh"></i> Loading.....</span>');
 			jQuery(this).prop('disabled',true);
 			jQuery('#id_pelanggan,#kredit').prop('disabled', false).trigger('chosen:updated');
-			var next = form_valid('kdunit,id_alur,id_pelanggan,kdtran,nopks,tgpks,uraian,tgjtempo,nilai,debet,kredit');
+			var next = form_valid('nourut,kdunit,id_alur,id_pelanggan,kdtran,nopks,tgpks,uraian,tgjtempo,nilai,debet,kredit');
 			if(next==true){
 				jQuery.get('token', function(token){
 					if(token){
@@ -656,9 +708,13 @@
 			jQuery('#total').val(numberWithCommas(total));
 		});
 		
-		jQuery('#ppn').keyup(function (e){
+		jQuery('#ppn,#pph21,#pph22,#pph23,#pph25').keyup(function (e){
 			var nilai = jQuery('#nilai').val().replace(/,/g, '');
-			var ppn = jQuery('#ppn').val().replace(/,/g, '');
+			var ppn   = jQuery('#ppn').val().replace(/,/g, '');
+			var pph21 = jQuery('#pph21').val().replace(/,/g, '');
+			var pph22 = jQuery('#pph22').val().replace(/,/g, '');
+			var pph23 = jQuery('#pph23').val().replace(/,/g, '');
+			var pph25 = jQuery('#pph25').val().replace(/,/g, '');
 			
 			if(nilai==''){
 				nilai = 0;
@@ -674,7 +730,35 @@
 				ppn = parseInt(ppn);
 			}
 			
-			var total = nilai+ppn;
+			if(pph21==''){
+				pph21 = 0;
+			}
+			else{
+				pph21 = parseInt(pph21);
+			}
+			
+			if(pph22==''){
+				pph22 = 0;
+			}
+			else{
+				pph22 = parseInt(pph22);
+			}
+			
+			if(pph23==''){
+				pph23 = 0;
+			}
+			else{
+				pph23 = parseInt(pph23);
+			}
+			
+			if(pph25==''){
+				pph25 = 0;
+			}
+			else{
+				pph25 = parseInt(pph25);
+			}
+			
+			var total = nilai+ppn+pph21+pph22+pph23+pph25;
 			jQuery('#total').val(numberWithCommas(total));
 		});
 		

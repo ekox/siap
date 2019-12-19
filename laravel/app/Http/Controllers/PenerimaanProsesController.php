@@ -9,20 +9,21 @@ class PenerimaanProsesController extends Controller {
 
 	public function index(Request $request)
 	{
-		$aColumns = array('id','nmunit','nama','nmtrans','pks','nilai','status');
+		$aColumns = array('id','nourut','nmunit','nama','nmtrans','pks','nilai','status');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
 		/* DB table to use */
 		$sTable = "select    a.*
 					from(
 						select  a.id,
+								lpad(a.nourut,5,'0') as nourut,
 								d.nmunit,
 								e.nama,
 								h.nmtrans,
-								a.nodok||'<br>'||to_char(a.tgdok,'dd-mm-yyyy') as pks,
+								a.nodok as pks,
 								to_char(a.tgdok1,'dd-mm-yyyy') as tgjtempo,
 								a.uraian,
-								nvl(f.nilai,0) as nilai,
+								nvl(a.nilai,0)+nvl(a.ppn,0)+nvl(a.pph21,0)+nvl(a.pph22,0)+nvl(a.pph23,0)+nvl(a.pph25,0) as nilai,
 								c.nmstatus as status,
 								decode(c.is_unit,null,
 									1,
@@ -38,13 +39,6 @@ class PenerimaanProsesController extends Controller {
 						left outer join t_penerima e on(a.id_penerima=e.id)
 						left outer join t_level g on(c.kdlevel=g.kdlevel)
 						left outer join t_trans h on(a.kdtran=h.id)
-						left outer join(
-							select	id_trans,
-									sum(nilai) as nilai
-							from d_trans_akun
-							where kddk='D'
-							group by id_trans
-						) f on(a.id=f.id_trans)
 						where b.menu=2 and a.thang='".session('tahun')."' and c.kdlevel='".session('kdlevel')."'
 					) a
 					where a.akses=1
@@ -94,7 +88,7 @@ class PenerimaanProsesController extends Controller {
 		if(isset($_GET['sSearch'])){
 			$sSearch=$_GET['sSearch'];
 			if((isset($sSearch))&&($sSearch!='')){
-				$sWhere=" where id=".$sSearch." or
+				$sWhere=" where lower(nourut) like lower('".$sSearch."%') or lower(nourut) like lower('%".$sSearch."%') or
 								lower(pks) like lower('".$sSearch."%') or lower(pks) like lower('%".$sSearch."%') ";
 			}
 		}
@@ -150,6 +144,7 @@ class PenerimaanProsesController extends Controller {
 			
 			$output['aaData'][] = array(
 				$row->no,
+				$row->nourut,
 				$row->nmunit,
 				$row->nama,
 				$row->nmtrans,
@@ -165,18 +160,19 @@ class PenerimaanProsesController extends Controller {
 	
 	public function monitoring(Request $request)
 	{
-		$aColumns = array('id','nmunit','nama','nmtrans','pks','nilai','status');
+		$aColumns = array('id','nourut','nmunit','nama','nmtrans','pks','nilai','status');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
 		/* DB table to use */
 		$sTable = "select  a.id,
+							lpad(a.nourut,5,'0') as nourut,
 							d.nmunit,
 							e.nama,
 							h.nmtrans,
-							a.nodok||'<br>'||to_char(a.tgdok,'dd-mm-yyyy') as pks,
+							a.nodok as pks,
 							to_char(a.tgdok1,'dd-mm-yyyy') as tgjtempo,
 							a.uraian,
-							nvl(f.nilai,0) as nilai,
+							nvl(a.nilai,0)+nvl(a.ppn,0)+nvl(a.pph21,0)+nvl(a.pph22,0)+nvl(a.pph23,0)+nvl(a.pph25,0) as nilai,
 							g.nmlevel||'/ '||c.nmstatus as status
 					from d_trans a
 					left outer join t_alur b on(a.id_alur=b.id)
@@ -185,13 +181,6 @@ class PenerimaanProsesController extends Controller {
 					left outer join t_penerima e on(a.id_penerima=e.id)
 					left outer join t_level g on(c.kdlevel=g.kdlevel)
 					left outer join t_trans h on(a.kdtran=h.id)
-					left outer join(
-						select	id_trans,
-								sum(nilai) as nilai
-						from d_trans_akun
-						where kddk='D'
-						group by id_trans
-					) f on(a.id=f.id_trans)
 					where b.menu=2 and a.thang='".session('tahun')."'
 					";
 		
@@ -238,7 +227,8 @@ class PenerimaanProsesController extends Controller {
 		if(isset($_GET['sSearch'])){
 			$sSearch=$_GET['sSearch'];
 			if((isset($sSearch))&&($sSearch!='')){
-				$sWhere=" where lower(pks) like lower('".$sSearch."%') or lower(pks) like lower('%".$sSearch."%') ";
+				$sWhere=" where lower(nourut) like lower('".$sSearch."%') or lower(nourut) like lower('%".$sSearch."%') or
+								lower(pks) like lower('".$sSearch."%') or lower(pks) like lower('%".$sSearch."%')";
 			}
 		}
 		
@@ -293,6 +283,7 @@ class PenerimaanProsesController extends Controller {
 			
 			$output['aaData'][] = array(
 				$row->no,
+				$row->nourut,
 				$row->nmunit,
 				$row->nama,
 				$row->nmtrans,
@@ -310,50 +301,30 @@ class PenerimaanProsesController extends Controller {
 	{
 		$rows = DB::select("
 			select  a.id,
+					lpad(a.nourut,5,'0') as nourut,
 					b.nmalur,
 					c.nmunit,
 					k.nmproyek,
 					d.nama as nmpelanggan,
-					f.nmtrans,
+					e.nmtrans,
 					a.nodok as nopks,
 					to_char(a.tgdok,'yyyy-mm-dd') as tgpks,
 					to_char(a.tgdok1,'yyyy-mm-dd') as tgjtempo,
 					a.uraian,
-					nvl(g.nilai,0) as nilai,
+					nvl(a.nilai,0) as nilai,
 					nvl(f.nmakun,0) as debet,
 					nvl(i.nmakun,0) as kredit,
 					a.id_alur,
 					a.status,
-					nvl(j.nilai,0) as pajak,
-					nvl(g.nilai,0)+nvl(j.nilai,0) as total
+					nvl(a.ppn,0)+nvl(a.pph21,0)+nvl(a.pph22,0)+nvl(a.pph23,0)+nvl(a.pph25,0) as pajak,
+					nvl(a.nilai,0)+nvl(a.ppn,0)+nvl(a.pph21,0)+nvl(a.pph22,0)+nvl(a.pph23,0)+nvl(a.pph25,0) as total
 			from d_trans a
 			left outer join t_alur b on(a.id_alur=b.id)
 			left outer join t_unit c on(a.kdunit=c.kdunit)
 			left outer join t_penerima d on(a.id_penerima=d.id)
-			left outer join t_trans f on(a.kdtran=f.id)
-			left outer join(
-				select	id_trans,
-						kdakun,
-						nilai
-				from d_trans_akun
-				where kddk='D' and grup is null
-			) g on(a.id=g.id_trans)
-			left outer join(
-				select	id_trans,
-						kdakun,
-						nilai
-				from d_trans_akun
-				where kddk='K'
-			) h on(a.id=h.id_trans)
-			left outer join(
-				select  a.id_trans,
-						sum(a.nilai) as nilai
-				from d_trans_akun a
-				where kddk='D' and grup is not null
-				group by a.id_trans
-			) j on(a.id=j.id_trans)
-			left outer join t_akun f on(g.kdakun=f.kdakun)
-			left outer join t_akun i on(h.kdakun=i.kdakun)
+			left outer join t_trans e on(a.kdtran=e.id)
+			left outer join t_akun f on(a.debet=f.kdakun)
+			left outer join t_akun i on(a.kredit=i.kdakun)
 			left join t_proyek k on(a.id_proyek=k.id)
 			where a.id=?
 		",[

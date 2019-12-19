@@ -603,4 +603,22 @@ class DropdownController extends Controller {
 		return $data;
 		
 	}
+	
+	public function nourut($param)
+	{
+		$rows = DB::select("
+			select  lpad(max(nvl(a.nourut,0))+1,5,'0') as nourut
+			from d_trans a
+			left join t_alur b on(a.id_alur=b.id)
+			where a.thang=? and b.menu=?
+		",[
+			session('tahun'),
+			$param
+		]);
+		
+		if(count($rows)>0){
+			return str_pad($rows[0]->nourut,5,"0",STR_PAD_LEFT);
+		}
+		
+	}
 }
