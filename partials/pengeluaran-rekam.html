@@ -736,7 +736,7 @@
 			}
 			
 			var ppn = parseInt(10*nilai/100);
-			var total = nilai+ppn;
+			var total = nilai-ppn;
 			jQuery('#ppn').val(numberWithCommas(ppn));
 			jQuery('#total').val(numberWithCommas(total));
 		});

@@ -458,40 +458,6 @@ class PengeluaranProsesController extends Controller {
 				
 				$lanjut = true;
 				
-				if($rows[0]->is_pajak=='1'){
-					
-					$rows_pajak = DB::select("
-						select	id
-						from d_trans_akun
-						where id_trans=? and substr(kdakun,1,1)='7'
-					",[
-						$request->input('inp-id')
-					]);
-					
-					if(count($rows_pajak)==0){
-						$lanjut = false;
-						$error = $rows[0]->ket;
-					}
-					
-				}
-				
-				if($rows[0]->is_bayar=='1'){
-					
-					$rows_bayar = DB::select("
-						select	nvl(nocek,'') as nocek
-						from d_trans
-						where id=?
-					",[
-						$request->input('inp-id')
-					]);
-					
-					if($rows_bayar[0]->nocek==''){
-						$lanjut = false;
-						$error = $rows[0]->ket;
-					}
-					
-				}
-				
 				if($lanjut){
 					
 					DB::beginTransaction();
