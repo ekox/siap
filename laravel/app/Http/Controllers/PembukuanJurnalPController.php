@@ -9,12 +9,13 @@ class PembukuanJurnalPController extends Controller {
 
 	public function index(Request $request)
 	{
-		$aColumns = array('id','notrans','nmalur','nama','nobukti','uraian','nilai','status');
+		$aColumns = array('id','nourut','nmalur','nama','nobukti','uraian','nilai','status');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
 		/* DB table to use */
 		$sTable = "select  	a.id as id_trans,
 							a.id,
+							lpad(a.nourut,5,'0') as nourut,
 							a.notrans,
 							a.thang,
 							d.nmunit,
@@ -35,6 +36,7 @@ class PembukuanJurnalPController extends Controller {
 						select  id_trans,
 								sum(nilai) as nilai
 						from d_trans_akun
+						WHERE kddk='D'
 						group by id_trans
 					) f on(a.id=f.id_trans)
 					where a.thang='".session('tahun')."' and a.id_alur=10
@@ -84,7 +86,7 @@ class PembukuanJurnalPController extends Controller {
 		if(isset($_GET['sSearch'])){
 			$sSearch=$_GET['sSearch'];
 			if((isset($sSearch))&&($sSearch!='')){
-				$sWhere=" where lower(nobukti) like lower('".$sSearch."%') or lower(nobukti) like lower('%".$sSearch."%') or
+				$sWhere=" where lower(nourut) like lower('".$sSearch."%') or lower(nourut) like lower('%".$sSearch."%') or
 								lower(uraian) like lower('".$sSearch."%') or lower(uraian) like lower('%".$sSearch."%') ";
 			}
 		}
@@ -144,7 +146,7 @@ class PembukuanJurnalPController extends Controller {
 			
 			$output['aaData'][] = array(
 				$row->id,
-				$row->id,
+				$row->nourut,
 				$row->nmalur,
 				$row->nobukti,
 				$row->uraian,
@@ -160,6 +162,7 @@ class PembukuanJurnalPController extends Controller {
 	{
 		$rows = DB::select("
 			select  id,
+					lpad(nourut,5,'0') as nourut,
 					notrans,
 					id_alur,
 					id_output,
@@ -224,6 +227,7 @@ class PembukuanJurnalPController extends Controller {
 	{
 		$rows = DB::select("
 			select	a.kdakun,
+					a.kddk,
 					b.nmakun,
 					a.nilai
 			from d_trans_akun a
@@ -242,17 +246,29 @@ class PembukuanJurnalPController extends Controller {
 								<th>No</th>
 								<th>Akun</th>
 								<th>Uraian</th>
-								<th>Nilai</th>
+								<th>Debet</th>
+								<th>Kredit</th>
 							</tr>
 						</thead>
 						<tbody>';
 			$i = 1;
 			foreach($rows as $row){
+				
+				if($row->kddk=='D'){
+					$debet = number_format($row->nilai);
+					$kredit = '';
+				}
+				else{
+					$debet = '';
+					$kredit = number_format($row->nilai);
+				}
+				
 				$detil .= '<tr>
 								<td>'.$i++.'</td>
 								<td>'.$row->kdakun.'</td>
 								<td>'.$row->nmakun.'</td>
-								<td style="text-align:right;">'.number_format($row->nilai).'</td>
+								<td style="text-align:right;">'.$debet.'</td>
+								<td style="text-align:right;">'.$kredit.'</td>
 						   </tr>';
 			}
 			
@@ -284,6 +300,7 @@ class PembukuanJurnalPController extends Controller {
 					'thang' => session('tahun'),
 					'kdunit' => session('kdunit'),
 					'id_alur' => 10,
+					'nourut' => $request->input('nourut'),
 					'kdtran' => $request->input('kdtran'),
 					'nodok' => $request->input('nobukti'),
 					'tgdok' => $request->input('tgbukti'),
