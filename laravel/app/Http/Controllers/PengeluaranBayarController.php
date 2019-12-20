@@ -54,7 +54,7 @@ class PengeluaranBayarController extends Controller {
 						where kddk='D' and grup is not null and substr(kdakun,1,2)='72'
 						group by a.id_trans
 					) j on(a.id=j.id_trans)
-					where b.menu=4 and a.thang='".session('tahun')."' and c.is_bayar='1'
+					where b.menu=4 and a.thang='".session('tahun')."' and c.is_bayar1='1'
 					";
 		
 		/*
@@ -314,7 +314,7 @@ class PengeluaranBayarController extends Controller {
 			from d_trans_akun a
 			left outer join d_trans b on(a.id_trans=b.id)
 			left outer join t_alur_status c on(b.id_alur=c.id_alur and b.status=c.status)
-			where a.id_trans=? and a.kddk='K' and c.is_bayar='1' and a.grup is null
+			where a.id_trans=? and a.kddk='K' and c.is_bayar1='1' and a.grup is null
 		",[
 			$request->input('inp-id')
 		]);
@@ -354,11 +354,11 @@ class PengeluaranBayarController extends Controller {
 			",[
 				$request->input('inp-id'),
 				$kredit,
-				str_replace(',', '', $request->input('nilai')),
+				str_replace(',', '', $request->input('total')),
 				$grup,
 				$request->input('inp-id'),
 				$request->input('bayar'),
-				str_replace(',', '', $request->input('nilai')),
+				str_replace(',', '', $request->input('total')),
 				$grup
 			]);
 			

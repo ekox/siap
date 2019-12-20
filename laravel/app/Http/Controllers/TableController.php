@@ -41,6 +41,7 @@ class TableController extends Controller
     public static $tbody_close = '</tbody>';
 	public $reportName;
 	public $tahun;
+	public $nbsp;
 
 	// methods of class
 
@@ -51,6 +52,7 @@ class TableController extends Controller
 	{
 		//wride code below
 		$this->tahun = session('tahun');
+		$this->nbsp = str_repeat('&nbsp;', 4);
 	}
 
 	/**
@@ -125,6 +127,23 @@ class TableController extends Controller
 		$html_out = self::$css_style;
 		$html_out.= self::$table_open_nb;
 		$html_out.= self::$thead_open;
+
+		$jnslap = $arrParam['jnslap'];
+
+		switch($jnslap) {
+			case 'nrc':
+			case 'lbr':
+				$eofPer = 'PERIODE BERAKHIR'.strtoupper(self::eofLaporan($periode));
+				break;
+			case 'prb':
+			case 'cfl':
+				$eofPer = 'PERIODE '.strtoupper(self::getPeriode($periode));
+				break;
+			default:
+				$eofPer = ' ';
+		} 
+		
+		
 		$html_out.= '<tr>
 						<th>'.self::$entitas.'</th>
 					</tr>
@@ -132,7 +151,7 @@ class TableController extends Controller
 						<th>'.$namaLaporan.'</th>
 					</tr>
 					<tr>
-						<th class="ac">Per '.self::eofLaporan($periode).' '.$tahun.'</th>
+						<th class="ac">'.$eofPer.' '.$tahun.'</th>
 					</tr>
 					<tr>
 						<td class="ac">'.self::$infoLaporan.'</td>
@@ -184,6 +203,20 @@ class TableController extends Controller
 		
 		$arrPeriode = array(
 			'01'=>'31 Januari ', '02'=>$eofFebruary, '03'=>' 31 Maret ', '04'=>' 30 April ', '05'=>'31 Mei ', '06'=>'30 Juni ', '07'=>'31 Juli ', '08'=>'31 Agustus ', '09'=>'30 September ', '10'=>'31 Oktober ', '11'=>'30 November ', '12'=>'31 Desember '
+		);
+
+		return $arrPeriode[$periode];
+	}
+
+	/**
+	 * description 
+	 */
+	public static function getPeriode($periode)
+	{
+		$arrPeriode = array(
+			'01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' => 'April',
+			'05' => 'Mei', '06' => 'Juni', '07' => 'Juli', '08' => 'Agustus',
+			'09' => 'September', '10' => 'Oktober', '11' => 'November', '12' => 'Desember',
 		);
 
 		return $arrPeriode[$periode];

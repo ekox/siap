@@ -9,18 +9,19 @@ class PengeluaranRekamController extends Controller {
 
 	public function index(Request $request)
 	{
-		$aColumns = array('id','nmunit','nama','nmtrans','pks','nilai','status','lampiran');
+		$aColumns = array('id','nourut','nmunit','nama','nmtrans','pks','nilai','status','lampiran');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
 		/* DB table to use */
 		$sTable = "select  	a.id,
+							lpad(a.nourut,5,'0') as nourut,
 							d.nmunit,
 							e.nama,
 							h.nmtrans,
-							a.nodok||'<br>'||to_char(a.tgdok,'dd-mm-yyyy') as pks,
+							a.nodok as pks,
 							to_char(a.tgdok1,'dd-mm-yyyy') as tgjtempo,
 							a.uraian,
-							nvl(f.nilai,0)+nvl(j.nilai,0) as nilai,
+							nvl(a.nilai,0)-nvl(a.ppn,0)-nvl(a.pph21,0)-nvl(a.pph22,0)-nvl(a.pph23,0)-nvl(a.pph25,0) as nilai,
 							c.nmstatus as status,
 							i.lampiran
 					from d_trans a
@@ -31,27 +32,12 @@ class PengeluaranRekamController extends Controller {
 					left outer join t_level g on(c.kdlevel=g.kdlevel)
 					left outer join t_trans h on(a.kdtran=h.id)
 					left outer join(
-						select	id_trans,
-								sum(nilai) as nilai
-						from d_trans_akun
-						where kddk='D' and grup is null
-						group by id_trans
-					) f on(a.id=f.id_trans)
-					left outer join(
 						select  a.id_trans,
 								rtrim(xmlagg(xmlelement(e, a.id||'|'||b.uraian, ',')).extract('//text()').getclobval(), ',') as lampiran
 						from d_trans_dok a
 						left outer join t_dok b on(a.id_dok=b.id)
 						group by a.id_trans
 					) i on(a.id=i.id_trans)
-					left outer join(
-						select  a.id_trans,
-								a.kdakun,
-								sum(a.nilai) as nilai
-						from d_trans_akun a
-						where kddk='D' and grup is not null and substr(kdakun,1,2)='72'
-						group by a.id_trans,a.kdakun
-					) j on(a.id=j.id_trans)
 					where b.menu=4 and a.thang='".session('tahun')."' and a.kdunit='".session('kdunit')."'
 					order by a.id desc
 					";
@@ -99,8 +85,8 @@ class PengeluaranRekamController extends Controller {
 		if(isset($_GET['sSearch'])){
 			$sSearch=$_GET['sSearch'];
 			if((isset($sSearch))&&($sSearch!='')){
-				$sWhere=" where lower(nopks) like lower('".$sSearch."%') or lower(nopks) like lower('%".$sSearch."%') or
-								lower(uraian) like lower('".$sSearch."%') or lower(uraian) like lower('%".$sSearch."%') ";
+				$sWhere=" where lower(pks) like lower('".$sSearch."%') or lower(pks) like lower('%".$sSearch."%') or
+								lower(nourut) like lower('".$sSearch."%') or lower(nourut) like lower('%".$sSearch."%') ";
 			}
 		}
 		
@@ -181,7 +167,7 @@ class PengeluaranRekamController extends Controller {
 			
 			$output['aaData'][] = array(
 				$row->no,
-				$row->nmunit,
+				$row->nourut,
 				$row->nama,
 				$row->nmtrans,
 				$row->pks,
@@ -199,6 +185,7 @@ class PengeluaranRekamController extends Controller {
 	{
 		$rows = DB::select("
 			select  a.id,
+					lpad(a.nourut,5,'0') as nourut,
 					a.kdunit,
 					a.id_alur,
 					a.id_output,
@@ -208,34 +195,17 @@ class PengeluaranRekamController extends Controller {
 					to_char(a.tgdok,'yyyy-mm-dd') as tgpks,
 					to_char(a.tgdok1,'yyyy-mm-dd') as tgjtempo,
 					a.uraian,
-					nvl(b.nilai,0) as nilai,
-					nvl(d.nilai,0) as ppn,
-					nvl(b.nilai,0)+nvl(d.nilai,0) as total,
-					nvl(b.kdakun,'') as debet,
-					nvl(c.kdakun,'') as kredit,
+					nvl(a.nilai,0) as nilai,
+					nvl(a.ppn,0) as ppn,
+					nvl(a.pph21,0) as pph21,
+					nvl(a.pph22,0) as pph22,
+					nvl(a.pph23,0) as pph23,
+					nvl(a.pph25,0) as pph25,
+					nvl(a.nilai,0)-nvl(a.ppn,0)-nvl(a.pph21,0)-nvl(a.pph22,0)-nvl(a.pph23,0)-nvl(a.pph25,0) as total,
+					nvl(a.debet,'') as debet,
+					nvl(a.kredit,'') as kredit,
 					a.parent_id
 			from d_trans a
-			left outer join(
-				select	id_trans,
-						kdakun,
-						nilai
-				from d_trans_akun
-				where kddk='D' and grup is null
-			) b on(a.id=b.id_trans)
-			left outer join(
-				select	id_trans,
-						kdakun,
-						nilai
-				from d_trans_akun
-				where kddk='K'
-			) c on(a.id=c.id_trans)
-			left outer join(
-				select	id_trans,
-						kdakun,
-						nilai
-				from d_trans_akun
-				where kddk='D' and grup is not null
-			) d on(a.id=d.id_trans)
 			where a.id=?
 		",[
 			$id
@@ -338,224 +308,137 @@ class PengeluaranRekamController extends Controller {
 	public function simpan(Request $request)
 	{
 		DB::beginTransaction();
+		
+		$rows = DB::select("
+			select	*
+			from t_alur
+			where id=?
+		",[
+			$request->input('id_alur')
+		]);
+		
+		if(count($rows)>0){
 			
-		if($request->input('inp-rekambaru')=='1'){
+			$nilai = (int)str_replace(',', '', $request->input('nilai'));
 			
-			$arr_parent = explode("|", $request->input('parent_id'));
-			$parent_id = $arr_parent[0];
-			
-			$id_trans = DB::table('d_trans')->insertGetId([
-				'kdunit' => session('kdunit'),
-				'thang' => session('tahun'),
-				'id_output' => $request->input('id_output'),
-				'id_alur' => $request->input('id_alur'),
-				'kdtran' => $request->input('kdtran'),
-				'id_penerima' => $request->input('id_pelanggan'),
-				'nodok' => $request->input('nopks'),
-				'tgdok' => $request->input('tgpks'),
-				'tgdok1' => $request->input('tgjtempo'),
-				'uraian' => $request->input('uraian'),
-				'parent_id' => $parent_id,
-				'status' => 1,
-				'id_user' => session('id_user')
-			]);
-			
-			if($id_trans){
+			if($nilai>=$rows[0]->batas1 && $nilai<=$rows[0]->batas2){
 				
-				$insert = DB::insert("
-					insert into d_trans_akun(id_trans,kdakun,kddk,nilai)
-					select	?,
-							?,
-							'D',
-							?
-					from dual
-					union all
-					select	?,
-							?,
-							'K',
-							?
-					from dual
-				",[
-					$id_trans,
-					$request->input('debet'),
-					str_replace(',', '', $request->input('nilai')),
-					$id_trans,
-					$request->input('kredit'),
-					str_replace(',', '', $request->input('nilai')),
-				]);
-				
-				if($insert){
+				if($request->input('inp-rekambaru')=='1'){
 					
-					$ppn = (int)str_replace(',', '', $request->input('ppn'));
-					if($ppn>0){
-						
-						$now = new \DateTime();
-						$grup = $now->format('YmdHis');
-						
-						$insert = DB::insert("
-							insert into d_trans_akun(id_trans,kdakun,kddk,nilai,grup)
-							select	?,
-									?,
-									'D',
-									?,
-									?
-							from dual
-							union all
-							select	?,
-									?,
-									'K',
-									?,
-									?
-							from dual
-						",[
-							$id_trans,
-							'721000',
-							$ppn,
-							$grup,
-							$id_trans,
-							$request->input('kredit'),
-							$ppn,
-							$grup
-						]);
-						
-					}
-					
-					if($insert){
-						DB::commit();
-						return 'success';
-					}
-					else{
-						return 'Pajak gagal disimpan!';
-					}
-					
-				}
-				else{
-					return 'Data detil akun gagal disimpan!';
-				}
-				
-			}
-			else{
-				return 'Data gagal disimpan!';
-			}
-			
-		}
-		else{
-			$update = DB::update("
-				update d_trans
-				set id_output=?,
-					kdtran=?,
-					id_penerima=?,
-					nodok=?,
-					tgdok=?,
-					tgdok1=?,
-					uraian=?,
-					id_user=?,
-					updated_at=sysdate
-				where id=?
-			",[
-				$request->input('id_output'),
-				$request->input('kdtran'),
-				$request->input('id_pelanggan'),
-				$request->input('nopks'),
-				$request->input('tgpks'),
-				$request->input('tgjtempo'),
-				$request->input('uraian'),
-				session('id_user'),
-				$request->input('inp-id')
-			]);
-			
-			if($update){
-				
-				$delete = DB::delete("
-					delete from d_trans_akun
-					where id_trans=?
-				",[
-					$request->input('inp-id')
-				]);
-				
-				if($delete){
-					
-					$insert = DB::insert("
-						insert into d_trans_akun(id_trans,kdakun,kddk,nilai)
-						select	?,
-								?,
-								'D',
-								?
-						from dual
-						union all
-						select	?,
-								?,
-								'K',
-								?
-						from dual
+					$rows = DB::select("
+						select	count(*) as jml
+						from d_trans a
+						left join t_alur b on(a.id_alur=b.id)
+						where a.thang=? and b.menu=4 and a.nourut=?
 					",[
-						$request->input('inp-id'),
-						$request->input('debet'),
-						str_replace(',', '', $request->input('nilai')),
-						$request->input('inp-id'),
-						$request->input('kredit'),
-						str_replace(',', '', $request->input('nilai')),
+						session('tahun'),
+						str_replace('0', '', $request->input('nourut'))
 					]);
 					
-					if($insert){
+					if($rows[0]->jml==0){
 						
-						$ppn = (int)str_replace(',', '', $request->input('ppn'));
-						if($ppn>0){
-							
-							$now = new \DateTime();
-							$grup = $now->format('YmdHis');
-							
-							$insert = DB::insert("
-								insert into d_trans_akun(id_trans,kdakun,kddk,nilai,grup)
-								select	?,
-										?,
-										'D',
-										?,
-										?
-								from dual
-								union all
-								select	?,
-										?,
-										'K',
-										?,
-										?
-								from dual
-							",[
-								$request->input('inp-id'),
-								'721000',
-								$ppn,
-								$grup,
-								$request->input('inp-id'),
-								$request->input('kredit'),
-								$ppn,
-								$grup
-							]);
-							
-						}
+						$arr_parent = explode("|", $request->input('parent_id'));
+						$parent_id = $arr_parent[0];
 						
-						if($insert){
+						$id_trans = DB::table('d_trans')->insertGetId([
+							'kdunit' => session('kdunit'),
+							'thang' => session('tahun'),
+							'nourut' => str_replace('0', '', $request->input('nourut')),
+							'id_output' => $request->input('id_output'),
+							'id_alur' => $request->input('id_alur'),
+							'kdtran' => $request->input('kdtran'),
+							'id_penerima' => $request->input('id_pelanggan'),
+							'nodok' => $request->input('nopks'),
+							'tgdok' => $request->input('tgpks'),
+							'tgdok1' => $request->input('tgjtempo'),
+							'uraian' => $request->input('uraian'),
+							'debet' => $request->input('debet'),
+							'kredit' => $request->input('kredit'),
+							'nilai' => str_replace(',', '', $request->input('nilai')),
+							'ppn' => str_replace(',', '', $request->input('ppn')),
+							'pph21' => str_replace(',', '', $request->input('pph21')),
+							'pph22' => str_replace(',', '', $request->input('pph22')),
+							'pph23' => str_replace(',', '', $request->input('pph23')),
+							'pph25' => str_replace(',', '', $request->input('pph25')),
+							'parent_id' => $parent_id,
+							'status' => 1,
+							'id_user' => session('id_user')
+						]);
+						
+						if($id_trans){
 							DB::commit();
 							return 'success';
 						}
 						else{
-							return 'Pajak gagal disimpan!';
+							return 'Data gagal disimpan!';
 						}
 						
 					}
 					else{
-						return 'Data detil akun gagal disimpan!';
+						return 'Duplikasi nomor transaksi!';
 					}
 					
 				}
 				else{
-					return 'Data akun yang lama gagal dihapus!';
+					$update = DB::update("
+						update d_trans
+						set id_output=?,
+							kdtran=?,
+							id_penerima=?,
+							nodok=?,
+							tgdok=?,
+							tgdok1=?,
+							uraian=?,
+							debet=?,
+							kredit=?,
+							nilai=?,
+							ppn=?,
+							pph21=?,
+							pph22=?,
+							pph23=?,
+							pph25=?,
+							id_user=?,
+							updated_at=sysdate
+						where id=?
+					",[
+						$request->input('id_output'),
+						$request->input('kdtran'),
+						$request->input('id_pelanggan'),
+						$request->input('nopks'),
+						$request->input('tgpks'),
+						$request->input('tgjtempo'),
+						$request->input('uraian'),
+						$request->input('debet'),
+						$request->input('kredit'),
+						str_replace(',', '', $request->input('nilai')),
+						str_replace(',', '', $request->input('ppn')),
+						str_replace(',', '', $request->input('pph21')),
+						str_replace(',', '', $request->input('pph22')),
+						str_replace(',', '', $request->input('pph23')),
+						str_replace(',', '', $request->input('pph25')),
+						session('id_user'),
+						$request->input('inp-id')
+					]);
+					
+					if($update){
+						DB::commit();
+						return 'success';
+					}
+					else{
+						return 'Data gagal diubah!';
+					}
 				}
 				
 			}
 			else{
-				return 'Data gagal diubah!';
+				return 'Nilai transaksi tidak valid!';
 			}
+			
 		}
+		else{
+			return 'Kode proses tidak ditemukan!';
+		}
+		
 	}
 	
 	public function hapus(Request $request)
@@ -580,32 +463,18 @@ class PengeluaranRekamController extends Controller {
 			]);
 			
 			$delete = DB::delete("
-				delete from d_trans_akun
-				where id_trans=?
+				delete from d_trans
+				where id=?
 			",[
 				$request->input('id')
 			]);
 			
-			if($delete){
-				
-				$delete = DB::delete("
-					delete from d_trans
-					where id=?
-				",[
-					$request->input('id')
-				]);
-				
-				if($delete==true) {
-					DB::commit();
-					return 'success';
-				}
-				else {
-					return 'Proses hapus gagal. Hubungi Administrator.';
-				}
-				
+			if($delete==true) {
+				DB::commit();
+				return 'success';
 			}
-			else{
-				return 'Data akun gagal dihapus!';
+			else {
+				return 'Proses hapus gagal. Hubungi Administrator.';
 			}
 			
 		}

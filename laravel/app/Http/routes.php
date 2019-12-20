@@ -377,6 +377,7 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get('/periode', 'DropdownController@periode');
 		Route::get('/tahun', 'DropdownController@tahun');
 		Route::get('/proyek', 'DropdownController@proyek');
+		Route::get('/nourut/{param}', 'DropdownController@nourut');
 		
 	});
 	

@@ -50,10 +50,13 @@ class BuktiTransaksiController extends TableController
 	 */
 	public function uangKeluar()
 	{
-		//~ $obj = new Bukti;
-		//~ dd($obj->queryUangMukaKerja(112));
-		$id = htmlentities($_GET['id']);
-		dd(Bukti::queryUangMukaKerja($id));
+		$tahun = session('tahun');
+		if(!isset($_GET['id'])) {
+			return '<script type="text/javascript">alert(\'ID tidak ditemukan\');window.open(\'/siap\', \'_blank\')</script>';
+		} else {
+			$id = htmlentities($_GET['id']);
+			dd(Bukti::queryUangMukaKerja('2019', $id));
+		}
 	}
 
     /**
@@ -61,6 +64,7 @@ class BuktiTransaksiController extends TableController
 	 */
 	public function uangMukaKerja()
     {
+		$tahun = session('tahun');
 		if(!isset($_GET['id'])) {
 			return '<script type="text/javascript">alert(\'ID tidak ditemukan\');window.open(\'/siap\', \'_blank\')</script>';
 		} else {
@@ -70,7 +74,7 @@ class BuktiTransaksiController extends TableController
 			$noDokumen = 'No.:    PSJ/FM/DKA/MRI/01';
 			$tglBerlaku = '';
 
-			$data = Bukti::queryUangMukaKerja($id);
+			$data = Bukti::queryUangMukaKerja($tahun, $id);
 
 			$html_out = self::$style;
 			$html_out.= '<table border="0" cellspacing="0" cellpadding="1" width="100%" style="font-size:10px;">';
@@ -165,7 +169,7 @@ class BuktiTransaksiController extends TableController
 			
 			$html_out.= '<tr>
 				<td class="ac">SM. Divisi Keuangan & Akt.</td>
-				<td class="ac">SM. Divisi Umum & SDM/td>
+				<td class="ac">SM. Divisi Umum & SDM</td>
 				<td class="ac">&nbsp;</td>
 			</tr>';
 			
@@ -180,11 +184,15 @@ class BuktiTransaksiController extends TableController
 			$html_out.= '<tr>
 				<td colspan="3">&nbsp;</td>
 			</tr>';
-
+			
+			$seniorMgrKeu = Bukti::getSeniorManagerKeuangan()->nama;
+			$seniorDivUmum = Bukti::getDivisiUmumSDM()->nama;
+			$penerimaUMK = Bukti::getPenerimaUangMuka($id)->nama;
+			
 			$html_out.= '<tr>
-				<td class="ac">..........</td>
-				<td class="ac">..........</td>
-				<td class="ac">..........</td>
+				<td class="ac">'.$seniorMgrKeu.'</td>
+				<td class="ac">'.$seniorDivUmum.'</td>
+				<td class="ac">'.$penerimaUMK.'</td>
 			</tr>';
 			
 			$html_out.= self::$tbody_close;

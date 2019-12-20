@@ -83,19 +83,20 @@ class HomeController extends Controller {
 	
 	public function data(Request $request)
 	{
-		$aColumns = array('id','nmunit','nama','nmtrans','nilai','status','waktu','url');
+		$aColumns = array('id','nourut','nmunit','nama','nmtrans','nilai','status','waktu','url');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
 		/* DB table to use */
 		$sTable = "select    a.*
 					from(
 						select  a.id,
+								lpad(a.nourut,5,'0') as nourut,
 								d.nmunit,
 								e.nama,
 								h.nmtrans,
-								a.nodok||'<br>'||to_char(a.tgdok,'dd-mm-yyyy') as pks,
+								a.nodok as pks,
 								to_char(a.tgdok1,'dd-mm-yyyy') as tgjtempo,
-								nvl(f.nilai,0) as nilai,
+								nvl(a.nilai,0) as nilai,
 								c.nmstatus as status,
 								decode(c.is_unit,null,
 									1,
@@ -114,13 +115,6 @@ class HomeController extends Controller {
 						left outer join t_level g on(c.kdlevel=g.kdlevel)
 						left outer join t_trans h on(a.kdtran=h.id)
 						left outer join t_alur_menu i on(b.menu=i.menu)
-						left outer join(
-							select	id_trans,
-									sum(nilai) as nilai
-							from d_trans_akun
-							where kddk='D'
-							group by id_trans
-						) f on(a.id=f.id_trans)
 						where a.thang='".session('tahun')."' and c.kdlevel='".session('kdlevel')."' and nvl(c.is_final,'0')<>'1'
 					) a
 					where a.akses=1
@@ -170,8 +164,8 @@ class HomeController extends Controller {
 		if(isset($_GET['sSearch'])){
 			$sSearch=$_GET['sSearch'];
 			if((isset($sSearch))&&($sSearch!='')){
-				$sWhere=" where lower(nopks) like lower('".$sSearch."%') or lower(nopks) like lower('%".$sSearch."%') or
-								lower(uraian) like lower('".$sSearch."%') or lower(uraian) like lower('%".$sSearch."%') ";
+				$sWhere=" where lower(pks) like lower('".$sSearch."%') or lower(pks) like lower('%".$sSearch."%') or
+								lower(nourut) like lower('".$sSearch."%') or lower(nourut) like lower('%".$sSearch."%') ";
 			}
 		}
 		
@@ -221,6 +215,7 @@ class HomeController extends Controller {
 			
 			$output['aaData'][] = array(
 				$row->no,
+				$row->nourut,
 				$row->nmunit,
 				$row->nama,
 				$row->nmtrans,
