@@ -9,7 +9,7 @@ class PenerimaanProsesController extends Controller {
 
 	public function index(Request $request)
 	{
-		$aColumns = array('id','nourut','nmunit','nama','nmtrans','pks','nilai','status');
+		$aColumns = array('id','nourut','nmunit','nama','nmtrans','pks','nilai','status','is_final');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
 		/* DB table to use */
@@ -31,7 +31,8 @@ class PenerimaanProsesController extends Controller {
 										1,
 										0
 									)
-								) as akses
+								) as akses,
+								c.is_final
 						from d_trans a
 						left outer join t_alur b on(a.id_alur=b.id)
 						left outer join t_alur_status c on(a.id_alur=c.id_alur and a.status=c.status)
@@ -135,12 +136,15 @@ class PenerimaanProsesController extends Controller {
 		
 		foreach( $rows as $row )
 		{
-			$aksi='<center>
+			$aksi = '';
+			if($row->is_final!=='1'){
+				$aksi='<center>
 						<button type="button" class="btn btn-raised btn-sm btn-icon btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-check"></i></button>
 						<div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
 							<a id="'.$row->id.'" class="dropdown-item proses" href="javascript:;">Proses Data</a>
 						</div>
 					</center>';
+			}
 			
 			$output['aaData'][] = array(
 				$row->no,
