@@ -18,6 +18,9 @@ class TableController extends Controller
 		.al {text-align:left;}
 		.aj {text-align:justify;}
 		.ar {text-align:right;}
+		.vt {vertical-align:top;}
+		.vm {vertical-align:middle;}
+		.vb {vertical-align:bottom;}
 		.ball {border:1px solid;}
 		.blr {border-left:1px solid; border-right:1px solid;}
 		.btb {border-top:1px solid; border-bottom:1px solid;}
@@ -27,6 +30,22 @@ class TableController extends Controller
 		.bb {border-bottom:1px solid;}
 		.bo {font-weight:bold;}
 		.pad2 {padding:2px 2px 2px 2px;}
+		.pl2 {padding-left:2px;}
+		.pr2 {padding-right:2px;}
+		.pt2 {padding-top:2px;}
+		.pb2 {padding-bottom:2px;}
+		.pl3 {padding-left:3px;}
+		.pr3 {padding-right:3px;}
+		.pt3 {padding-top:3px;}
+		.pb3 {padding-bottom:3px;}
+		.wd2 {width:2%;}
+		.wd3 {width:3%;}
+		.wd5 {width:5%;}
+		.wd10 {width:10%;}
+		.wd15 {width:15%;}
+		.wd20 {width:20%;}
+		.wd25 {width:25%;}
+		.wd50 {width:50%;}
 	</style>';
 
 	public static $entitas = "PERUMDA PEMBANGUNAN SARANA JAYA";

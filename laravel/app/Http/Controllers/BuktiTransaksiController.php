@@ -41,8 +41,32 @@ class BuktiTransaksiController extends TableController
 	 */
 	public function uangMasuk()
 	{
-		$angka = 987654321987654;
-		return strlen($angka).' digit <br>'.number_format($angka, 0, ',', '.')." terbilang ( ".KNV::terbilang($angka)." )";
+		//~ $angka = 987654321987654;
+		//~ return strlen($angka).' digit <br>'.number_format($angka, 0, ',', '.')." terbilang ( ".KNV::terbilang($angka)." )";
+		
+		$data = [
+			'tahun' => session('tahun'),
+			'perusahaan' => 'PERUSAHAAN DAERAH PEMBANGUNAN SARANA JAYA<br>PEMERINTAH KHUSUS DKI JAKARTA',
+		];
+
+		$html_out = view('bukti.uang-masuk', $data);
+
+		$mpdf = new Mpdf([
+			'mode' => 'utf-8',
+			'format' => 'A4-P',
+			'margin_left' => 8,
+			'margin_right' => 8,
+			'margin_top' => 18,
+			'margin_bottom' => 18,
+		]);
+
+		//mode portrait or landscape
+		$mpdf->AddPage('P');
+
+		//write content to PDF
+		$mpdf->writeHTML($html_out);
+		$mpdf->Output('Bukti Uang Muka Kerja.pdf', 'I');
+		exit;
 	}
 
 	/**
@@ -50,13 +74,38 @@ class BuktiTransaksiController extends TableController
 	 */
 	public function uangKeluar()
 	{
-		$tahun = session('tahun');
-		if(!isset($_GET['id'])) {
-			return '<script type="text/javascript">alert(\'ID tidak ditemukan\');window.open(\'/siap\', \'_blank\')</script>';
-		} else {
-			$id = htmlentities($_GET['id']);
-			dd(Bukti::queryUangMukaKerja('2019', $id));
-		}
+		//~ $tahun = session('tahun');
+		//~ if(!isset($_GET['id'])) {
+			//~ return '<script type="text/javascript">alert(\'ID tidak ditemukan\');window.open(\'/siap\', \'_blank\')</script>';
+		//~ } else {
+			//~ $id = htmlentities($_GET['id']);
+			//~ dd(Bukti::queryUangMukaKerja('2019', $id));
+		//~ }
+		$data = [
+			'tahun' => session('tahun'),
+			'perusahaan' => 'PERUSAHAAN DAERAH PEMBANGUNAN SARANA JAYA<br>PEMERINTAH KHUSUS DKI JAKARTA',
+			'nomor' => '',
+			'nomorbukti' => '',
+		];
+		
+		$html_out = view('bukti.uang-keluar', $data);
+
+		$mpdf = new Mpdf([
+			'mode' => 'utf-8',
+			'format' => 'A4-P',
+			'margin_left' => 8,
+			'margin_right' => 8,
+			'margin_top' => 18,
+			'margin_bottom' => 18,
+		]);
+
+		//mode portrait or landscape
+		$mpdf->AddPage('P');
+
+		//write content to PDF
+		$mpdf->writeHTML($html_out);
+		$mpdf->Output('Bukti Uang Muka Kerja.pdf', 'I');
+		exit;
 	}
 
     /**
