@@ -37,7 +37,7 @@
 </table>
 
 <!--table content-->
-<table width="100%" border="0" cellspacing="0" cellpadding="3" style="border: 1px solid #000;font-size:12px;">
+<table width="100%" border="1" cellspacing="0" cellpadding="3" style="border: 1px solid #000;font-size:12px;">
 	<tbody>
 		<tr>
 			<td class="wd15 pl3 vt">Tahun Anggaran</td>
@@ -55,7 +55,7 @@
 			<td colspan="3">&nbsp;</td>
 			<td rowspan="2" class="bl pl3 vt">Kepada</td>
 			<td rowspan="2" class="pl3 vt">:</td>
-			<td rowspan="2" class="pl3 vt">........................................................................................</td>
+			<td rowspan="2" colspan="2" class="pl3 vt">........................................................................................</td>
 		</tr>
 		<tr>
 			<td colspan="3">&nbsp;</td>
@@ -64,7 +64,7 @@
 			<td colspan="3" class="pl3">Kode Mata Anggaran Pengeluaran :</td>
 			<td rowspan="3" class="bl wd15 pl3 vt">Uang Sejumlah</td>
 			<td rowspan="3" class="wd2 pl3 vt">:</td>
-			<td rowspan="3" class="pl3 vt">........................................................................................</td>
+			<td rowspan="3" colspan="2" class="pl3 vt">........................................................................................</td>
 		</tr>
 		<tr>
 			<td colspan="3" class="pl3">Beban Anggaran Belanja</td>
@@ -82,7 +82,7 @@
 			<td class="pl3 ar">....................</td>
 			<td rowspan="4" class="bl pl3 vt">Untuk</td>
 			<td rowspan="4" class="wd2 pl3 vt">:</td>
-			<td rowspan="4" class="pl3 vt">........................................................................................</td>
+			<td rowspan="4" colspan="2" class="pl3 vt">........................................................................................</td>
 		</tr>
 		<tr>
 			<td class="pl3">....................</td>
@@ -105,7 +105,7 @@
 			<td class="pl3 ar">....................</td>
 			<td rowspan="4" class="bl pl3 vt">Dasar Pembayaran</td>
 			<td rowspan="4" class="wd2 pl3 vt">:</td>
-			<td rowspan="4" class="pl3 vt">........................................................................................</td>
+			<td rowspan="4" colspan="2" class="pl3 vt">........................................................................................</td>
 		</tr>
 		<tr>
 			<td class="pl3">....................</td>
@@ -134,7 +134,7 @@
 		<tr>
 			<td class="bl pl3">Pada tanggal</td>
 			<td class="pl3">:</td>
-			<td class="pl3">....................</td>
+			<td colspan="2" class="pl3">....................</td>
 		</tr>
 		<tr>
 			<td class="pl3">....................</td>
@@ -151,6 +151,7 @@
 			<td class="bl pl3">Tanda tangan</td>
 			<td class="pl3">:</td>
 			<td class="pl3">....................</td>
+			<td class="pl3">Jakarta</td>
 		</tr>
 		<tr>
 			<td class="pl3">....................</td>
@@ -199,7 +200,7 @@
 		
 		<tr>
 			<td colspan="3" class="pl3 ac">&nbsp;</td>
-			<td colspan="2" class="bl pl3">Telah diperiksa dan dibukukan dalam Buku Kas nomor:</td>
+			<td colspan="2" class="bl pl3">Telah diperiksa dan dibukukan dalam Buku Kas/Bank dengan nomor:</td>
 			<td class="pl3 ac">&nbsp;</td>
 		</tr>
 		<tr>

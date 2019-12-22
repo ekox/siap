@@ -199,7 +199,7 @@
 		
 		<tr>
 			<td colspan="3" class="pl3 ac">&nbsp;</td>
-			<td colspan="2" class="bl pl3">Telah diperiksa dan dibukukan dalam Buku Kas nomor:</td>
+			<td colspan="2" class="bl pl3">Telah diperiksa dan dibukukan dalam Buku Kas dengan nomor:</td>
 			<td class="pl3 ac">&nbsp;</td>
 		</tr>
 		<tr>
