@@ -607,7 +607,7 @@ class DropdownController extends Controller {
 	public function nourut($param)
 	{
 		$rows = DB::select("
-			select  lpad(max(nvl(a.nourut,0))+1,5,'0') as nourut
+			select  nvl(lpad(max(nvl(a.nourut,0))+1,5,'0'),'00001') as nourut
 			from d_trans a
 			left join t_alur b on(a.id_alur=b.id)
 			where a.thang=? and b.menu=?
@@ -617,7 +617,10 @@ class DropdownController extends Controller {
 		]);
 		
 		if(count($rows)>0){
-			return str_pad($rows[0]->nourut,5,"0",STR_PAD_LEFT);
+			return $rows[0]->nourut;
+		}
+		else{
+			return '00001';
 		}
 		
 	}

@@ -29,6 +29,13 @@
 							<input type="hidden" id="inp-akun">
 							<div class="form-body">
 								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="nourut">No.Transaksi </label>
+									<div class="col-md-7">
+	                            		<input type="text" id="nourut" name="nourut" class="form-control" readonly>
+	                            	</div>
+									<button id="cari-nourut" class="btn btn-xs btn-raised btn-warning mr-1"><i class="fa fa-refresh"></i></button>
+		                        </div>
+								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="kdtran">Jenis Transaksi </label>
 									<div class="col-md-7">
 	                            		<select id="kdtran" name="kdtran" class="form-control chosen">
@@ -116,7 +123,7 @@
 								<thead>
 									<tr>
 										<th></th>
-										<th>ID</th>
+										<th>No.Trans</th>
 										<th>Jenis</th>
 										<th>No.Bukti</th>
 										<th>Uraian</th>
@@ -153,6 +160,12 @@
 			return x1 + x2;
 		}
 		
+		function cariNourut(){
+			jQuery.get('dropdown/nourut/5', function(result){
+				jQuery('#nourut').val(result);
+			});
+		}
+		
 		//aktivasi chosen
 		jQuery('.chosen').chosen();
 		
@@ -177,7 +190,7 @@
 		//tampilan default
 		function form_default() {
 			jQuery('#id_alur,#id_output,#id_penerima,#nobukti,#tgbukti,#uraian').val('');
-			jQuery('.warning, #div-form').hide();
+			jQuery('.warning, #div-form, #cari-nourut').hide();
 			jQuery('#div-tabel').show();
 			jQuery('#id_alur,#id_output,#id_penerima').trigger('chosen:updated');
 			jQuery('#simpan').prop('disabled', false);
@@ -190,7 +203,7 @@
 		jQuery('#tambah').click(function(){
 			jQuery('#div-tabel').hide();
 			jQuery('#inp-rekambaru').val('1');
-			jQuery('#div-form').show();
+			jQuery('#div-form, #cari-nourut').show();
 			jQuery('#x').val(0);
 			
 			jQuery('#tabel-rincian').html(
@@ -215,6 +228,7 @@
 			jQuery('.val_num').mask('000,000,000,000,000', {reverse: true});
 			jQuery('#chosen0').chosen({width:'100%'});
 			jQuery('#dk-0').chosen({width:'100%'});
+			cariNourut();
 		});
 		
 		jQuery('#tambah-detil').click(function(){
@@ -353,6 +367,7 @@
 					jQuery('#inp-id').val(id);
 					jQuery('#inp-rekambaru').val('0');
 					jQuery('#kdtran').val(result.message.kdtran);
+					jQuery('#nourut').val(result.message.nourut);
 					jQuery('#nobukti').val(result.message.nobukti);
 					jQuery('#tgbukti').val(result.message.tgbukti);
 					jQuery('#uraian').val(result.message.uraian);
@@ -405,6 +420,11 @@
 		//klik batal
 		jQuery('.batal').click(function(){
 			form_default();
+		});
+		
+		//klik refresh nomor transaksi
+		jQuery('#cari-nourut').click(function(){
+			cariNourut();
 		});
 		
 		//klik simpan
