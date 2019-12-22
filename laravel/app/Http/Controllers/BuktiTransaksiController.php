@@ -49,6 +49,7 @@ class BuktiTransaksiController extends TableController
 			'nomorbukti' => '',
 		];
 
+		//~ return view('bukti.uang-masuk', $data);
 		$html_out = view('bukti.uang-masuk', $data);
 
 		$mpdf = new Mpdf([
@@ -83,6 +84,7 @@ class BuktiTransaksiController extends TableController
 		];
 		
 		return view('bukti.uang-keluar', $data);
+		//~ $html_out = view('bukti.uang-keluar', $data);
 
 		//~ $mpdf = new Mpdf([
 			//~ 'mode' => 'utf-8',
