@@ -117,6 +117,7 @@
 			var periode = jQuery(this).val();
 			
 			jQuery('#div-tabel').show();
+			jQuery('#tabel-ruh').html('<td colspan="8">Sedang proses......</td>');
 			
 			jQuery.getJSON('pembukuan/neraca-lajur/'+periode, function(result){
 				jQuery('#tabel-ruh').html(result.data);
