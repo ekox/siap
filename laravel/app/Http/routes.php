@@ -288,6 +288,12 @@ Route::group(['middleware' => 'auth'], function(){
 			
 		});
 		
+		Route::group(['prefix' => 'neraca-penyesuaian'], function () {
+		
+			Route::get('', 'PembukuanJurnalController@neracaPenyesuaian');
+			
+		});
+		
 		Route::group(['prefix' => 'posting'], function () {
 		
 			Route::get('', 'PembukuanPostingController@index');

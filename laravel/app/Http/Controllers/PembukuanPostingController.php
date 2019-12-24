@@ -241,11 +241,10 @@ class PembukuanPostingController extends Controller {
 					/* ambil data transaksi berjalan */
 					select  to_char(b.tgdok,'YYYY') as thang,
 							to_char(b.tgdok,'MM') as periode,
-							a.kdakun,
-							a.kddk,
-							a.nilai
-					from d_trans_akun a
-					left outer join d_trans b on(a.id_trans=b.id)
+							b.kdakun,
+							b.kddk,
+							b.nilai
+					from d_trans b
 					where b.thang='".session('tahun')."' and b.tgdok<=last_day(to_date('01/".$periode."/".session('tahun')."','DD/MM/YYYY'))
 					
 					".$where."
