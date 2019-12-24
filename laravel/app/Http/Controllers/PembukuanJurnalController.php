@@ -9,154 +9,338 @@ class PembukuanJurnalController extends Controller {
 
 	public function index(Request $request)
 	{
-		$aColumns = array('tgtrans','jenis','id_trans','kdlap','kdakun','nmakun','kddk','nilai');
-		/* Indexed column (used for fast and accurate table cardinality) */
-		$sIndexColumn = "tgtrans";
-		/* DB table to use */
-		$sTable = "select  a.*
+		$rows = DB::select("
+			select  a.kdakun,
+					b.nmakun,
+					sum(decode(a.kddk,'D',a.nilai,0)) as debet,
+					sum(decode(a.kddk,'K',a.nilai,0)) as kredit
+			from(
+				/* saldo awal */
+				select  to_char(a.tgsawal,'YYYY') as thang,
+						to_char(a.tgsawal,'MM') as periode,
+						a.kddk,
+						a.kdakun,
+						sum(a.nilai) as nilai
+				from d_sawal a
+				where a.thang=?
+				group by to_char(a.tgsawal,'YYYY'),
+						to_char(a.tgsawal,'MM'),
+						a.kdakun,
+						a.kddk
+				
+				union all
+				
+				/* transaksi berjalan debet */
+				select  to_char(tgdok,'yyyy') as thang,
+						to_char(tgdok,'mm') as periode,
+						'D' as kddk,
+						debet as kdakun,
+						sum(nilai) as nilai
+				from d_trans a
+				left join t_alur b on(a.id_alur=b.id)
+				where thang=? and debet is not null and b.neraca1=1
+				group by to_char(tgdok,'yyyy'),
+						 to_char(tgdok,'mm'),
+						 debet
+						 
+				union all
+				
+				/* transaksi berjalan kredit */
+				select  to_char(tgdok,'yyyy') as thang,
+						to_char(tgdok,'mm') as periode,
+						'K' as kddk,
+						kredit as kdakun,
+						sum(nilai) as nilai
+				from d_trans a
+				left join t_alur b on(a.id_alur=b.id)
+				where thang=? and kredit is not null and b.neraca1=1
+				group by to_char(tgdok,'yyyy'),
+						 to_char(tgdok,'mm'),
+						 kredit
+			) a
+			left join t_akun b on(a.kdakun=b.kdakun)
+			group by a.kdakun,b.nmakun
+			order by a.kdakun,b.nmakun
+		",[
+			session('tahun'),
+			session('tahun'),
+			session('tahun')
+		]);
+		
+		$data = '';
+		$total_debet = 0;
+		$total_kredit = 0;
+		foreach($rows as $row){
+			$data .= '<tr>
+						<td>'.$row->kdakun.'</td>
+						<td>'.$row->nmakun.'</td>
+						<td style="text-align:right;">'.number_format($row->debet,0).'</td>
+						<td style="text-align:right;">'.number_format($row->kredit,0).'</td>
+					  </tr>';
+			$total_debet += $row->debet;
+			$total_kredit += $row->kredit;
+		}
+		
+		return response()->json(array(
+			'data' => $data,
+			'total_debet' => number_format($total_debet,0),
+			'total_kredit' => number_format($total_kredit,0)
+		));
+	}
+	
+	public function neracaPenyesuaian(Request $request)
+	{
+		$rows = DB::select("
+			select  a.kdakun,
+					b.nmakun,
+					a.debet,
+					a.kredit,
+					a.debet1,
+					a.kredit1,
+					a.debet2,
+					a.kredit2
+			from(
+				select  nvl(a.kdakun,b.kdakun) as kdakun,
+						nvl(a.debet,0) as debet,
+						nvl(a.kredit,0) as kredit,
+						nvl(b.debet,0) as debet1,
+						nvl(b.kredit,0) as kredit1,
+						nvl(a.debet,0)+nvl(b.debet,0) as debet2,
+						nvl(a.kredit,0)+nvl(b.kredit,0) as kredit2
+				from(
+					/* neraca saldo */
+					select  a.kdakun,
+							sum(decode(a.kddk,'D',a.nilai,0)) as debet,
+							sum(decode(a.kddk,'K',a.nilai,0)) as kredit
 					from(
-						select  to_char(a.tgsawal,'DD-MM-YYYY') as tgtrans,
-								'Saldo Awal' as jenis,
-								a.id as id_trans,
-								a.kdlap,
-								a.kdakun,
-								b.nmakun,
+						/* saldo awal */
+						select  to_char(a.tgsawal,'YYYY') as thang,
+								to_char(a.tgsawal,'MM') as periode,
 								a.kddk,
-								a.nilai
+								a.kdakun,
+								sum(a.nilai) as nilai
 						from d_sawal a
-						left outer join t_akun b on(a.kdakun=b.kdakun)
-						where a.thang='".session('tahun')."'
-
-						union all
-
-						select  to_char(b.tgdok,'DD-MM-YYYY') as tgtrans,
-								'Transaksi' as jenis,
-								a.id_trans,
-								c.kdlap,
+						where a.thang=?
+						group by to_char(a.tgsawal,'YYYY'),
+								to_char(a.tgsawal,'MM'),
 								a.kdakun,
-								c.nmakun,
-								a.kddk,
-								a.nilai
-						from d_trans_akun a
-						left outer join d_trans b on(a.id_trans=b.id)
-						left outer join t_akun c on(a.kdakun=c.kdakun)
-						where b.thang='".session('tahun')."'
+								a.kddk
+						
+						union all
+						
+						/* transaksi berjalan debet */
+						select  to_char(tgdok,'yyyy') as thang,
+								to_char(tgdok,'mm') as periode,
+								'D' as kddk,
+								debet as kdakun,
+								sum(nilai) as nilai
+						from d_trans a
+						left join t_alur b on(a.id_alur=b.id)
+						where thang=? and debet is not null and b.neraca1=1
+						group by to_char(tgdok,'yyyy'),
+								 to_char(tgdok,'mm'),
+								 debet
+								 
+						union all
+						
+						/* transaksi berjalan kredit */
+						select  to_char(tgdok,'yyyy') as thang,
+								to_char(tgdok,'mm') as periode,
+								'K' as kddk,
+								kredit as kdakun,
+								sum(nilai) as nilai
+						from d_trans a
+						left join t_alur b on(a.id_alur=b.id)
+						where thang=? and kredit is not null and b.neraca1=1
+						group by to_char(tgdok,'yyyy'),
+								 to_char(tgdok,'mm'),
+								 kredit
 					) a
-					order by a.tgtrans desc, a.kddk,a.kdakun asc";
+					group by a.kdakun
+				) a
+				full outer join(
+					/* penyesuaian */
+					select  a.kdakun,
+							sum(decode(a.kddk,'D',a.nilai,0)) as debet,
+							sum(decode(a.kddk,'K',a.nilai,0)) as kredit
+					from(
+						select  to_char(tgdok,'yyyy') as thang,
+								to_char(tgdok,'mm') as periode,
+								c.kddk,
+								c.kdakun,
+								sum(c.nilai) as nilai
+						from d_trans a
+						left join t_alur b on(a.id_alur=b.id)
+						left join d_trans_akun c on(a.id=c.id_trans)
+						where thang=? and b.neraca1=0
+						group by to_char(tgdok,'yyyy'),
+								 to_char(tgdok,'mm'),
+								 c.kddk,
+								 c.kdakun
+					) a
+					group by a.kdakun
+				) b on(a.kdakun=b.kdakun)
+			) a
+			left join t_akun b on(a.kdakun=b.kdakun)
+			order by a.kdakun
+		",[
+			session('tahun'),
+			session('tahun'),
+			session('tahun'),
+			session('tahun')
+		]);
 		
-		/*
-		 * Paging
-		 */ 
-		$sLimit = " ";
-		if((isset($_GET['iDisplayStart']))&&(isset($_GET['iDisplayLength']))){
-			$iDisplayStart=$_GET['iDisplayStart']+1;
-			$iDisplayLength=$_GET['iDisplayLength'];
-			$sSearch=$_GET['sSearch'];
-			if ((isset( $iDisplayStart )) &&  ($iDisplayLength != '-1' )) 
-			{
-				$iDisplayEnd=$iDisplayStart+$iDisplayLength-1;
-				$sLimit = " WHERE NO BETWEEN '$iDisplayStart' AND '$iDisplayEnd'";
-			}
+		$data = '';
+		$total_debet = 0;
+		$total_kredit = 0;
+		$total_debet1 = 0;
+		$total_kredit1 = 0;
+		$total_debet2 = 0;
+		$total_kredit2 = 0;
+		foreach($rows as $row){
+			$data .= '<tr>
+						<td>'.$row->kdakun.'</td>
+						<td>'.$row->nmakun.'</td>
+						<td style="text-align:right;">'.number_format($row->debet,0).'</td>
+						<td style="text-align:right;">'.number_format($row->kredit,0).'</td>
+						<td style="text-align:right;">'.number_format($row->debet1,0).'</td>
+						<td style="text-align:right;">'.number_format($row->kredit1,0).'</td>
+						<td style="text-align:right;">'.number_format($row->debet2,0).'</td>
+						<td style="text-align:right;">'.number_format($row->kredit2,0).'</td>
+					  </tr>';
+			$total_debet += $row->debet;
+			$total_kredit += $row->kredit;
+			$total_debet1 += $row->debet1;
+			$total_kredit1 += $row->kredit1;
+			$total_debet2 += $row->debet2;
+			$total_kredit2 += $row->kredit2;
 		}
 		
-		/*
-		 * Ordering
-		 */
-		$sOrder = " ";
-		if((isset($_GET['iSortCol_0']))&&(isset($_GET['sSortDir_0']))){
-			$iSortCol_0=$_GET['iSortCol_0'];
-			$iSortDir_0=$_GET['sSortDir_0'];
-			if ( isset($iSortCol_0  ) )
-			{		
-				//modified ordering
-				for($i=0;$i<count($aColumns);$i++){
-					if($iSortCol_0==$i){
-						if($iSortDir_0=='asc'){
-							$sOrder = " ORDER BY ".$aColumns[$i]." DESC ";
-						}
-						else{
-							$sOrder = " ORDER BY ".$aColumns[$i]." ASC ";
-						}
-					}
-				}
-			}
-		}
-		
-		//modified filtering
-		$sWhere="";
-		if(isset($_GET['sSearch'])){
-			$sSearch=$_GET['sSearch'];
-			if((isset($sSearch))&&($sSearch!='')){
-				$sWhere=" where lower(nmakun) like lower('".$sSearch."%') or lower(nmakun) like lower('%".$sSearch."%') or
-								lower(kdakun) like lower('".$sSearch."%') or lower(kdakun) like lower('%".$sSearch."%') ";
-			}
-		}
-		
-		/* Data set length after filtering */
-		$iFilteredTotal = 0;
+		return response()->json(array(
+			'data' => $data,
+			'total_debet' => number_format($total_debet,0),
+			'total_kredit' => number_format($total_kredit,0),
+			'total_debet1' => number_format($total_debet1,0),
+			'total_kredit1' => number_format($total_kredit1,0),
+			'total_debet2' => number_format($total_debet2,0),
+			'total_kredit2' => number_format($total_kredit2,0)
+		));
+	}
+	
+	public function neracaLajur(Request $request, $periode)
+	{
 		$rows = DB::select("
-			SELECT COUNT(*) as JUMLAH FROM (".$sTable.") qry
-		");
-		$result = (array)$rows[0];
-		if($result){
-			$iFilteredTotal = $result['jumlah'];
+			select  a.*,
+					d.nmakun,
+					nvl(b.debet,0) as debet1,
+					nvl(b.kredit,0) as kredit1,
+					nvl(c.debet,0) as debet2,
+					nvl(c.kredit,0) as kredit2
+			from(
+				select  a.kdakun,
+						sum(a.debet) as debet,
+						sum(a.kredit) as kredit
+				from d_buku_besar a
+				where a.thang=? and a.periode<=?
+				group by a.kdakun
+			) a
+			left join(
+				select  a.kdakun,
+						sum(a.debet) as debet,
+						sum(a.kredit) as kredit
+				from d_buku_besar a
+				left join t_akun b on(a.kdakun=b.kdakun)
+				where a.thang=? and a.periode<=? and b.kdlap='NR'
+				group by a.kdakun
+			) b on(a.kdakun=b.kdakun)
+			left join(
+				select  a.kdakun,
+						sum(a.debet) as debet,
+						sum(a.kredit) as kredit
+				from d_buku_besar a
+				left join t_akun b on(a.kdakun=b.kdakun)
+				where a.thang=? and a.periode<=? and b.kdlap='LR'
+				group by a.kdakun
+			) c on(a.kdakun=c.kdakun)
+			left join t_akun d on(a.kdakun=d.kdakun)
+			order by a.kdakun
+		",[
+			session('tahun'),
+			$periode,
+			session('tahun'),
+			$periode,
+			session('tahun'),
+			$periode
+		]);
+		
+		$data = '';
+		$total_debet = 0;
+		$total_kredit = 0;
+		$total_debet1 = 0;
+		$total_kredit1 = 0;
+		$total_debet2 = 0;
+		$total_kredit2 = 0;
+		foreach($rows as $row){
+			$data .= '<tr>
+						<td>'.$row->kdakun.'</td>
+						<td>'.$row->nmakun.'</td>
+						<td style="text-align:right;">'.number_format($row->debet,0).'</td>
+						<td style="text-align:right;">'.number_format($row->kredit,0).'</td>
+						<td style="text-align:right;">'.number_format($row->debet1,0).'</td>
+						<td style="text-align:right;">'.number_format($row->kredit1,0).'</td>
+						<td style="text-align:right;">'.number_format($row->debet2,0).'</td>
+						<td style="text-align:right;">'.number_format($row->kredit2,0).'</td>
+					  </tr>';
+			$total_debet += $row->debet;
+			$total_kredit += $row->kredit;
+			$total_debet1 += $row->debet1;
+			$total_kredit1 += $row->kredit1;
+			$total_debet2 += $row->debet2;
+			$total_kredit2 += $row->kredit2;
 		}
 		
-		/* Total data set length */
-		$iTotal = 0;
-		$rows = DB::select("
-			SELECT COUNT(".$sIndexColumn.") as JUMLAH FROM (".$sTable.") qry
-		");
-		$result = (array)$rows[0];
-		if($result){
-			$iTotal = $result['jumlah'];
+		//hitung rugi laba
+		if($total_debet1>$total_kredit1){
+			$total_kredit3 = $total_debet1-$total_kredit1;
+			$total_debet3 = 0;
 		}
-
-		/*
-		 * Format Output
-		 */
-		$sEcho="";
-		if(isset($_GET['sEcho'])){
-			$sEcho=$_GET['sEcho'];
-		}
-		$output = array(
-			"sEcho" => intval($sEcho),
-			"iTotalRecords" => $iTotal,
-			"iTotalDisplayRecords" => $iFilteredTotal,
-			"aaData" => array()
-		);
-		
-		$str=str_replace(" , ", " ", implode(", ", $aColumns));
-		
-		$sQuery = "SELECT * FROM ( SELECT ROWNUM AS NO,".$str." FROM ( SELECT * FROM (".$sTable.") ".$sOrder.") ".$sWhere." ) a ".$sLimit." ";
-		
-		$rows = DB::select($sQuery);
-		
-		foreach( $rows as $row )
-		{
-			$debet = '';
-			$kredit = '';
-			
-			if($row->kddk=='D'){
-				$debet = number_format($row->nilai);
-			}
-			else{
-				$kredit = number_format($row->nilai);
-			}
-			
-			$output['aaData'][] = array(
-				$row->tgtrans,
-				$row->jenis,
-				$row->id_trans,
-				$row->kdlap,
-				$row->kdakun,
-				$row->nmakun,
-				'<div style="text-align:right;">'.$debet.'</div>',
-				'<div style="text-align:right;">'.$kredit.'</div>'
-			);
+		else{
+			$total_debet3 = $total_kredit1-$total_debet1;
+			$total_kredit3 = 0;
 		}
 		
-		return response()->json($output);
+		if($total_debet2>$total_kredit2){
+			$total_kredit4 = $total_debet2-$total_kredit2;
+			$total_debet4 = 0;
+		}
+		else{
+			$total_debet4 = $total_kredit2-$total_debet2;
+			$total_kredit4 = 0;
+		}
+		
+		//hitung total akhir
+		$total_debet5 = $total_debet1 + $total_debet3;
+		$total_kredit5 = $total_kredit1 + $total_kredit3;
+		$total_debet6 = $total_debet2 + $total_debet4;
+		$total_kredit6 = $total_kredit2 + $total_kredit4;
+		
+		return response()->json(array(
+			'data' => $data,
+			'total_debet' => number_format($total_debet,0),
+			'total_kredit' => number_format($total_kredit,0),
+			'total_debet1' => number_format($total_debet1,0),
+			'total_kredit1' => number_format($total_kredit1,0),
+			'total_debet2' => number_format($total_debet2,0),
+			'total_kredit2' => number_format($total_kredit2,0),
+			'total_debet3' => number_format($total_debet3,0),
+			'total_kredit3' => number_format($total_kredit3,0),
+			'total_debet4' => number_format($total_debet4,0),
+			'total_kredit4' => number_format($total_kredit4,0),
+			'total_debet5' => number_format($total_debet5,0),
+			'total_kredit5' => number_format($total_kredit5,0),
+			'total_debet6' => number_format($total_debet6,0),
+			'total_kredit6' => number_format($total_kredit6,0)
+		));
 	}
 	
 }

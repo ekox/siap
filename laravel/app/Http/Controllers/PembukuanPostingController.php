@@ -146,10 +146,9 @@ class PembukuanPostingController extends Controller {
 			
 			$where = '';
 			//if($periode=='12'){
-				$where = "
+				/*$where = "
 					union all
 					
-					/* cari equitas laba */
 					select  to_char(b.tgdok,'YYYY') as thang,
 							to_char(b.tgdok,'MM') as periode,
 							a.kdakun,
@@ -184,7 +183,6 @@ class PembukuanPostingController extends Controller {
 							
 					union all
 							
-					/* cari equitas rugi */
 					select  to_char(b.tgdok,'YYYY') as thang,
 							to_char(b.tgdok,'MM') as periode,
 							a.kdakun,
@@ -216,7 +214,7 @@ class PembukuanPostingController extends Controller {
 							to_char(b.tgdok,'MM'),
 							a.kdakun,
 							a.kddk
-				";
+				";*/
 			//}
 			
 			$query = "
@@ -227,33 +225,68 @@ class PembukuanPostingController extends Controller {
 						sum(decode(a.kddk,'K',a.nilai,0)) as kredit,
 						".session('id_user')." as id_user
 				from(
-					/* ambil data saldo awal */
+					/* saldo awal */
 					select  to_char(a.tgsawal,'YYYY') as thang,
 							to_char(a.tgsawal,'MM') as periode,
-							a.kdakun,
 							a.kddk,
-							a.nilai
+							a.kdakun,
+							sum(a.nilai) as nilai
 					from d_sawal a
 					where a.thang='".session('tahun')."' and a.tgsawal<=last_day(to_date('01/".$periode."/".session('tahun')."','DD/MM/YYYY'))
-
+					group by to_char(a.tgsawal,'YYYY'),
+							to_char(a.tgsawal,'MM'),
+							a.kdakun,
+							a.kddk
+					
 					union all
 					
-					/* ambil data transaksi berjalan */
-					select  to_char(b.tgdok,'YYYY') as thang,
-							to_char(b.tgdok,'MM') as periode,
-							a.kdakun,
-							a.kddk,
-							a.nilai
-					from d_trans_akun a
-					left outer join d_trans b on(a.id_trans=b.id)
-					where b.thang='".session('tahun')."' and b.tgdok<=last_day(to_date('01/".$periode."/".session('tahun')."','DD/MM/YYYY'))
+					/* transaksi berjalan debet */
+					select  to_char(tgdok,'yyyy') as thang,
+							to_char(tgdok,'mm') as periode,
+							'D' as kddk,
+							debet as kdakun,
+							sum(nilai) as nilai
+					from d_trans a
+					left join t_alur b on(a.id_alur=b.id)
+					where thang='".session('tahun')."' and debet is not null and b.neraca1=1 and tgdok<=last_day(to_date('01/".$periode."/".session('tahun')."','DD/MM/YYYY'))
+					group by to_char(tgdok,'yyyy'),
+							 to_char(tgdok,'mm'),
+							 debet
+							 
+					union all
+
+					/* transaksi berjalan kredit */
+					select  to_char(tgdok,'yyyy') as thang,
+							to_char(tgdok,'mm') as periode,
+							'K' as kddk,
+							kredit as kdakun,
+							sum(nilai) as nilai
+					from d_trans a
+					left join t_alur b on(a.id_alur=b.id)
+					where thang='".session('tahun')."' and kredit is not null and b.neraca1=1 and tgdok<=last_day(to_date('01/".$periode."/".session('tahun')."','DD/MM/YYYY'))
+					group by to_char(tgdok,'yyyy'),
+							 to_char(tgdok,'mm'),
+							 kredit
+							 
+					union all
 					
-					".$where."
+					/* jurnal penyesuaian */
+					select  to_char(tgdok,'yyyy') as thang,
+							to_char(tgdok,'mm') as periode,
+							c.kddk,
+							c.kdakun,
+							sum(c.nilai) as nilai
+					from d_trans a
+					left join t_alur b on(a.id_alur=b.id)
+					left join d_trans_akun c on(a.id=c.id_trans)
+					where thang='".session('tahun')."' and b.neraca1=0 and a.tgdok<=last_day(to_date('01/".$periode."/".session('tahun')."','DD/MM/YYYY'))
+					group by to_char(tgdok,'yyyy'),
+							 to_char(tgdok,'mm'),
+							 c.kddk,
+							 c.kdakun
 					
 				) a
-				group by a.thang,
-						a.periode,
-						a.kdakun
+				group by a.thang,a.periode,a.kdakun
 			";
 			
 			DB::beginTransaction();
