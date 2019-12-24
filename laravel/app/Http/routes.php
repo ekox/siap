@@ -307,11 +307,23 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get('/arus-kas', 'LaporanKeuanganController@cashFlow');
 		Route::get('/rkey', 'LaporanKeuanganController@rKey');
 		
-		Route::group(['prefix' =>'realisasi'], function() {
-			Route::get('/', 'LaporanKeuanganController@realisasi');
-		});
-		
 	});
+
+	Route::group(['prefix' =>'realisasi'], function() {
+
+		//realisasi pendapatan
+		Route::get('/pendapatan-umum', 'LaporanRealisasiController@pendapatan');
+		Route::get('/pendapatan-pengembangan', 'LaporanRealisasiController@pendapatanPengembangan');
+		Route::get('/pendapatan-pengelolaan', 'LaporanRealisasiController@pendapatanPengelolaan');
+
+		//realisasi beban
+		Route::get('/beban-umum', 'LaporanRealisasiController@pendapatan');
+		Route::get('/beban-penjualan', 'LaporanRealisasiController@pendapatanPengembangan');
+		Route::get('/beban-usaha', 'LaporanRealisasiController@pendapatanPengelolaan');
+			
+	});
+		
+	
 	
 	//laporan
 	Route::group(['prefix' => 'laporan'], function () {
