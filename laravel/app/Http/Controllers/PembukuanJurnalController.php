@@ -15,6 +15,22 @@ class PembukuanJurnalController extends Controller {
 					sum(decode(a.kddk,'D',a.nilai,0)) as debet,
 					sum(decode(a.kddk,'K',a.nilai,0)) as kredit
 			from(
+				/* saldo awal */
+				select  to_char(a.tgsawal,'YYYY') as thang,
+						to_char(a.tgsawal,'MM') as periode,
+						a.kddk,
+						a.kdakun,
+						sum(a.nilai) as nilai
+				from d_sawal a
+				where a.thang=?
+				group by to_char(a.tgsawal,'YYYY'),
+						to_char(a.tgsawal,'MM'),
+						a.kdakun,
+						a.kddk
+				
+				union all
+				
+				/* transaksi berjalan debet */
 				select  to_char(tgdok,'yyyy') as thang,
 						to_char(tgdok,'mm') as periode,
 						'D' as kddk,
@@ -28,7 +44,8 @@ class PembukuanJurnalController extends Controller {
 						 debet
 						 
 				union all
-
+				
+				/* transaksi berjalan kredit */
 				select  to_char(tgdok,'yyyy') as thang,
 						to_char(tgdok,'mm') as periode,
 						'K' as kddk,
@@ -45,6 +62,7 @@ class PembukuanJurnalController extends Controller {
 			group by a.kdakun,b.nmakun
 			order by a.kdakun,b.nmakun
 		",[
+			session('tahun'),
 			session('tahun'),
 			session('tahun')
 		]);
@@ -95,6 +113,22 @@ class PembukuanJurnalController extends Controller {
 							sum(decode(a.kddk,'D',a.nilai,0)) as debet,
 							sum(decode(a.kddk,'K',a.nilai,0)) as kredit
 					from(
+						/* saldo awal */
+						select  to_char(a.tgsawal,'YYYY') as thang,
+								to_char(a.tgsawal,'MM') as periode,
+								a.kddk,
+								a.kdakun,
+								sum(a.nilai) as nilai
+						from d_sawal a
+						where a.thang=?
+						group by to_char(a.tgsawal,'YYYY'),
+								to_char(a.tgsawal,'MM'),
+								a.kdakun,
+								a.kddk
+						
+						union all
+						
+						/* transaksi berjalan debet */
 						select  to_char(tgdok,'yyyy') as thang,
 								to_char(tgdok,'mm') as periode,
 								'D' as kddk,
@@ -108,7 +142,8 @@ class PembukuanJurnalController extends Controller {
 								 debet
 								 
 						union all
-
+						
+						/* transaksi berjalan kredit */
 						select  to_char(tgdok,'yyyy') as thang,
 								to_char(tgdok,'mm') as periode,
 								'K' as kddk,
@@ -151,6 +186,7 @@ class PembukuanJurnalController extends Controller {
 		",[
 			session('tahun'),
 			session('tahun'),
+			session('tahun'),
 			session('tahun')
 		]);
 		
@@ -188,6 +224,122 @@ class PembukuanJurnalController extends Controller {
 			'total_kredit1' => number_format($total_kredit1,0),
 			'total_debet2' => number_format($total_debet2,0),
 			'total_kredit2' => number_format($total_kredit2,0)
+		));
+	}
+	
+	public function neracaLajur(Request $request, $periode)
+	{
+		$rows = DB::select("
+			select  a.*,
+					d.nmakun,
+					nvl(b.debet,0) as debet1,
+					nvl(b.kredit,0) as kredit1,
+					nvl(c.debet,0) as debet2,
+					nvl(c.kredit,0) as kredit2
+			from(
+				select  a.kdakun,
+						sum(a.debet) as debet,
+						sum(a.kredit) as kredit
+				from d_buku_besar a
+				where a.thang=? and a.periode<=?
+				group by a.kdakun
+			) a
+			left join(
+				select  a.kdakun,
+						sum(a.debet) as debet,
+						sum(a.kredit) as kredit
+				from d_buku_besar a
+				left join t_akun b on(a.kdakun=b.kdakun)
+				where a.thang=? and a.periode<=? and b.kdlap='NR'
+				group by a.kdakun
+			) b on(a.kdakun=b.kdakun)
+			left join(
+				select  a.kdakun,
+						sum(a.debet) as debet,
+						sum(a.kredit) as kredit
+				from d_buku_besar a
+				left join t_akun b on(a.kdakun=b.kdakun)
+				where a.thang=? and a.periode<=? and b.kdlap='LR'
+				group by a.kdakun
+			) c on(a.kdakun=c.kdakun)
+			left join t_akun d on(a.kdakun=d.kdakun)
+			order by a.kdakun
+		",[
+			session('tahun'),
+			$periode,
+			session('tahun'),
+			$periode,
+			session('tahun'),
+			$periode
+		]);
+		
+		$data = '';
+		$total_debet = 0;
+		$total_kredit = 0;
+		$total_debet1 = 0;
+		$total_kredit1 = 0;
+		$total_debet2 = 0;
+		$total_kredit2 = 0;
+		foreach($rows as $row){
+			$data .= '<tr>
+						<td>'.$row->kdakun.'</td>
+						<td>'.$row->nmakun.'</td>
+						<td style="text-align:right;">'.number_format($row->debet,0).'</td>
+						<td style="text-align:right;">'.number_format($row->kredit,0).'</td>
+						<td style="text-align:right;">'.number_format($row->debet1,0).'</td>
+						<td style="text-align:right;">'.number_format($row->kredit1,0).'</td>
+						<td style="text-align:right;">'.number_format($row->debet2,0).'</td>
+						<td style="text-align:right;">'.number_format($row->kredit2,0).'</td>
+					  </tr>';
+			$total_debet += $row->debet;
+			$total_kredit += $row->kredit;
+			$total_debet1 += $row->debet1;
+			$total_kredit1 += $row->kredit1;
+			$total_debet2 += $row->debet2;
+			$total_kredit2 += $row->kredit2;
+		}
+		
+		//hitung rugi laba
+		if($total_debet1>$total_kredit1){
+			$total_kredit3 = $total_debet1-$total_kredit1;
+			$total_debet3 = 0;
+		}
+		else{
+			$total_debet3 = $total_kredit1-$total_debet1;
+			$total_kredit3 = 0;
+		}
+		
+		if($total_debet2>$total_kredit2){
+			$total_kredit4 = $total_debet2-$total_kredit2;
+			$total_debet4 = 0;
+		}
+		else{
+			$total_debet4 = $total_kredit2-$total_debet2;
+			$total_kredit4 = 0;
+		}
+		
+		//hitung total akhir
+		$total_debet5 = $total_debet1 + $total_debet3;
+		$total_kredit5 = $total_kredit1 + $total_kredit3;
+		$total_debet6 = $total_debet2 + $total_debet4;
+		$total_kredit6 = $total_kredit2 + $total_kredit4;
+		
+		return response()->json(array(
+			'data' => $data,
+			'total_debet' => number_format($total_debet,0),
+			'total_kredit' => number_format($total_kredit,0),
+			'total_debet1' => number_format($total_debet1,0),
+			'total_kredit1' => number_format($total_kredit1,0),
+			'total_debet2' => number_format($total_debet2,0),
+			'total_kredit2' => number_format($total_kredit2,0),
+			'total_debet3' => number_format($total_debet3,0),
+			'total_kredit3' => number_format($total_kredit3,0),
+			'total_debet4' => number_format($total_debet4,0),
+			'total_kredit4' => number_format($total_kredit4,0),
+			'total_debet5' => number_format($total_debet5,0),
+			'total_kredit5' => number_format($total_kredit5,0),
+			'total_debet6' => number_format($total_debet6,0),
+			'total_kredit6' => number_format($total_kredit6,0)
 		));
 	}
 	
