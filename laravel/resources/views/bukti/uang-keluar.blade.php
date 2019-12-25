@@ -37,7 +37,7 @@
 </table>
 
 <!--table content-->
-<table width="100%" border="0" cellspacing="0" cellpadding="3" style="border:1px solid #000;font-size:11px;">
+<table width="100%" border="1" cellspacing="0" cellpadding="3" style="border:1px solid #000;font-size:11px;">
 	<tbody>
 		<tr>
 			<td class="wd15 pl3 vt">Tahun Anggaran</td>
