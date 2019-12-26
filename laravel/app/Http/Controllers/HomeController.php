@@ -183,7 +183,7 @@ class HomeController extends Controller {
 		
 		foreach( $rows as $row )
 		{
-			$aksi='<a href="#/'.$row->url.'?id_trans='.$row->id.'" title="Proses data ini?">'.number_format($row->waktu,2).' jam</a>';
+			$aksi='<a href="#/'.$row->url.'?id_trans='.$row->nourut.'" title="Proses data ini?">'.number_format($row->waktu,2).' jam</a>';
 			
 			$output['aaData'][] = array(
 				$row->no,
