@@ -329,9 +329,9 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get('/pendapatan-pengelolaan', 'LaporanRealisasiController@pendapatanPengelolaan');
 
 		//realisasi beban
-		Route::get('/beban-umum', 'LaporanRealisasiController@pendapatan');
-		Route::get('/beban-penjualan', 'LaporanRealisasiController@pendapatanPengembangan');
-		Route::get('/beban-usaha', 'LaporanRealisasiController@pendapatanPengelolaan');
+		Route::get('/beban-umum', 'LaporanRealisasiController@beban');
+		Route::get('/beban-penjualan', 'LaporanRealisasiController@bebanPokokPenjualan');
+		Route::get('/beban-usaha', 'LaporanRealisasiController@bebanUsaha');
 			
 	});
 		

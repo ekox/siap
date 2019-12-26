@@ -50,9 +50,23 @@ class Bukti extends Model
     /**
      * description 
      */
+    public static function queryUangKeluar()
+    {
+        $rows = DB::select("
+            
+        ",
+        []);
+    }
+
+    /**
+     * description 
+     */
     public static function queryUangMasuk()
     {
-        
+        $rows = DB::select("
+            
+        ",
+        []);
     }
 
     /**

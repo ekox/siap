@@ -83,25 +83,25 @@ class BuktiTransaksiController extends TableController
 			'nomorbukti' => '',
 		];
 		
-		return view('bukti.uang-keluar', $data);
-		//~ $html_out = view('bukti.uang-keluar', $data);
+		//~ return view('bukti.uang-keluar', $data);
+		$html_out = view('bukti.uang-keluar', $data);
 
-		//~ $mpdf = new Mpdf([
-			//~ 'mode' => 'utf-8',
-			//~ 'format' => 'A4-P',
-			//~ 'margin_left' => 8,
-			//~ 'margin_right' => 8,
-			//~ 'margin_top' => 18,
-			//~ 'margin_bottom' => 18,
-		//~ ]);
+		$mpdf = new Mpdf([
+			'mode' => 'utf-8',
+			'format' => 'A4-P',
+			'margin_left' => 8,
+			'margin_right' => 8,
+			'margin_top' => 18,
+			'margin_bottom' => 18,
+		]);
 
-		//~ //mode portrait or landscape
-		//~ $mpdf->AddPage('P');
+		//mode portrait or landscape
+		$mpdf->AddPage('P');
 
-		//~ //write content to PDF
-		//~ $mpdf->writeHTML($html_out);
-		//~ $mpdf->Output('Bukti Uang Keluar.pdf', 'I');
-		//~ exit;
+		//write content to PDF
+		$mpdf->writeHTML($html_out);
+		$mpdf->Output('Bukti Uang Keluar.pdf', 'I');
+		exit;
 	}
 
     /**
