@@ -504,6 +504,22 @@ class DropdownController extends Controller {
 		
 	}
 	
+	public function akun_pajak_json()
+	{
+		$rows = DB::select("
+			select  a.kdakun,
+					b.nmakun,
+					a.nilai,
+					a.kddk
+			from t_akun_pajak a
+			left join t_akun b on(a.kdakun=b.kdakun)
+			order by a.nourut
+		");
+		
+		return response()->json($rows);
+		
+	}
+	
 	public function akun_debet($id_trans)
 	{
 		$rows = DB::select("

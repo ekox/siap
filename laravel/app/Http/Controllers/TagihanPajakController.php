@@ -5,7 +5,7 @@ use Session;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class PengeluaranPajakController extends Controller {
+class TagihanPajakController extends Controller {
 
 	public function index(Request $request)
 	{
@@ -32,7 +32,7 @@ class PengeluaranPajakController extends Controller {
 					left outer join t_penerima e on(a.id_penerima=e.id)
 					left outer join t_level g on(c.kdlevel=g.kdlevel)
 					left outer join t_trans h on(a.kdtran=h.id)
-					where b.menu=4 and a.thang='".session('tahun')."' and c.is_pajak1='1'
+					where b.menu=1 and a.thang='".session('tahun')."' and c.is_pajak1='1'
 					";
 		
 		/*

@@ -23,7 +23,7 @@ class PengeluaranProsesController extends Controller {
 								a.nodok as pks,
 								to_char(a.tgdok1,'dd-mm-yyyy') as tgjtempo,
 								a.uraian,
-								nvl(a.nilai,0)-nvl(a.ppn,0)-nvl(a.pph21,0)-nvl(a.pph22,0)-nvl(a.pph23,0)-nvl(a.pph25,0) as nilai,
+								nvl(a.nilai,0) as nilai,
 								c.nmstatus as status,
 								decode(c.is_unit,null,
 									1,
@@ -186,6 +186,7 @@ class PengeluaranProsesController extends Controller {
 					left outer join t_level g on(c.kdlevel=g.kdlevel)
 					left outer join t_trans h on(a.kdtran=h.id)
 					where b.menu=4 and a.thang='".session('tahun')."'
+					order by a.nourut desc
 					";
 		
 		/*
@@ -317,9 +318,9 @@ class PengeluaranProsesController extends Controller {
 					to_char(a.tgdok,'yyyy-mm-dd') as tgpks,
 					to_char(a.tgdok1,'yyyy-mm-dd') as tgjtempo,
 					a.uraian,
-					nvl(a.nilai,0) as nilai,
-					nvl(a.ppn,0)+nvl(a.pph21,0)+nvl(a.pph22,0)+nvl(a.pph23,0)+nvl(a.pph25,0) as pajak,
-					nvl(a.nilai,0)-nvl(a.ppn,0)-nvl(a.pph21,0)-nvl(a.pph22,0)-nvl(a.pph23,0)-nvl(a.pph25,0) as total,
+					nvl(a.nilai_bersih,0) as nilai,
+					nvl(j.nilai,0) as pajak,
+					nvl(a.nilai,0) as total,
 					nvl(f.nmakun,0) as debet,
 					nvl(i.nmakun,0) as kredit,
 					a.id_alur,
@@ -332,6 +333,13 @@ class PengeluaranProsesController extends Controller {
 			left outer join t_trans k on(a.kdtran=k.id)
 			left outer join t_akun f on(a.debet=f.kdakun)
 			left outer join t_akun i on(a.kredit=i.kdakun)
+			left outer join(
+				select	a.id_trans,
+						sum(decode(b.kddk,'D',a.nilai,-a.nilai)) as nilai
+				from d_trans_pajak a
+				left join t_akun_pajak b on(a.kdakun=b.kdakun)
+				group by a.id_trans
+			) j on(a.id=j.id_trans)
 			where a.id=?
 		",[
 			$id
