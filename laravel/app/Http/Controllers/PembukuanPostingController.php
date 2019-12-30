@@ -245,7 +245,7 @@ class PembukuanPostingController extends Controller {
 							to_char(tgdok,'mm') as periode,
 							'D' as kddk,
 							debet as kdakun,
-							sum(nilai) as nilai
+							sum(decode(b.menu,1,a.nilai,2,a.nilai,a.nilai_bersih)) as nilai
 					from d_trans a
 					left join t_alur b on(a.id_alur=b.id)
 					where thang='".session('tahun')."' and debet is not null and b.neraca1=1 and tgdok<=last_day(to_date('01/".$periode."/".session('tahun')."','DD/MM/YYYY'))
@@ -254,19 +254,51 @@ class PembukuanPostingController extends Controller {
 							 debet
 							 
 					union all
-
+					
 					/* transaksi berjalan kredit */
 					select  to_char(tgdok,'yyyy') as thang,
 							to_char(tgdok,'mm') as periode,
 							'K' as kddk,
 							kredit as kdakun,
-							sum(nilai) as nilai
+							sum(decode(b.menu,1,a.nilai_bersih,2,a.nilai_bersih,a.nilai)) as nilai
 					from d_trans a
 					left join t_alur b on(a.id_alur=b.id)
 					where thang='".session('tahun')."' and kredit is not null and b.neraca1=1 and tgdok<=last_day(to_date('01/".$periode."/".session('tahun')."','DD/MM/YYYY'))
 					group by to_char(tgdok,'yyyy'),
 							 to_char(tgdok,'mm'),
 							 kredit
+							 
+					union all
+					
+					/* hitung pajak keluaran */
+					select  to_char(b.tgdok,'yyyy') as thang,
+							to_char(b.tgdok,'mm') as periode,
+							'K' as kddk,
+							a.kdakun,
+							sum(a.nilai) as nilai
+					from d_trans_pajak a
+					left join d_trans b on(a.id_trans=b.id)
+					left join t_alur c on(b.id_alur=c.id)
+					where b.thang='".session('tahun')."' and c.menu in(1,2) and b.tgdok<=last_day(to_date('01/".$periode."/".session('tahun')."','DD/MM/YYYY'))
+					group by to_char(b.tgdok,'yyyy'),
+							to_char(b.tgdok,'mm'),
+							a.kdakun
+							
+					union all
+							
+					/* hitung pajak masukan */
+					select  to_char(b.tgdok,'yyyy') as thang,
+							to_char(b.tgdok,'mm') as periode,
+							'D' as kddk,
+							a.kdakun,
+							sum(a.nilai) as nilai
+					from d_trans_pajak a
+					left join d_trans b on(a.id_trans=b.id)
+					left join t_alur c on(b.id_alur=c.id)
+					where b.thang='".session('tahun')."' and c.menu in(4) and b.tgdok<=last_day(to_date('01/".$periode."/".session('tahun')."','DD/MM/YYYY'))
+					group by to_char(b.tgdok,'yyyy'),
+							to_char(b.tgdok,'mm'),
+							a.kdakun
 							 
 					union all
 					
