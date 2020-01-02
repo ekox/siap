@@ -138,6 +138,7 @@ class PenerimaanRekamController extends Controller {
 								<a id="'.$row->id.'" class="dropdown-item ubah" href="javascript:;">Ubah Data</a>
 								<a id="'.$row->id.'" class="dropdown-item hapus" href="javascript:;">Hapus Data</a>
 								<a id="'.$row->id.'" class="dropdown-item upload" href="javascript:;">Upload Lampiran</a>
+								<a class="dropdown-item" href="bukti/uang-masuk/'.$row->id.'" target="_blank">Cetak Bukti</a>
 							</div>
 						</center>';
 			}

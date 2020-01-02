@@ -1,4 +1,3 @@
-@include('css')
 <!--table header-->
 <table width="100%" border="0" cellspacing="0" cellpadding="0" style="border: 1px solid #000;font-size:12px;">
 	<thead>
@@ -13,17 +12,17 @@
 		<tr>
 			<td class="wd10 pl3 vt">Nomor</td>
 			<td class="wd2 vt">:</td>
-			<td class="pl3 vt">&nbsp;</td>
+			<td class="pl3 vt">{{$nourut}}</td>
 		</tr>
 		<tr>
 			<td class="pl3 vt">Tahun</td>
 			<td class=" t">:</td>
-			<td class="pl3 vt">{{$tahun}}</td>
+			<td class="pl3 vt">{{$thang}}</td>
 		</tr>
 		<tr>
 			<td class="pl3 vt">No. Bukti Keluar</td>
 			<td class="vt">:</td>
-			<td class="pl3 vt">&nbsp;</td>
+			<td class="pl3 vt">{{$nodok}}</td>
 		</tr>
 	</tbody>
 	<thead>
@@ -42,7 +41,7 @@
 		<tr>
 			<td class="wd15 pl3 vt">Tahun Anggaran</td>
 			<td class="wd5 ar vt">:</td>
-			<td class="wd15 pl3 vt">{{$tahun}}</td>
+			<td class="wd15 pl3 vt">{{$thang}}</td>
 			<td colspan="4" class="bl pl3">&nbsp;</td>
 		</tr>
 		<tr>
@@ -55,7 +54,7 @@
 			<td colspan="3">&nbsp;</td>
 			<td rowspan="2" class="wd15 bl pl3 vt">Kepada</td>
 			<td rowspan="2" class="ar vt">:</td>
-			<td rowspan="2" colspan="2" class="pl3 vt">..............................................................................</td>
+			<td rowspan="2" colspan="2" class="pl3 vt">{{$nmpenerima}}</td>
 		</tr>
 		<tr>
 			<td colspan="3">&nbsp;</td>
@@ -64,7 +63,7 @@
 			<td colspan="3" class="pl3">Kode Mata Anggaran Pengeluaran :</td>
 			<td rowspan="3" class="bl pl3 vt">Uang Sejumlah</td>
 			<td rowspan="3" class="wd2 ar vt">:</td>
-			<td rowspan="3" colspan="2" class="pl3 vt">..............................................................................</td>
+			<td rowspan="3" colspan="2" class="pl3 vt">{{$sejumlah}}</td>
 		</tr>
 		<tr>
 			<td colspan="3" class="pl3">Beban Anggaran Belanja</td>
@@ -77,12 +76,12 @@
 			<td colspan="4" class="bl">&nbsp;</td>
 		</tr>
 		<tr>
-			<td class="pl3">....................</td>
+			<td class="pl3">{{$kdakun}}</td>
 			<td class="pl3">Rp</td>
-			<td class="pl3 ar">....................</td>
+			<td class="pl3 ar">{{$nilai}}</td>
 			<td rowspan="4" class="bl pl3 vt">Untuk</td>
 			<td rowspan="4" class="pl3 ar vt">:</td>
-			<td rowspan="4" colspan="2" class="pl3 vt">........................................................................................</td>
+			<td rowspan="4" colspan="2" class="pl3 vt">{{$uraian}}</td>
 		</tr>
 		<tr>
 			<td class="pl3">....................</td>
@@ -105,7 +104,7 @@
 			<td class="pl3 ar">....................</td>
 			<td rowspan="4" class="bl pl3 vt">Dasar Pembayaran</td>
 			<td rowspan="4" class="pl3 ar vt">:</td>
-			<td rowspan="4" colspan="2" class="pl3 vt">........................................................................................</td>
+			<td rowspan="4" colspan="2" class="pl3 vt">{{$nmakun}}</td>
 		</tr>
 		<tr>
 			<td class="pl3 vt">....................</td>
@@ -134,7 +133,7 @@
 		<tr>
 			<td class="bl pl3">Pada tanggal</td>
 			<td class="pl3 ar vt">:</td>
-			<td colspan="2" class="pl3">....................</td>
+			<td colspan="2" class="pl3">{{$tgdok}}</td>
 		</tr>
 		<tr>
 			<td class="pl3 vt">....................</td>
@@ -142,7 +141,7 @@
 			<td class="pl3 ar vt">....................</td>
 			<td class="bl pl3 vt">Cash/Cek</td>
 			<td class="ar vt">:</td>
-			<td colspan="2" class="pl3">....................</td>
+			<td colspan="2" class="pl3">{{$bayar}}</td>
 		</tr>
 		<tr>
 			<td class="pl3">....................</td>
@@ -177,7 +176,7 @@
 		<tr>
 			<td rowspan="2" class="pl3 vt">Jumlah yang harus dibayar</td>
 			<td rowspan="2" class="pl3 vt">Rp</td>
-			<td rowspan="2" class="pl3 ar vt">....................</td>
+			<td rowspan="2" class="pl3 ar vt">{{$nilai}}</td>
 			<td class="bl pl3 vt">KTP/SIM No.</td>
 			<td class="ar vt">:</td>
 			<td class="pl3 vt">....................</td>

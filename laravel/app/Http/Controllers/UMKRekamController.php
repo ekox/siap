@@ -131,6 +131,7 @@ class UMKRekamController extends Controller {
 							<div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
 								<a id="'.$row->id.'" class="dropdown-item ubah" href="javascript:;">Ubah Data</a>
 								<a id="'.$row->id.'" class="dropdown-item hapus" href="javascript:;">Hapus Data</a>
+								<a class="dropdown-item" href="bukti/uang-muka/'.$row->id.'" target="_blank">Cetak Bukti</a>
 							</div>
 						</center>';
 			}

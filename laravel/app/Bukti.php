@@ -30,7 +30,7 @@ class Bukti extends Model
                    b.batas2,
                    c.id AS id_trans_akun,
                    c.kdakun,
-                   c.nilai,
+                   a.nilai,
                    c.kddk,
                    d.nmakun
               FROM d_trans a
@@ -40,9 +40,9 @@ class Bukti extends Model
                       ON (a.id = c.id_trans)
                    LEFT JOIN t_akun d
                       ON (c.kdakun = d.kdakun)
-             WHERE a.thang = ? AND b.menu = 3 AND c.kddk = 'K' AND c.id_trans = ?
+             WHERE a.id = ?
 		",
-		[$tahun, $id]);
+		[$id]);
 
 		return $rows[0];
 	}
