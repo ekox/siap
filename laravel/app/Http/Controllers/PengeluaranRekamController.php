@@ -341,203 +341,235 @@ class PengeluaranRekamController extends Controller {
 				
 				if($nilai>=$rows[0]->batas1 && $nilai<=$rows[0]->batas2){
 					
-					if($request->input('inp-rekambaru')=='1'){
+					$rows = DB::select("
+						select	*
+						from t_trans
+						where id=?
+					",[
+						$request->input('kdtran')
+					]);
+					
+					if(count($rows)>0){
 						
-						$rows = DB::select("
-							select	count(*) as jml
-							from d_trans a
-							left join t_alur b on(a.id_alur=b.id)
-							where a.thang=? and b.menu=4 and a.nourut=?
-						",[
-							session('tahun'),
-							str_replace('0', '', $request->input('nourut'))
-						]);
+						$validasi_pagu = $rows[0]->validasi_pagu;
+						$lanjut = true;
 						
-						if($rows[0]->jml==0){
+						if($validasi_pagu==1){
+							$sisa = str_replace(',', '', $request->input('sisa'));
+							if($total>$sisa){
+								$lanjut = false;
+							}
+						}
+						
+						if($lanjut){
 							
-							$arr_parent = explode("|", $request->input('parent_id'));
-							$parent_id = $arr_parent[0];
-							
-							$id_trans = DB::table('d_trans')->insertGetId([
-								'kdunit' => session('kdunit'),
-								'thang' => session('tahun'),
-								'nourut' => str_replace('0', '', $request->input('nourut')),
-								'id_output' => $request->input('id_output'),
-								'id_alur' => $request->input('id_alur'),
-								'kdtran' => $request->input('kdtran'),
-								'id_penerima' => $request->input('id_pelanggan'),
-								'nodok' => $request->input('nopks'),
-								'tgdok' => $request->input('tgpks'),
-								'tgdok1' => $request->input('tgjtempo'),
-								'uraian' => $request->input('uraian'),
-								'debet' => $request->input('debet'),
-								'kredit' => $request->input('kredit'),
-								'nilai' => str_replace(',', '', $request->input('total')),
-								'nilai_bersih' => str_replace(',', '', $request->input('nilai')),
-								'parent_id' => $parent_id,
-								'status' => 1,
-								'id_user' => session('id_user')
-							]);
-							
-							if($id_trans){
+							if($request->input('inp-rekambaru')=='1'){
+						
+								$rows = DB::select("
+									select	count(*) as jml
+									from d_trans a
+									left join t_alur b on(a.id_alur=b.id)
+									where a.thang=? and b.menu=4 and a.nourut=?
+								",[
+									session('tahun'),
+									str_replace('0', '', $request->input('nourut'))
+								]);
 								
-								$lanjut = true;
-								$arr_pajak = $request->input('rincian');
-								if(count($arr_pajak)>0){
+								if($rows[0]->jml==0){
 									
-									$arr_keys = array_keys($arr_pajak);
-									$arr_insert = array();
+									$arr_parent = explode("|", $request->input('parent_id'));
+									$parent_id = $arr_parent[0];
 									
-									for($i=0;$i<count($arr_keys);$i++){
+									$id_trans = DB::table('d_trans')->insertGetId([
+										'kdunit' => session('kdunit'),
+										'thang' => session('tahun'),
+										'nourut' => str_replace('0', '', $request->input('nourut')),
+										'id_output' => $request->input('id_output'),
+										'id_alur' => $request->input('id_alur'),
+										'kdtran' => $request->input('kdtran'),
+										'id_penerima' => $request->input('id_pelanggan'),
+										'nodok' => $request->input('nopks'),
+										'tgdok' => $request->input('tgpks'),
+										'tgdok1' => $request->input('tgjtempo'),
+										'uraian' => $request->input('uraian'),
+										'debet' => $request->input('debet'),
+										'kredit' => $request->input('kredit'),
+										'nilai' => str_replace(',', '', $request->input('total')),
+										'nilai_bersih' => str_replace(',', '', $request->input('nilai')),
+										'parent_id' => $parent_id,
+										'status' => 1,
+										'id_user' => session('id_user')
+									]);
+									
+									if($id_trans){
 										
-										if($arr_pajak[$arr_keys[$i]]["'nilai'"]>0){
+										$lanjut = true;
+										$arr_pajak = $request->input('rincian');
+										if(count($arr_pajak)>0){
+											
+											$arr_keys = array_keys($arr_pajak);
+											$arr_insert = array();
+											
+											for($i=0;$i<count($arr_keys);$i++){
+												
+												if($arr_pajak[$arr_keys[$i]]["'nilai'"]>0){
+												
+													$arr_akun = explode("|", $arr_pajak[$arr_keys[$i]]["'kdakun'"]);
+													$kdakun = $arr_akun[0];
+												
+													$arr_insert[] = "select	".$id_trans." as id_trans,
+																			'".$kdakun."' as kdakun,
+																			".str_replace(',', '', $arr_pajak[$arr_keys[$i]]["'nilai'"])." as nilai
+																	 from dual";
+																	 
+												}
+												
+											}
+											
+											if(count($arr_insert)>0){
+													
+												$delete = DB::delete("
+													delete from d_trans_pajak
+													where id_trans=?
+												",[
+													$id_trans
+												]);
+													
+												$insert = DB::insert("
+													insert into d_trans_pajak(id_trans,kdakun,nilai)
+													".implode(" union all ", $arr_insert)."
+												");
+												
+												if(!$insert){
+													$lanjut = false;
+												}
+												
+											}
+											
+										}
 										
-											$arr_akun = explode("|", $arr_pajak[$arr_keys[$i]]["'kdakun'"]);
-											$kdakun = $arr_akun[0];
-										
-											$arr_insert[] = "select	".$id_trans." as id_trans,
-																	'".$kdakun."' as kdakun,
-																	".str_replace(',', '', $arr_pajak[$arr_keys[$i]]["'nilai'"])." as nilai
-															 from dual";
-															 
+										if($lanjut){
+											DB::commit();
+											return 'success';
+										}
+										else{
+											return 'Simpan pajak gagal!';
 										}
 										
 									}
-									
-									if(count($arr_insert)>0){
-											
-										$delete = DB::delete("
-											delete from d_trans_pajak
-											where id_trans=?
-										",[
-											$id_trans
-										]);
-											
-										$insert = DB::insert("
-											insert into d_trans_pajak(id_trans,kdakun,nilai)
-											".implode(" union all ", $arr_insert)."
-										");
-										
-										if(!$insert){
-											$lanjut = false;
-										}
-										
+									else{
+										return 'Data gagal disimpan!';
 									}
 									
-								}
-								
-								if($lanjut){
-									DB::commit();
-									return 'success';
 								}
 								else{
-									return 'Simpan pajak gagal!';
+									return 'Duplikasi nomor transaksi!';
 								}
 								
 							}
 							else{
-								return 'Data gagal disimpan!';
+								$update = DB::update("
+									update d_trans
+									set id_output=?,
+										kdtran=?,
+										id_penerima=?,
+										nodok=?,
+										tgdok=?,
+										tgdok1=?,
+										uraian=?,
+										debet=?,
+										kredit=?,
+										nilai=?,
+										nilai_bersih=?,
+										id_user=?,
+										updated_at=sysdate
+									where id=?
+								",[
+									$request->input('id_output'),
+									$request->input('kdtran'),
+									$request->input('id_pelanggan'),
+									$request->input('nopks'),
+									$request->input('tgpks'),
+									$request->input('tgjtempo'),
+									$request->input('uraian'),
+									$request->input('debet'),
+									$request->input('kredit'),
+									str_replace(',', '', $request->input('total')),
+									str_replace(',', '', $request->input('nilai')),
+									session('id_user'),
+									$request->input('inp-id')
+								]);
+								
+								if($update){
+									
+									$lanjut = true;
+									$arr_pajak = $request->input('rincian');
+									$id_trans = $request->input('inp-id');
+									if(count($arr_pajak)>0){
+										
+										$arr_keys = array_keys($arr_pajak);
+										$arr_insert = array();
+										
+										for($i=0;$i<count($arr_keys);$i++){
+											
+											if($arr_pajak[$arr_keys[$i]]["'nilai'"]>0){
+											
+												$arr_akun = explode("|", $arr_pajak[$arr_keys[$i]]["'kdakun'"]);
+												$kdakun = $arr_akun[0];
+											
+												$arr_insert[] = "select	".$id_trans." as id_trans,
+																		'".$kdakun."' as kdakun,
+																		".str_replace(',', '', $arr_pajak[$arr_keys[$i]]["'nilai'"])." as nilai
+																 from dual";
+																 
+											}
+											
+										}
+										
+										if(count($arr_insert)>0){
+												
+											$delete = DB::delete("
+												delete from d_trans_pajak
+												where id_trans=?
+											",[
+												$id_trans
+											]);
+												
+											$insert = DB::insert("
+												insert into d_trans_pajak(id_trans,kdakun,nilai)
+												".implode(" union all ", $arr_insert)."
+											");
+											
+											if(!$insert){
+												$lanjut = false;
+											}
+											
+										}
+										
+									}
+									
+									if($lanjut){
+										DB::commit();
+										return 'success';
+									}
+									else{
+										return 'Simpan pajak gagal!';
+									}
+									
+								}
+								else{
+									return 'Data gagal diubah!';
+								}
 							}
 							
 						}
 						else{
-							return 'Duplikasi nomor transaksi!';
+							return 'Pagu tidak cukup!';
 						}
 						
 					}
 					else{
-						$update = DB::update("
-							update d_trans
-							set id_output=?,
-								kdtran=?,
-								id_penerima=?,
-								nodok=?,
-								tgdok=?,
-								tgdok1=?,
-								uraian=?,
-								debet=?,
-								kredit=?,
-								nilai=?,
-								nilai_bersih=?,
-								id_user=?,
-								updated_at=sysdate
-							where id=?
-						",[
-							$request->input('id_output'),
-							$request->input('kdtran'),
-							$request->input('id_pelanggan'),
-							$request->input('nopks'),
-							$request->input('tgpks'),
-							$request->input('tgjtempo'),
-							$request->input('uraian'),
-							$request->input('debet'),
-							$request->input('kredit'),
-							str_replace(',', '', $request->input('total')),
-							str_replace(',', '', $request->input('nilai')),
-							session('id_user'),
-							$request->input('inp-id')
-						]);
-						
-						if($update){
-							
-							$lanjut = true;
-							$arr_pajak = $request->input('rincian');
-							$id_trans = $request->input('inp-id');
-							if(count($arr_pajak)>0){
-								
-								$arr_keys = array_keys($arr_pajak);
-								$arr_insert = array();
-								
-								for($i=0;$i<count($arr_keys);$i++){
-									
-									if($arr_pajak[$arr_keys[$i]]["'nilai'"]>0){
-									
-										$arr_akun = explode("|", $arr_pajak[$arr_keys[$i]]["'kdakun'"]);
-										$kdakun = $arr_akun[0];
-									
-										$arr_insert[] = "select	".$id_trans." as id_trans,
-																'".$kdakun."' as kdakun,
-																".str_replace(',', '', $arr_pajak[$arr_keys[$i]]["'nilai'"])." as nilai
-														 from dual";
-														 
-									}
-									
-								}
-								
-								if(count($arr_insert)>0){
-										
-									$delete = DB::delete("
-										delete from d_trans_pajak
-										where id_trans=?
-									",[
-										$id_trans
-									]);
-										
-									$insert = DB::insert("
-										insert into d_trans_pajak(id_trans,kdakun,nilai)
-										".implode(" union all ", $arr_insert)."
-									");
-									
-									if(!$insert){
-										$lanjut = false;
-									}
-									
-								}
-								
-							}
-							
-							if($lanjut){
-								DB::commit();
-								return 'success';
-							}
-							else{
-								return 'Simpan pajak gagal!';
-							}
-							
-						}
-						else{
-							return 'Data gagal diubah!';
-						}
+						return 'Jenis transaksi tidak ditemukan!';
 					}
 					
 				}

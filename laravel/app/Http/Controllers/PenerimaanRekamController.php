@@ -364,14 +364,19 @@ class PenerimaanRekamController extends Controller {
 			for($i=0;$i<count($arr_keys);$i++){
 				$pajak1 = str_replace(',', '', $arr_pajak[$arr_keys[$i]]["'nilai'"]);
 				$arr_akun = explode("|", $arr_pajak[$arr_keys[$i]]["'kdakun'"]);
-				$kddk = $arr_akun[1];
-				if($pajak1>0){
-					if($kddk=='D'){
-						$pajak += $pajak1;
+				
+				if(isset($arr_akun[1])){
+					
+					$kddk = $arr_akun[1];
+					if($pajak1>0){
+						if($kddk=='D'){
+							$pajak += $pajak1;
+						}
+						else{
+							$pajak -= $pajak1;
+						}
 					}
-					else{
-						$pajak -= $pajak1;
-					}
+					
 				}
 			}
 		}
