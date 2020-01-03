@@ -35,7 +35,7 @@ class PembukuanJurnalController extends Controller {
 						to_char(tgdok,'mm') as periode,
 						'D' as kddk,
 						debet as kdakun,
-						sum(nilai) as nilai
+						sum(decode(b.menu,1,a.nilai,2,a.nilai,a.nilai_bersih)) as nilai
 				from d_trans a
 				left join t_alur b on(a.id_alur=b.id)
 				where thang=? and debet is not null and b.neraca1=1
@@ -50,18 +50,52 @@ class PembukuanJurnalController extends Controller {
 						to_char(tgdok,'mm') as periode,
 						'K' as kddk,
 						kredit as kdakun,
-						sum(nilai) as nilai
+						sum(decode(b.menu,1,a.nilai_bersih,2,a.nilai_bersih,a.nilai)) as nilai
 				from d_trans a
 				left join t_alur b on(a.id_alur=b.id)
 				where thang=? and kredit is not null and b.neraca1=1
 				group by to_char(tgdok,'yyyy'),
 						 to_char(tgdok,'mm'),
 						 kredit
+						 
+				union all
+				
+				/* hitung pajak keluaran */
+				select  to_char(b.tgdok,'yyyy') as thang,
+						to_char(b.tgdok,'mm') as periode,
+						'K' as kddk,
+						a.kdakun,
+						sum(a.nilai) as nilai
+				from d_trans_pajak a
+				left join d_trans b on(a.id_trans=b.id)
+				left join t_alur c on(b.id_alur=c.id)
+				where b.thang=? and c.menu in(1,2)
+				group by to_char(b.tgdok,'yyyy'),
+						to_char(b.tgdok,'mm'),
+						a.kdakun
+						
+				union all
+						
+				/* hitung pajak masukan */
+				select  to_char(b.tgdok,'yyyy') as thang,
+						to_char(b.tgdok,'mm') as periode,
+						'D' as kddk,
+						a.kdakun,
+						sum(a.nilai) as nilai
+				from d_trans_pajak a
+				left join d_trans b on(a.id_trans=b.id)
+				left join t_alur c on(b.id_alur=c.id)
+				where b.thang=? and c.menu in(4)
+				group by to_char(b.tgdok,'yyyy'),
+						to_char(b.tgdok,'mm'),
+						a.kdakun
 			) a
 			left join t_akun b on(a.kdakun=b.kdakun)
 			group by a.kdakun,b.nmakun
 			order by a.kdakun,b.nmakun
 		",[
+			session('tahun'),
+			session('tahun'),
 			session('tahun'),
 			session('tahun'),
 			session('tahun')
@@ -113,6 +147,7 @@ class PembukuanJurnalController extends Controller {
 							sum(decode(a.kddk,'D',a.nilai,0)) as debet,
 							sum(decode(a.kddk,'K',a.nilai,0)) as kredit
 					from(
+						
 						/* saldo awal */
 						select  to_char(a.tgsawal,'YYYY') as thang,
 								to_char(a.tgsawal,'MM') as periode,
@@ -133,7 +168,7 @@ class PembukuanJurnalController extends Controller {
 								to_char(tgdok,'mm') as periode,
 								'D' as kddk,
 								debet as kdakun,
-								sum(nilai) as nilai
+								sum(decode(b.menu,1,a.nilai,2,a.nilai,a.nilai_bersih)) as nilai
 						from d_trans a
 						left join t_alur b on(a.id_alur=b.id)
 						where thang=? and debet is not null and b.neraca1=1
@@ -148,13 +183,46 @@ class PembukuanJurnalController extends Controller {
 								to_char(tgdok,'mm') as periode,
 								'K' as kddk,
 								kredit as kdakun,
-								sum(nilai) as nilai
+								sum(decode(b.menu,1,a.nilai_bersih,2,a.nilai_bersih,a.nilai)) as nilai
 						from d_trans a
 						left join t_alur b on(a.id_alur=b.id)
 						where thang=? and kredit is not null and b.neraca1=1
 						group by to_char(tgdok,'yyyy'),
 								 to_char(tgdok,'mm'),
 								 kredit
+								 
+						union all
+						
+						/* hitung pajak keluaran */
+						select  to_char(b.tgdok,'yyyy') as thang,
+								to_char(b.tgdok,'mm') as periode,
+								'K' as kddk,
+								a.kdakun,
+								sum(a.nilai) as nilai
+						from d_trans_pajak a
+						left join d_trans b on(a.id_trans=b.id)
+						left join t_alur c on(b.id_alur=c.id)
+						where b.thang=? and c.menu in(1,2)
+						group by to_char(b.tgdok,'yyyy'),
+								to_char(b.tgdok,'mm'),
+								a.kdakun
+								
+						union all
+								
+						/* hitung pajak masukan */
+						select  to_char(b.tgdok,'yyyy') as thang,
+								to_char(b.tgdok,'mm') as periode,
+								'D' as kddk,
+								a.kdakun,
+								sum(a.nilai) as nilai
+						from d_trans_pajak a
+						left join d_trans b on(a.id_trans=b.id)
+						left join t_alur c on(b.id_alur=c.id)
+						where b.thang=? and c.menu in(4)
+						group by to_char(b.tgdok,'yyyy'),
+								to_char(b.tgdok,'mm'),
+								a.kdakun
+						
 					) a
 					group by a.kdakun
 				) a
@@ -184,6 +252,8 @@ class PembukuanJurnalController extends Controller {
 			left join t_akun b on(a.kdakun=b.kdakun)
 			order by a.kdakun
 		",[
+			session('tahun'),
+			session('tahun'),
 			session('tahun'),
 			session('tahun'),
 			session('tahun'),

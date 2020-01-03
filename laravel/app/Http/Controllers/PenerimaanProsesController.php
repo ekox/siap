@@ -142,6 +142,7 @@ class PenerimaanProsesController extends Controller {
 						<button type="button" class="btn btn-raised btn-sm btn-icon btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-check"></i></button>
 						<div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
 							<a id="'.$row->id.'" class="dropdown-item proses" href="javascript:;">Proses Data</a>
+							<a class="dropdown-item" href="bukti/uang-masuk/'.$row->id.'" target="_blank">Cetak Bukti</a>
 						</div>
 					</center>';
 			}
@@ -186,6 +187,7 @@ class PenerimaanProsesController extends Controller {
 					left outer join t_level g on(c.kdlevel=g.kdlevel)
 					left outer join t_trans h on(a.kdtran=h.id)
 					where b.menu=2 and a.thang='".session('tahun')."'
+					order by a.nourut desc
 					";
 		
 		/*
@@ -282,6 +284,7 @@ class PenerimaanProsesController extends Controller {
 						<button type="button" class="btn btn-raised btn-sm btn-icon btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-check"></i></button>
 						<div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
 							<a id="'.$row->id.'" class="dropdown-item proses" href="javascript:;">Lihat Data</a>
+							<a class="dropdown-item" href="bukti/uang-masuk/'.$row->id.'" target="_blank">Cetak Bukti</a>
 						</div>
 					</center>';
 			
@@ -315,12 +318,12 @@ class PenerimaanProsesController extends Controller {
 					to_char(a.tgdok,'yyyy-mm-dd') as tgpks,
 					to_char(a.tgdok1,'yyyy-mm-dd') as tgjtempo,
 					a.uraian,
-					nvl(a.nilai,0) as nilai,
+					nvl(a.nilai_bersih,0) as nilai,
 					nvl(f.nmakun,0) as debet,
 					nvl(i.nmakun,0) as kredit,
 					a.id_alur,
 					a.status,
-					nvl(a.ppn,0)+nvl(a.pph21,0)+nvl(a.pph22,0)+nvl(a.pph23,0)+nvl(a.pph25,0) as pajak,
+					nvl(g.nilai,0) as pajak,
 					nvl(a.nilai,0)+nvl(a.ppn,0)+nvl(a.pph21,0)+nvl(a.pph22,0)+nvl(a.pph23,0)+nvl(a.pph25,0) as total
 			from d_trans a
 			left outer join t_alur b on(a.id_alur=b.id)
@@ -330,6 +333,12 @@ class PenerimaanProsesController extends Controller {
 			left outer join t_akun f on(a.debet=f.kdakun)
 			left outer join t_akun i on(a.kredit=i.kdakun)
 			left join t_proyek k on(a.id_proyek=k.id)
+			left join(
+				select	id_trans,
+						sum(nilai) as nilai
+				from d_trans_pajak
+				group by id_trans
+			) g on(a.id=g.id_trans)
 			where a.id=?
 		",[
 			$id

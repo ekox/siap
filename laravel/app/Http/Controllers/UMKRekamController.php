@@ -125,12 +125,13 @@ class UMKRekamController extends Controller {
 		foreach( $rows as $row )
 		{
 			$aksi='';
-			if(session('kdlevel')=='11'){
+			if(session('kdlevel')=='04' || session('kdlevel')=='11'){
 				$aksi='<center>
 							<button type="button" class="btn btn-raised btn-sm btn-icon btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-check"></i></button>
 							<div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
 								<a id="'.$row->id.'" class="dropdown-item ubah" href="javascript:;">Ubah Data</a>
 								<a id="'.$row->id.'" class="dropdown-item hapus" href="javascript:;">Hapus Data</a>
+								<a class="dropdown-item" href="bukti/uang-muka/'.$row->id.'" target="_blank">Cetak Bukti</a>
 							</div>
 						</center>';
 			}
@@ -287,6 +288,7 @@ class UMKRekamController extends Controller {
 							'debet' => '910000',
 							'kredit' => '920000',
 							'nilai' => str_replace(',', '', $request->input('nilai')),
+							'nilai_bersih' => str_replace(',', '', $request->input('nilai')),
 							'status' => 1,
 							'id_user' => session('id_user')
 						]);
@@ -315,6 +317,7 @@ class UMKRekamController extends Controller {
 							tgdok1=?,
 							uraian=?,
 							nilai=?,
+							nilai_bersih=?,
 							id_user=?,
 							updated_at=sysdate
 						where id=?
@@ -325,6 +328,7 @@ class UMKRekamController extends Controller {
 						$request->input('tgpks'),
 						$request->input('tgjtempo'),
 						$request->input('uraian'),
+						str_replace(',', '', $request->input('nilai')),
 						str_replace(',', '', $request->input('nilai')),
 						session('id_user'),
 						$request->input('inp-id')

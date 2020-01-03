@@ -184,7 +184,7 @@ class TagihanProsesController extends Controller {
 					left outer join t_level g on(c.kdlevel=g.kdlevel)
 					left outer join t_trans h on(a.kdtran=h.id)
 					where b.menu=1 and a.thang='".session('tahun')."'
-					order by a.id desc
+					order by a.nourut desc
 					";
 		
 		/*
@@ -314,7 +314,9 @@ class TagihanProsesController extends Controller {
 					to_char(a.tgdok,'yyyy-mm-dd') as tgpks,
 					to_char(a.tgdok1,'yyyy-mm-dd') as tgjtempo,
 					a.uraian,
-					nvl(a.nilai,0) as nilai,
+					nvl(a.nilai_bersih,0) as nilai,
+					nvl(a.nilai,0)-nvl(a.nilai_bersih,0) as pajak,
+					nvl(a.nilai,0) as total,
 					nvl(f.nmakun,0) as debet,
 					nvl(i.nmakun,0) as kredit,
 					a.id_alur,
