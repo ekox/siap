@@ -324,6 +324,8 @@ class PengeluaranRekamController extends Controller {
 	{
 		$total = str_replace(',', '', $request->input('total'));
 		
+		$nourut = (int)$request->input('nourut');
+		
 		if($total>0){
 		
 			DB::beginTransaction();
@@ -365,7 +367,7 @@ class PengeluaranRekamController extends Controller {
 						if($lanjut){
 							
 							if($request->input('inp-rekambaru')=='1'){
-						
+								
 								$rows = DB::select("
 									select	count(*) as jml
 									from d_trans a
@@ -373,7 +375,7 @@ class PengeluaranRekamController extends Controller {
 									where a.thang=? and b.menu=4 and a.nourut=?
 								",[
 									session('tahun'),
-									str_replace('0', '', $request->input('nourut'))
+									$nourut
 								]);
 								
 								if($rows[0]->jml==0){
@@ -384,7 +386,7 @@ class PengeluaranRekamController extends Controller {
 									$id_trans = DB::table('d_trans')->insertGetId([
 										'kdunit' => session('kdunit'),
 										'thang' => session('tahun'),
-										'nourut' => str_replace('0', '', $request->input('nourut')),
+										'nourut' => $nourut,
 										'id_output' => $request->input('id_output'),
 										'id_alur' => $request->input('id_alur'),
 										'kdtran' => $request->input('kdtran'),
@@ -406,47 +408,49 @@ class PengeluaranRekamController extends Controller {
 										
 										$lanjut = true;
 										$arr_pajak = $request->input('rincian');
-										if(count($arr_pajak)>0){
-											
-											$arr_keys = array_keys($arr_pajak);
-											$arr_insert = array();
-											
-											for($i=0;$i<count($arr_keys);$i++){
+										if(is_array($arr_pajak)){
+											if(count($arr_pajak)>0){
 												
-												if($arr_pajak[$arr_keys[$i]]["'nilai'"]>0){
+												$arr_keys = array_keys($arr_pajak);
+												$arr_insert = array();
 												
-													$arr_akun = explode("|", $arr_pajak[$arr_keys[$i]]["'kdakun'"]);
-													$kdakun = $arr_akun[0];
+												for($i=0;$i<count($arr_keys);$i++){
+													
+													if($arr_pajak[$arr_keys[$i]]["'nilai'"]>0){
+													
+														$arr_akun = explode("|", $arr_pajak[$arr_keys[$i]]["'kdakun'"]);
+														$kdakun = $arr_akun[0];
+													
+														$arr_insert[] = "select	".$id_trans." as id_trans,
+																				'".$kdakun."' as kdakun,
+																				".str_replace(',', '', $arr_pajak[$arr_keys[$i]]["'nilai'"])." as nilai
+																		 from dual";
+																		 
+													}
+													
+												}
 												
-													$arr_insert[] = "select	".$id_trans." as id_trans,
-																			'".$kdakun."' as kdakun,
-																			".str_replace(',', '', $arr_pajak[$arr_keys[$i]]["'nilai'"])." as nilai
-																	 from dual";
-																	 
+												if(count($arr_insert)>0){
+														
+													$delete = DB::delete("
+														delete from d_trans_pajak
+														where id_trans=?
+													",[
+														$id_trans
+													]);
+														
+													$insert = DB::insert("
+														insert into d_trans_pajak(id_trans,kdakun,nilai)
+														".implode(" union all ", $arr_insert)."
+													");
+													
+													if(!$insert){
+														$lanjut = false;
+													}
+													
 												}
 												
 											}
-											
-											if(count($arr_insert)>0){
-													
-												$delete = DB::delete("
-													delete from d_trans_pajak
-													where id_trans=?
-												",[
-													$id_trans
-												]);
-													
-												$insert = DB::insert("
-													insert into d_trans_pajak(id_trans,kdakun,nilai)
-													".implode(" union all ", $arr_insert)."
-												");
-												
-												if(!$insert){
-													$lanjut = false;
-												}
-												
-											}
-											
 										}
 										
 										if($lanjut){
@@ -506,47 +510,49 @@ class PengeluaranRekamController extends Controller {
 									$lanjut = true;
 									$arr_pajak = $request->input('rincian');
 									$id_trans = $request->input('inp-id');
-									if(count($arr_pajak)>0){
-										
-										$arr_keys = array_keys($arr_pajak);
-										$arr_insert = array();
-										
-										for($i=0;$i<count($arr_keys);$i++){
+									if(is_array($arr_pajak)){
+										if(count($arr_pajak)>0){
 											
-											if($arr_pajak[$arr_keys[$i]]["'nilai'"]>0){
+											$arr_keys = array_keys($arr_pajak);
+											$arr_insert = array();
 											
-												$arr_akun = explode("|", $arr_pajak[$arr_keys[$i]]["'kdakun'"]);
-												$kdakun = $arr_akun[0];
+											for($i=0;$i<count($arr_keys);$i++){
+												
+												if($arr_pajak[$arr_keys[$i]]["'nilai'"]>0){
+												
+													$arr_akun = explode("|", $arr_pajak[$arr_keys[$i]]["'kdakun'"]);
+													$kdakun = $arr_akun[0];
+												
+													$arr_insert[] = "select	".$id_trans." as id_trans,
+																			'".$kdakun."' as kdakun,
+																			".str_replace(',', '', $arr_pajak[$arr_keys[$i]]["'nilai'"])." as nilai
+																	 from dual";
+																	 
+												}
+												
+											}
 											
-												$arr_insert[] = "select	".$id_trans." as id_trans,
-																		'".$kdakun."' as kdakun,
-																		".str_replace(',', '', $arr_pajak[$arr_keys[$i]]["'nilai'"])." as nilai
-																 from dual";
-																 
+											if(count($arr_insert)>0){
+													
+												$delete = DB::delete("
+													delete from d_trans_pajak
+													where id_trans=?
+												",[
+													$id_trans
+												]);
+													
+												$insert = DB::insert("
+													insert into d_trans_pajak(id_trans,kdakun,nilai)
+													".implode(" union all ", $arr_insert)."
+												");
+												
+												if(!$insert){
+													$lanjut = false;
+												}
+												
 											}
 											
 										}
-										
-										if(count($arr_insert)>0){
-												
-											$delete = DB::delete("
-												delete from d_trans_pajak
-												where id_trans=?
-											",[
-												$id_trans
-											]);
-												
-											$insert = DB::insert("
-												insert into d_trans_pajak(id_trans,kdakun,nilai)
-												".implode(" union all ", $arr_insert)."
-											");
-											
-											if(!$insert){
-												$lanjut = false;
-											}
-											
-										}
-										
 									}
 									
 									if($lanjut){
@@ -671,7 +677,7 @@ class PengeluaranRekamController extends Controller {
 		",[
 			$id
 		]);
-		
+
 		if(count($rows)>0){
 			
 			$is_parent = $rows[0]->is_parent;
@@ -685,11 +691,10 @@ class PengeluaranRekamController extends Controller {
 							to_char(a.tgdok,'dd-mm-yyyy') as tgpks,
 							a.id_penerima as id_pelanggan,
 							a.uraian,
-							nvl(c.nilai,0) as nilai,
-							c.kdakun
+							nvl(a.nilai,0) as nilai,
+							a.debet as kdakun
 					from d_trans a
-					left outer join d_trans_akun c on(a.id=c.id_trans)
-					where a.id_alur=? and c.kddk='D'
+					where a.kdtran=?
 				",[
 					$parent_id
 				]);

@@ -9,7 +9,7 @@ class RefAlurController extends Controller {
 
 	public function index(Request $request)
 	{
-		$aColumns = array('id','nmalur','nmlevel','status','nmstatus');
+		$aColumns = array('id','nmalur','nmlevel','status','nmstatus','proses');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
 		/* DB table to use */
@@ -17,11 +17,19 @@ class RefAlurController extends Controller {
 							b.nmalur,
 							c.nmlevel,
 							a.status,
-							a.nmstatus
+							a.nmstatus,
+							nvl(d.proses,'') as proses
 					from t_alur_status a
 					left outer join t_alur b on(a.id_alur=b.id)
 					left outer join t_level c on(a.kdlevel=c.kdlevel)
-					order by a.id_alur,a.status asc
+					left outer join(
+						select  a.id_alur_status,
+							   wm_concat(b.nmstatus) as proses
+						from t_alur_status_dtl a
+						left join t_alur_status b on(a.id_alur_status_lanjut=b.id)
+						group by a.id_alur_status
+					) d on(a.id=d.id_alur_status)
+					order by b.nourut,a.status asc
 				";
 		
 		/*
@@ -123,13 +131,20 @@ class RefAlurController extends Controller {
 						</center>';*/
 			}
 			
+			$arr_proses = explode(",", $row->proses);
+			$proses = '<ul>';
+			for($j=0; $j<count($arr_proses); $j++){
+				$proses .= '<li>'.$arr_proses[$j].'</li>';
+			}
+			$proses .= '</ul>';
+			
 			$output['aaData'][] = array(
 				$row->id,
 				$row->nmalur,
 				$row->nmlevel,
 				$row->status,
 				$row->nmstatus,
-				$aksi
+				$proses
 			);
 		}
 		

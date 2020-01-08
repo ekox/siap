@@ -47,8 +47,10 @@ Route::group(['middleware' => 'auth'], function(){
 				Route::get('', 'AnggaranPaguUnitController@index');
 				Route::get('/pilih/{param}', 'AnggaranPaguUnitController@pilih')->middleware('role:00');
 				Route::get('/sisa', 'AnggaranPaguUnitController@sisaPagu');
+				Route::get('/revisike', 'AnggaranPaguUnitController@revisike');
 				Route::post('', 'AnggaranPaguUnitController@simpan')->middleware('role:00');
 				Route::post('/hapus', 'AnggaranPaguUnitController@hapus')->middleware('role:00');
+				Route::post('/revisi', 'AnggaranPaguUnitController@simpanRevisi')->middleware('role:00');
 				
 			});
 			

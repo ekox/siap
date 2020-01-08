@@ -17,19 +17,30 @@ class AnggaranPaguUnitController extends Controller {
 			$where = " and a.kdunit='".substr(session('kdunit'),0,4)."' ";
 		}
 		
-		$aColumns = array('id','thang','nmunit','uraian','kdakun','nilai');
+		$aColumns = array('id','nmunit','uraian','kdakun','pagu','realisasi','sisa');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
 		/* DB table to use */
 		$sTable = "select  a.id,
-							a.thang,
 							c.nmunit,
 							b.uraian,
 							a.kdakun,
-							a.nilai
+							a.nilai as pagu,
+							nvl(d.nilai,0) as realisasi,
+							a.nilai-nvl(d.nilai,0) as sisa
 					from d_pagu a
 					left outer join t_output b on(a.id_output=b.id)
 					left outer join t_unit c on(a.kdunit=c.kdunit)
+					left outer join(
+						select  a.thang,
+								a.kdunit,
+								a.debet as kdakun,
+								sum(a.nilai) as nilai
+						from d_trans a
+						left join t_alur b on(a.id_alur=b.id)
+						where b.menu=4
+						group by a.thang,a.kdunit,a.debet
+					) d on(a.thang=d.thang and a.kdunit=d.kdunit and a.kdakun=d.kdakun)
 					where a.thang='".session('tahun')."' ".$where."
 					order by a.id desc";
 		
@@ -136,11 +147,12 @@ class AnggaranPaguUnitController extends Controller {
 			
 			$output['aaData'][] = array(
 				$row->no,
-				$row->thang,
 				$row->nmunit,
 				$row->uraian,
 				$row->kdakun,
-				'<div style="text-align:right;">'.number_format($row->nilai).'</div>',
+				'<div style="text-align:right;">'.number_format($row->pagu).'</div>',
+				'<div style="text-align:right;">'.number_format($row->realisasi).'</div>',
+				'<div style="text-align:right;">'.number_format($row->sisa).'</div>',
 				$aksi
 			);
 		}
@@ -299,6 +311,77 @@ class AnggaranPaguUnitController extends Controller {
 		]);
 		
 		return response()->json($rows[0]);
+	}
+	
+	public function revisike(Request $request)
+	{
+		try{
+			$rows = DB::select("
+				select  nvl(max(revisike),0)+1 as revisike
+				from d_pagu
+				where thang=?
+			",[
+				session('tahun')
+			]);
+			
+			if(count($rows)>0){
+				return response()->json($rows[0]);
+			}
+			
+		}
+		catch(\Exception $e){
+			return 'Kesalahan lainnya!';
+		}
+	}
+	
+	public function simpanRevisi(Request $request)
+	{
+		try{
+			DB::beginTransaction();
+			
+			$insert = DB::insert("
+				insert into h_pagu(kdunit,thang,id_output,nodok,tgdok,revisike,kdakun,nilai,created_at,updated_at)
+				select  kdunit,
+						thang,
+						id_output,
+						nodok,
+						tgdok,
+						nvl(revisike,0) as revisike,
+						kdakun,
+						nilai,
+						created_at,
+						updated_at
+				from d_pagu
+				where thang=?
+			",[
+				session('tahun')
+			]);
+			
+			$update = DB::update("
+				update d_pagu
+				set nodok=?,
+					tgdok=to_date(?,'yyyy-mm-dd'),
+					revisike=?
+				where thang=?
+			",[
+				$request->input('nodok'),
+				$request->input('tgdok'),
+				$request->input('revisike'),
+				session('tahun')
+			]);
+			
+			if($update) {
+				DB::commit();
+				return 'success';
+			}
+			else {
+				return 'Proses simpan revisi gagal. Hubungi Administrator.';
+			}
+			
+		}
+		catch(\Exception $e){
+			return 'Terdapat kesalahan lainnya, hubungi Administrator!';
+		}		
 	}
 	
 }

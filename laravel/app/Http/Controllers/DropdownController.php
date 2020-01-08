@@ -351,7 +351,7 @@ class DropdownController extends Controller {
 			select	*
 			from t_alur
 			where menu=4
-			order by id asc
+			order by nourut asc
 		");
 		
 		$data = '<option value="" style="display:none;">Pilih Data</option>';

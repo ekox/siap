@@ -377,6 +377,7 @@
 		
 		jQuery('#id_alur').change(function(){
 			var id_alur = jQuery(this).val();
+			jQuery('#kdtran').html('').trigger('chosen:updated');
 			jQuery.get('dropdown/transaksi/'+id_alur, function(result){
 				jQuery('#kdtran').html(result).trigger('chosen:updated');
 			});
@@ -385,6 +386,7 @@
 		jQuery('#kdtran').change(function(){
 			var kdtran = jQuery(this).val();
 			jQuery('#id_pelanggan,#kredit').prop('disabled', false).trigger('chosen:updated');
+			jQuery('#debet,#kredit,#parent_id').html('').trigger('chosen:updated');
 			jQuery.get('dropdown/akun/debet/'+kdtran, function(result){
 				jQuery('#debet').html(result).trigger('chosen:updated');
 			});
