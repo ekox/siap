@@ -43,20 +43,9 @@ class LaporanKeuanganController extends TableController
 
 		//header of content
 		$html_out.= '<tr>
-			<th rowspan="2">URAIAN</th>
-			<th rowspan="2">RKAP '.$tahun.'</th>
-			<th colspan="3">'.self::getPeriode($periode).' '.$tahun.'</th>
-			<th colspan="3">s.d '.self::getPeriode($periode).' '.$tahun.'</th>
-			<th rowspan="2">% thd RKAP '.$tahun.'</th>
-		</tr>';
-		
-		$html_out.= '<tr>
-			<th>Rencana</th>
-			<th>Realisasi</th>
-			<th>%</th>
-			<th>Rencana</th>
-			<th>Realisasi</th>
-			<th>%</th>
+			<th>URAIAN</th>
+			<th>s.d '.self::getPeriode($periode).' '.$tahun.'</th>
+			<th>'.self::getPeriode($periode).' '.$tahun.'</th>
 		</tr>';
 
 		//column info
@@ -64,19 +53,13 @@ class LaporanKeuanganController extends TableController
 			<th>1</th>
 			<th>2</th>
 			<th>3</th>
-			<th>4</th>
-			<th>5=4:3</th>
-			<th>6</th>
-			<th>7</th>
-			<th>8=7:6</th>
-			<th>9=7:2</th>
 		</tr>';
 		
 		$html_out.= self::$thead_close;
 
 		//get content
 		$rows = array(
-			'pendapatan'=> \App\Labarugi::getPendapatan($this->tahun, $periode)->nilai,
+			'pendapatan'=> \App\Labarugi::getPendapatan($this->tahun, $periode),
 			'beban_pokok_pendapatan' => \App\Labarugi::getBebanPokokPendapatan($this->tahun, $periode)->nilai,
 			'laba_kotor' => \App\Labarugi::getLabaKotor($this->tahun, $periode)->nilai,
 			'beban_pemasaran' => \App\Labarugi::getBebanPemasaran($this->tahun, $periode)->nilai,
@@ -92,60 +75,68 @@ class LaporanKeuanganController extends TableController
 			'manfaat_bpp' => \App\Labarugi::getManfaatBebanPajakPenghasilan($this->tahun, $periode)->nilai,
 			'laba_bersih' => \App\Labarugi::getLabaBersih($this->tahun, $periode)->nilai,
 		);
+		
+		$pendapatan = \App\Labarugi::getPendapatan($this->tahun, $periode);
+		$beban_pokok_pendapatan = \App\Labarugi::getBebanPokokPendapatan($this->tahun, $periode);
+		$beban_pemasaran = \App\Labarugi::getBebanPemasaran($this->tahun, $periode);
+		$beban_adum = \App\Labarugi::getBebanAdministrasiUmum($this->tahun, $periode);
+		$pendapatan_lain = \App\Labarugi::getPendapatanLainLain($this->tahun, $periode);
+		$beban_lain = \App\Labarugi::getBebanLainLain($this->tahun, $periode);
 
 		//generate row of table body content
-		function isiBaris($uraian, $nilai, $tw_rc, $tw_rl, $tw_p, $sdtw_rc, $sdtw_rl, $sdtw_p, $thd)
+		function isiBaris($uraian, $nilai, $nilai1)
 		{
 			$obj = new LaporanKeuanganController();
 			
 			return '<tr>
 						<td class="pad2">'.$obj->cFmt($uraian).'</td>
 						<td class="pad2 ar">'.$obj->cFmt($nilai).'</td>
-						<td class="pad2 ar">'.$obj->cFmt($tw_rc).'</td>
-						<td class="pad2 ar">'.$obj->cFmt($tw_rl).'</td>
-						<td class="pad2 ac">'.$obj->cFmt($tw_p).'</td>
-						<td class="pad2 ar">'.$obj->cFmt($sdtw_rc).'</td>
-						<td class="pad2 ar">'.$obj->cFmt($sdtw_rl).'</td>
-						<td class="pad2 ar">'.$obj->cFmt($sdtw_p).'</td>
-						<td class="pad2 ac">'.$obj->cFmt($thd).'</td>
+						<td class="pad2 ar">'.$obj->cFmt($nilai1).'</td>
 					</tr>';
 		}
 	
 		//body of content
 		$html_out.= self::$tbody_open;
 
-		$html_out.= isiBaris('PENDAPATAN', abs($rows['pendapatan']), 0, 0, 0, 0, 0, 0, 0);
-		$html_out.= isiBaris('&nbsp;', '', '', '', '', '', '', '', '');
-		$html_out.= isiBaris('BEBAN POKOK PENDAPATAN', ($rows['beban_pokok_pendapatan']*-1), 0, 0, 0, 0, 0, 0, 0);
-		$html_out.= isiBaris('&nbsp;', '', '', '', '', '', '', '', '');
-		$laba_kotor = (abs($rows['pendapatan']) + (abs($rows['beban_pokok_pendapatan'])*-1));
-		$html_out.= isiBaris('<span class="bo">LABA KOTOR</span>', $laba_kotor, 0, 0, 0, 0, 0, 0, 0);
-		$html_out.= isiBaris('&nbsp;', '', '', '', '', '', '', '', '');
-		$html_out.= isiBaris('BEBAN USAHA', '', '', '', '', '', '', '', '');
-		$html_out.= isiBaris($nbsp.'Beban Pemasaran', (abs($rows['beban_pemasaran'])*-1), 0, 0, 0, 0, 0, 0, 0);
-		$html_out.= isiBaris($nbsp.'Beban Administrasi Umum', (abs($rows['beban_adum'])*-1), 0, 0, 0, 0, 0, 0, 0);
-		$jml_beban_usaha = (abs($rows['beban_pemasaran']) + abs($rows['beban_adum'])) * -1;
-		$html_out.= isiBaris('Jumlah Beban Usaha', $jml_beban_usaha, 0, 0, 0, 0, 0, 0, 0);
-		$html_out.= isiBaris('&nbsp;', '', '', '', '', '', '', '', '');
+		$html_out.= isiBaris('PENDAPATAN', abs($pendapatan->nilai), abs($pendapatan->nilai1));
+		$html_out.= isiBaris('&nbsp;', '', '');
+		$html_out.= isiBaris('BEBAN POKOK PENDAPATAN', ($beban_pokok_pendapatan->nilai*-1), ($beban_pokok_pendapatan->nilai1*-1));
+		$html_out.= isiBaris('&nbsp;', '', '');
+		$laba_kotor = (abs($pendapatan->nilai) + (abs($beban_pokok_pendapatan->nilai)*-1));
+		$laba_kotor1 = (abs($pendapatan->nilai1) + (abs($beban_pokok_pendapatan->nilai1)*-1));
+		$html_out.= isiBaris('<span class="bo">LABA KOTOR</span>', $laba_kotor, $laba_kotor1);
+		$html_out.= isiBaris('&nbsp;', '', '');
+		$html_out.= isiBaris('BEBAN USAHA', '', '');
+		$html_out.= isiBaris($nbsp.'Beban Pemasaran', (abs($beban_pemasaran->nilai)*-1), (abs($beban_pemasaran->nilai1)*-1));
+		$html_out.= isiBaris($nbsp.'Beban Administrasi Umum', (abs($beban_adum->nilai)*-1), (abs($beban_adum->nilai1)*-1));
+		$jml_beban_usaha = (abs($beban_pemasaran->nilai) + abs($beban_adum->nilai)) * -1;
+		$jml_beban_usaha1 = (abs($beban_pemasaran->nilai1) + abs($beban_adum->nilai1)) * -1;
+		$html_out.= isiBaris('Jumlah Beban Usaha', $jml_beban_usaha, $jml_beban_usaha1);
+		$html_out.= isiBaris('&nbsp;', '', '');
 		$laba_usaha = $laba_kotor + ( abs($jml_beban_usaha) * -1);
-		$html_out.= isiBaris('<span class="bo">LABA (RUGI) USAHA</span>', $laba_usaha, 0, 0, 0, 0, 0, 0, 0);
-		$html_out.= isiBaris('&nbsp;', '', '', '', '', '', '', '', '');
-		$html_out.= isiBaris('<span class="bo">PENDAPATAN (BEBAN) LAIN-LAIN</span>', '', '', '', '', '', '', '', '');
-		$html_out.= isiBaris($nbsp.'Pendapatan Lain-lain', $rows['pendapatan_lain'], 0, 0, 0, 0, 0, 0, 0);
-		$html_out.= isiBaris($nbsp.'Beban Lain-lain', $rows['beban_lain'], 0, 0, 0, 0, 0, 0, 0);
-		$html_out.= isiBaris('<span class="bo">Jumlah Pendapatan (Beban) Lain-lain Bersih</span>', $rows['jml_pb_lain'], 0, 0, 0, 0, 0, 0, 0);
-		$html_out.= isiBaris('&nbsp;', '', '', '', '', '', '', '', '');
-		$html_out.= isiBaris('<span class="bo">LABA SEBELUM BEBAN PAJAK PENGHASILAN<br/>DAN LABA (RUGI) ANAK PERUSAHAAN</span>', 0, 0, 0, 0, 0, 0, 0, 0);
-		$html_out.= isiBaris('&nbsp;', '', '', '', '', '', '', '', '');
-		$html_out.= isiBaris('Manfaat (Beban) Pajak Penghasilan', '', '', '', '', '', '', '', '');
-		$html_out.= isiBaris($nbsp.'Pajak Kini', $rows['pajak_kini'], 0, 0, 0, 0, 0, 0, 0);
-		$html_out.= isiBaris($nbsp.'Pajak Badan', $rows['pajak_badan'], 0, 0, 0, 0, 0, 0, 0);
-		$html_out.= isiBaris('&nbsp;', '', '', '', '', '', '', '', '');
-		$html_out.= isiBaris('<span class="bo">Jumlah Manfaat (Beban) Pajak Penghasilan</span>', $rows['manfaat_bpp'], 0, 0, 0, 0, 0, 0, 0);
-		$html_out.= isiBaris('&nbsp;', '', '', '', '', '', '', '', '');
-		$html_out.= isiBaris('LABA ANAK PERUSAHAAN', $rows['beban_pokok_pendapatan'], 0, 0, 0, 0, 0, 0, 0);
-		$html_out.= isiBaris('&nbsp;', '', '', '', '', '', '', '', '');
-		$html_out.= isiBaris('LABA BERSIH', $rows['beban_pokok_pendapatan'], 0, 0, 0, 0, 0, 0, 0);
+		$laba_usaha1 = $laba_kotor1 + ( abs($jml_beban_usaha1) * -1);
+		$html_out.= isiBaris('<span class="bo">LABA (RUGI) USAHA</span>', $laba_usaha, $laba_usaha1);
+		$html_out.= isiBaris('&nbsp;', '', '');
+		$html_out.= isiBaris('<span class="bo">PENDAPATAN (BEBAN) LAIN-LAIN</span>', '', '');
+		$html_out.= isiBaris($nbsp.'Pendapatan Lain-lain', $pendapatan_lain->nilai, $pendapatan_lain->nilai1);
+		$html_out.= isiBaris($nbsp.'Beban Lain-lain', $beban_lain->nilai, $beban_lain->nilai1);
+		$jml_pb_lain = $pendapatan_lain->nilai + $beban_lain->nilai;
+		$jml_pb_lain1 = $pendapatan_lain->nilai1 + $beban_lain->nilai1;
+		$html_out.= isiBaris('<span class="bo">Jumlah Pendapatan (Beban) Lain-lain Bersih</span>', $jml_pb_lain, $jml_pb_lain1);
+		$html_out.= isiBaris('&nbsp;', '', '');
+		$laba_bersih = $laba_usaha+$jml_pb_lain;
+		$laba_bersih1 = $laba_usaha1+$jml_pb_lain1;
+		$html_out.= isiBaris('<span class="bo">LABA SEBELUM BEBAN PAJAK PENGHASILAN<br/>DAN LABA (RUGI) ANAK PERUSAHAAN</span>', $laba_bersih, $laba_bersih1);
+		$html_out.= isiBaris('&nbsp;', '', '');
+		$html_out.= isiBaris('Manfaat (Beban) Pajak Penghasilan', '', '');
+		$html_out.= isiBaris($nbsp.'Pajak Kini', $rows['pajak_kini'], 0, 0);
+		$html_out.= isiBaris($nbsp.'Pajak Badan', $rows['pajak_badan'], 0, 0);
+		$html_out.= isiBaris('&nbsp;', '', '');
+		$html_out.= isiBaris('<span class="bo">Jumlah Manfaat (Beban) Pajak Penghasilan</span>', $rows['manfaat_bpp'], 0);
+		$html_out.= isiBaris('&nbsp;', '', '');
+		$html_out.= isiBaris('LABA ANAK PERUSAHAAN', 0, 0);
+		$html_out.= isiBaris('&nbsp;', '', '');
+		$html_out.= isiBaris('LABA BERSIH', $laba_bersih, $laba_bersih1);
 		
 		$html_out.= self::$tbody_close;
 		$html_out.= self::$table_close;
@@ -204,16 +195,8 @@ class LaporanKeuanganController extends TableController
 		$html_out.= self::$thead_open;
 		
 		$html_out.= '<tr>
-			<th rowspan="2">URAIAN</th>
-			<th rowspan="2" style="width:150px;">RKAP '.$tahun.'</th>
-			<th colspan="3">s.d '.self::getPeriode($periode).' '.$tahun.'</th>
-			<th rowspan="2">%</th>
-		</tr>';
-		
-		$html_out.= '<tr>
-			<th>Rencana</th>
-			<th>Realisasi</th>
-			<th>%</th>
+			<th>URAIAN</th>
+			<th>s.d '.self::getPeriode($periode).' '.$tahun.'</th>
 		</tr>';
 		
 		$html_out.= self::$thead_close;
@@ -233,26 +216,26 @@ class LaporanKeuanganController extends TableController
 		
 		// list of account
 		$nrc = array(
-			'Z' => array( '&nbsp;', '', '', '', '', '' ),
-			'11' => array( $nbsp.'JUMLAH '.$data['ca']->nmakun, 0, 0, $data['ca']->saldo, 0, 0 ),
-			'12' => array( $nbsp.'JUMLAH '.$data['fa']->nmakun, 0, 0, $data['fa']->saldo, 0, 0 ),
-			'A'  => array( $nbsp.'JUMLAH ASET ', 0, 0, $data['ca']->saldo + $data['fa']->saldo, 0, 0 ),
-			'21' => array( $nbsp.'JUMLAH '.$data['stl']->nmakun, 0, 0, $data['stl']->saldo, 0, 0 ),
-			'22' => array( $nbsp.'JUMLAH '.$data['ltl']->nmakun, 0, 0, $data['ltl']->saldo, 0, 0 ),
-			'L'  => array( $nbsp.'JUMLAH KEWAJIBAN ', 0, 0, $data['stl']->saldo + $data['ltl']->saldo, 0, 0 ),
-			'31' => array( $nbsp.'JUMLAH '.$data['sc']->nmakun, 0, 0, $data['sc']->saldo, 0, 0 ),
-			'32' => array( $nbsp.'JUMLAH '.$data['re']->nmakun, 0, 0, $data['re']->saldo, 0, 0 ),
-			'E'  => array( $nbsp.'JUMLAH EKUITAS ', 0, 0, $data['sc']->saldo + $data['re']->saldo, 0, 0 ),
-			'LE'  => array( $nbsp.'JUMLAH KEWAJIBAN DAN EKUITAS', 0, 0, ($data['stl']->saldo + $data['ltl']->saldo + $data['sc']->saldo + $data['re']->saldo), 0, 0 ),
+			'Z' => array( '&nbsp;', '' ),
+			'11' => array( $nbsp.'JUMLAH '.$data['ca']->nmakun, $data['ca']->saldo ),
+			'12' => array( $nbsp.'JUMLAH '.$data['fa']->nmakun, $data['fa']->saldo ),
+			'A'  => array( $nbsp.'JUMLAH ASET ', $data['ca']->saldo + $data['fa']->saldo ),
+			'21' => array( $nbsp.'JUMLAH '.$data['stl']->nmakun, $data['stl']->saldo ),
+			'22' => array( $nbsp.'JUMLAH '.$data['ltl']->nmakun, $data['ltl']->saldo ),
+			'L'  => array( $nbsp.'JUMLAH KEWAJIBAN ', $data['stl']->saldo + $data['ltl']->saldo ),
+			'31' => array( $nbsp.'JUMLAH '.$data['sc']->nmakun, $data['sc']->saldo ),
+			'32' => array( $nbsp.'JUMLAH '.$data['re']->nmakun, $data['re']->saldo ),
+			'E'  => array( $nbsp.'JUMLAH EKUITAS ', $data['sc']->saldo + $data['re']->saldo ),
+			'LE'  => array( $nbsp.'JUMLAH KEWAJIBAN DAN EKUITAS', ($data['stl']->saldo + $data['ltl']->saldo + $data['sc']->saldo + $data['re']->saldo) ),
 		);
 
 		// CURRENT ASSETS
-		$html_out.= self::rowContent(['ASET', '', '', '', '', '']);
-		$html_out.= self::rowContent([$nbsp.'ASET LANCAR', '', '', '', '', '']);
+		$html_out.= self::rowContent(['ASET', '']);
+		$html_out.= self::rowContent([$nbsp.'ASET LANCAR', '']);
 		$akun11 = \App\Neraca::getAkun3($data['ca']->kdakun2, $arrParam);
 		foreach($akun11 as $a11) {
 			if($a11->saldo != 0) {
-				$html_out.= self::rowContent([$nbsp.$nbsp.$a11->nmakun, 0, 0, $a11->saldo, 0, 0]);
+				$html_out.= self::rowContent([$nbsp.$nbsp.$a11->nmakun, $a11->saldo]);
 			} 
 		}
 		
@@ -261,11 +244,11 @@ class LaporanKeuanganController extends TableController
 		$html_out.= self::rowContent($nrc['Z']);
 
 		// FIXED ASSETS
-		$html_out.= self::rowContent([$nbsp.'ASET TIDAK LANCAR', '', '', '', '', '']);
+		$html_out.= self::rowContent([$nbsp.'ASET TIDAK LANCAR', '']);
 		$akun12 = \App\Neraca::getAkun3($data['fa']->kdakun2, $arrParam);
 		foreach($akun12 as $a12) {
 			if( $a12->saldo != 0) {
-				$html_out.= self::rowContent([$nbsp.$nbsp.$a12->nmakun, 0, 0, $a12->saldo, 0, 0]);
+				$html_out.= self::rowContent([$nbsp.$nbsp.$a12->nmakun, $a12->saldo]);
 			}
 		}
 		$html_out.= self::rowContent($nrc['12']);
@@ -277,24 +260,24 @@ class LaporanKeuanganController extends TableController
 		// LIABILITIES & EQUITY
 		// LIABILITIES
 		// SHORT TERM LIABILITIES
-		$html_out.= self::rowContent(['KEWAJIBAN DAN EKUITAS', '', '', '', '', '']);
-		$html_out.= self::rowContent(['KEWAJIBAN', '', '', '', '', '']);
-		$html_out.= self::rowContent([$nbsp.'KEWAJIBAN JANGKA PENDEK', '', '', '', '', '']);
+		$html_out.= self::rowContent(['KEWAJIBAN DAN EKUITAS', '']);
+		$html_out.= self::rowContent(['KEWAJIBAN', '']);
+		$html_out.= self::rowContent([$nbsp.'KEWAJIBAN JANGKA PENDEK', '']);
 		$akun21 = \App\Neraca::getAkun3($data['stl']->kdakun2, $arrParam);
 		foreach($akun21 as $a21) {
 			if( $a21->saldo != 0) {
-				$html_out.= self::rowContent([$nbsp.$nbsp.$a21->nmakun, 0, 0, $a21->saldo, 0, 0]);
+				$html_out.= self::rowContent([$nbsp.$nbsp.$a21->nmakun, $a21->saldo]);
 			}
 		}
 		$html_out.= self::rowContent($nrc['21']);
 		$html_out.= self::rowContent($nrc['Z']);
 
 		// LONG TERM LIABILITIES
-		$html_out.= self::rowContent([$nbsp.'KEWAJIBAN JANGKA PANJANG', '', '', '', '', '']);
+		$html_out.= self::rowContent([$nbsp.'KEWAJIBAN JANGKA PANJANG', '']);
 		$akun22 = \App\Neraca::getAkun3($data['ltl']->kdakun2, $arrParam);
 		foreach($akun22 as $a22) {
 			if( $a22->saldo != 0) {
-				$html_out.= self::rowContent([$nbsp.$nbsp.$a22->nmakun, 0, 0, $a22->saldo, 0, 0]);
+				$html_out.= self::rowContent([$nbsp.$nbsp.$a22->nmakun, $a22->saldo]);
 			}
 		}
 		$html_out.= self::rowContent($nrc['22']);
@@ -303,23 +286,23 @@ class LaporanKeuanganController extends TableController
 
 		// EQUITY
 		// SHARE CAPITAL
-		$html_out.= self::rowContent(['EKUITAS', '', '', '', '', '']);
-		$html_out.= self::rowContent([$nbsp.'MODAL SAHAM DISETOR', '', '', '', '', '']);
+		$html_out.= self::rowContent(['EKUITAS', '']);
+		$html_out.= self::rowContent([$nbsp.'MODAL SAHAM DISETOR', '']);
 		$akun31 = \App\Neraca::getAkun3($data['sc']->kdakun2, $arrParam);
 		foreach($akun31 as $a31) {
 			if( $a31->saldo != 0) {
-				$html_out.= self::rowContent([$nbsp.$nbsp.$a31->nmakun, 0, 0, $a31->saldo, 0, 0]);
+				$html_out.= self::rowContent([$nbsp.$nbsp.$a31->nmakun,$a31->saldo]);
 			}
 		}
 		$html_out.= self::rowContent($nrc['31']);
 		$html_out.= self::rowContent($nrc['Z']);
 		
 		// RETAINED EARNINGS
-		$html_out.= self::rowContent([$nbsp.'SALDO LABA', '', '', '', '', '']);
+		$html_out.= self::rowContent([$nbsp.'SALDO LABA', '']);
 		$akun32 = \App\Neraca::getAkun3($data['re']->kdakun2, $arrParam);
 		foreach($akun32 as $a32) {
 			if( $a32->saldo != 0) {
-				$html_out.= self::rowContent([$nbsp.$nbsp.$a32->nmakun, 0, 0, $a32->saldo, 0, 0]);
+				$html_out.= self::rowContent([$nbsp.$nbsp.$a32->nmakun, $a32->saldo]);
 			}
 		}
 		$html_out.= self::rowContent($nrc['32']);
@@ -345,7 +328,7 @@ class LaporanKeuanganController extends TableController
 		]);
 
 		//mode portrait or landscape
-		$mpdf->AddPage('L');
+		$mpdf->AddPage('P');
 
 		//write content to PDF
 		$mpdf->writeHTML($html_out);

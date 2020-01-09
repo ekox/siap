@@ -25,30 +25,21 @@ class Labarugi extends Model
 	public static function getPendapatan($tahun, $periode)
 	{
 		$query = DB::select("
-			  SELECT periode,
-					 kdakun1,
-					 'PENDAPATAN' AS nmakun1,
-					 SUM (debet) AS debet,
-					 SUM (kredit) AS kredit,
-					 SUM ((debet-kredit)) AS nilai
-				FROM (  SELECT b.thang AS tahun,
-							   b.periode,
-							   SUBSTR (b.kdakun, 1, 1) kdakun1,
-							   SUBSTR (b.kdakun, 1, 2) kdakun2,
-							   SUBSTR (b.kdakun, 1, 3) kdakun3,
-							   b.kdakun,
-							   k.nmakun,
-							   b.debet,
-							   b.kredit
-						  FROM d_buku_besar b LEFT JOIN t_akun K ON b.kdakun = k.kdakun
-						 WHERE SUBSTR (b.kdakun, 1, 1) = '4'
-					  ORDER BY kdakun1,
-							   kdakun2,
-							   kdakun3, 
-							   kdakun)
-			   WHERE tahun = ?
-			GROUP BY periode, kdakun1, 'PENDAPATAN'
-		", [$tahun]);
+			select	a.*,
+					b.*
+			from(
+				select  nvl(sum(a.kredit-a.debet),0) as nilai
+				from d_buku_besar a
+				left join t_akun b on(a.kdakun=b.kdakun)
+				where a.thang=? and a.periode<=? and b.kdlap='LR' and substr(a.kdakun,1,1)='4'
+			) a,
+			(
+				select  nvl(sum(a.kredit-a.debet),0) as nilai1
+				from d_buku_besar a
+				left join t_akun b on(a.kdakun=b.kdakun)
+				where a.thang=? and a.periode=? and b.kdlap='LR' and substr(a.kdakun,1,1)='4'
+			) b
+		", [$tahun,$periode,$tahun,$periode]);
 
 		if(count($query) == 0) {
 			$query = self::emptyRows();
@@ -63,28 +54,21 @@ class Labarugi extends Model
 	public static function getBebanPokokPendapatan($tahun, $periode)
 	{
 		$query = DB::select("
-			  SELECT SUBSTR (kdakun, 1, 2) AS kdakun3,
-					 'Beban Pokok Pendapatan' AS nmakun3,
-					 SUM (debet) AS nilai
-				FROM (SELECT a.kdakun,
-							 a.nmakun,
-							 b.tahun,
-							 b.periode,
-							 b.debet,
-							 b.kredit
-						FROM    t_akun a
-							 INNER JOIN
-								(SELECT kdakun,
-										debet,
-										kredit,
-										thang AS tahun,
-										periode
-								   FROM d_buku_besar
-								  WHERE SUBSTR (kdakun, 1, 2) = '51') b
-							 ON b.kdakun = a.kdakun)
-			   WHERE tahun = ?
-			GROUP BY SUBSTR (kdakun, 1, 2), 'Beban Pokok Pendapatan'
-		", [$tahun]);
+			select	a.*,
+					b.*
+			from(
+				select  nvl(sum(a.debet-a.kredit),0) as nilai
+				from d_buku_besar a
+				left join t_akun b on(a.kdakun=b.kdakun)
+				where a.thang=? and a.periode<=? and b.kdlap='LR' and substr(a.kdakun,1,2)='51'
+			) a,
+			(
+				select  nvl(sum(a.debet-a.kredit),0) as nilai1
+				from d_buku_besar a
+				left join t_akun b on(a.kdakun=b.kdakun)
+				where a.thang=? and a.periode=? and b.kdlap='LR' and substr(a.kdakun,1,2)='51'
+			) b
+		", [$tahun,$periode,$tahun,$periode]);
 
 		if(count($query) == 0) {
 			$query = self::emptyRows();
@@ -99,29 +83,22 @@ class Labarugi extends Model
 	public static function getBebanUsaha($tahun, $periode)
 	{
 		$query = DB::select("
-			  SELECT SUBSTR (kdakun, 1, 2) AS kdakun3,
-					 'Beban Usaha' AS nmakun3,
-					 SUM (debet) AS nilai
-				FROM (SELECT a.kdakun,
-							 a.nmakun,
-							 b.tahun,
-							 b.periode,
-							 b.debet,
-							 b.kredit
-						FROM    t_akun a
-							 INNER JOIN
-								(SELECT kdakun,
-										debet,
-										kredit,
-										thang AS tahun,
-										periode
-								   FROM d_buku_besar
-								  WHERE SUBSTR (kdakun, 1, 2) = '52') b
-							 ON b.kdakun = a.kdakun)
-			   WHERE tahun = ?
-			GROUP BY SUBSTR (kdakun, 1, 2), 'Beban Usaha'
-		", [$tahun]);
-
+			select	a.*,
+					b.*
+			from(
+				select  nvl(sum(a.debet-a.kredit),0) as nilai
+				from d_buku_besar a
+				left join t_akun b on(a.kdakun=b.kdakun)
+				where a.thang=? and a.periode<=? and b.kdlap='LR' and substr(a.kdakun,1,2)='52'
+			) a,
+			(
+				select  nvl(sum(a.debet-a.kredit),0) as nilai1
+				from d_buku_besar a
+				left join t_akun b on(a.kdakun=b.kdakun)
+				where a.thang=? and a.periode=? and b.kdlap='LR' and substr(a.kdakun,1,2)='52'
+			) b
+		", [$tahun,$periode,$tahun,$periode]);
+		
 		if(count($query) == 0) {
 			$query = self::emptyRows();
 		} 
@@ -135,29 +112,22 @@ class Labarugi extends Model
 	public static function getBebanPemasaran($tahun, $periode)
 	{
 		$query = DB::select("
-			  SELECT SUBSTR (kdakun, 1, 3) AS kdakun3,
-					 'Beban Pemasaran' AS nmakun3,
-					 SUM (debet) AS nilai
-				FROM (SELECT a.kdakun,
-							 a.nmakun,
-							 b.tahun,
-							 b.periode,
-							 b.debet,
-							 b.kredit
-						FROM    t_akun a
-							 INNER JOIN
-								(SELECT kdakun,
-										debet,
-										kredit,
-										thang AS tahun,
-										periode
-								   FROM d_buku_besar
-								  WHERE SUBSTR (kdakun, 1, 3) = '521') b
-							 ON b.kdakun = a.kdakun)
-			   WHERE tahun = ?
-			GROUP BY SUBSTR (kdakun, 1, 3), 'Beban Pemasaran'
-		", [$tahun]);
-		
+			select	a.*,
+					b.*
+			from(
+				select  nvl(sum(a.debet-a.kredit),0) as nilai
+				from d_buku_besar a
+				left join t_akun b on(a.kdakun=b.kdakun)
+				where a.thang=? and a.periode<=? and b.kdlap='LR' and substr(a.kdakun,1,3)='521'
+			) a,
+			(
+				select  nvl(sum(a.debet-a.kredit),0) as nilai1
+				from d_buku_besar a
+				left join t_akun b on(a.kdakun=b.kdakun)
+				where a.thang=? and a.periode=? and b.kdlap='LR' and substr(a.kdakun,1,3)='521'
+			) b
+		", [$tahun,$periode,$tahun,$periode]);
+
 		if(count($query) == 0) {
 			$query = self::emptyRows();
 		} 
@@ -171,28 +141,21 @@ class Labarugi extends Model
 	public static function getBebanAdministrasiUmum($tahun, $periode)
 	{
 		$query = DB::select("
-			  SELECT SUBSTR (kdakun, 1, 3) AS kdakun3,
-					 'Beban Administrasi dan Umum' AS nmakun3,
-					 SUM (debet) AS nilai
-				FROM (SELECT a.kdakun,
-							 a.nmakun,
-							 b.tahun,
-							 b.periode,
-							 b.debet,
-							 b.kredit
-						FROM    t_akun a
-							 INNER JOIN
-								(SELECT kdakun,
-										debet,
-										kredit,
-										thang AS tahun,
-										periode
-								   FROM d_buku_besar
-								  WHERE SUBSTR (kdakun, 1, 3) = '522') b
-							 ON b.kdakun = a.kdakun)
-			   WHERE tahun = ?
-			GROUP BY SUBSTR (kdakun, 1, 3), 'Beban Administrasi dan Umum'
-		", [$tahun]);
+			select	a.*,
+					b.*
+			from(
+				select  nvl(sum(a.debet-a.kredit),0) as nilai
+				from d_buku_besar a
+				left join t_akun b on(a.kdakun=b.kdakun)
+				where a.thang=? and a.periode<=? and b.kdlap='LR' and substr(a.kdakun,1,3)='522'
+			) a,
+			(
+				select  nvl(sum(a.debet-a.kredit),0) as nilai1
+				from d_buku_besar a
+				left join t_akun b on(a.kdakun=b.kdakun)
+				where a.thang=? and a.periode=? and b.kdlap='LR' and substr(a.kdakun,1,3)='522'
+			) b
+		", [$tahun,$periode,$tahun,$periode]);
 
 		if(count($query) == 0) {
 			$query = self::emptyRows();
@@ -244,17 +207,27 @@ class Labarugi extends Model
 	 */
 	public static function getPendapatanLainLain($tahun, $periode)
 	{
-		$pendapatanLainLain = 0;
-	
 		$query = DB::select("
-			SELECT ".htmlentities($pendapatanLainLain)." AS nilai
-			FROM DUAL
-		");
+			select	a.*,
+					b.*
+			from(
+				select  nvl(sum(a.kredit-a.debet),0) as nilai
+				from d_buku_besar a
+				left join t_akun b on(a.kdakun=b.kdakun)
+				where a.thang=? and a.periode<=? and b.kdlap='LR' and substr(a.kdakun,1,2)='61'
+			) a,
+			(
+				select  nvl(sum(a.kredit-a.debet),0) as nilai1
+				from d_buku_besar a
+				left join t_akun b on(a.kdakun=b.kdakun)
+				where a.thang=? and a.periode=? and b.kdlap='LR' and substr(a.kdakun,1,2)='61'
+			) b
+		", [$tahun,$periode,$tahun,$periode]);
 
 		if(count($query) == 0) {
 			$query = self::emptyRows();
 		} 
-		
+
 		return $query[0];
 	}
 
@@ -263,17 +236,27 @@ class Labarugi extends Model
 	 */
 	public static function getBebanLainLain($tahun, $periode)
 	{
-		$bebanLainLain = 0;
-	
 		$query = DB::select("
-			SELECT ".htmlentities($bebanLainLain)." AS nilai
-			FROM DUAL
-		");
+			select	a.*,
+					b.*
+			from(
+				select  nvl(sum(a.debet-a.kredit),0) as nilai
+				from d_buku_besar a
+				left join t_akun b on(a.kdakun=b.kdakun)
+				where a.thang=? and a.periode<=? and b.kdlap='LR' and substr(a.kdakun,1,2)='62'
+			) a,
+			(
+				select  nvl(sum(a.debet-a.kredit),0) as nilai1
+				from d_buku_besar a
+				left join t_akun b on(a.kdakun=b.kdakun)
+				where a.thang=? and a.periode=? and b.kdlap='LR' and substr(a.kdakun,1,2)='62'
+			) b
+		", [$tahun,$periode,$tahun,$periode]);
 
 		if(count($query) == 0) {
 			$query = self::emptyRows();
 		} 
-		
+
 		return $query[0];
 	}
 
