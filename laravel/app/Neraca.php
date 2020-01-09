@@ -74,8 +74,23 @@ class Neraca extends Model
 		
 		$rows = DB::select("
 			SELECT '".$kdakun2."' AS kdakun2, '".$nmakun2."' AS nmakun, NVL (SUM (".$dk_saldo."), 0) AS saldo
-			  FROM d_buku_besar
-			 WHERE SUBSTR (kdakun, 1, 2) = ? ".$andWhere."
+			FROM(
+				select  kdakun,
+						debet,
+						kredit
+				from d_buku_besar
+				where 1=1 ".$andWhere."
+
+				union all
+
+				select  '322000' as kdakun,
+						0 as debet,
+						abs(sum(a.debet)-sum(a.kredit)) as kredit
+				from d_buku_besar a
+				left join t_akun b on(a.kdakun=b.kdakun)
+				where b.kdlap='NR' ".$andWhere."
+			) a
+			WHERE SUBSTR (kdakun, 1, 2) = ?
 		", [$kdakun2]);
 
 		return $rows[0];
@@ -152,8 +167,23 @@ class Neraca extends Model
 					 RIGHT JOIN
 						(  SELECT SUBSTR (kdakun, 1, 3) AS kdakun3,
 								  SUM ( (".$dk_saldo.")) AS saldo
-							 FROM d_buku_besar
-							WHERE kdakun LIKE '".$kdakun2."%' ".$andWhere."
+							 FROM (
+								select  kdakun,
+										debet,
+										kredit
+								from d_buku_besar
+								where 1=1 ".$andWhere."
+
+								union all
+
+								select  '322000' as kdakun,
+										0 as debet,
+										abs(sum(a.debet)-sum(a.kredit)) as kredit
+								from d_buku_besar a
+								left join t_akun b on(a.kdakun=b.kdakun)
+								where b.kdlap='NR' ".$andWhere."
+							 ) a
+							WHERE kdakun LIKE '".$kdakun2."%'
 						 GROUP BY SUBSTR (kdakun, 1, 3)) b
 					 ON (a.kdakun3 = b.kdakun3)
 			ORDER BY 1
