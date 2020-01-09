@@ -152,7 +152,7 @@ class TableController extends Controller
 		switch($jnslap) {
 			case 'nrc':
 			case 'lbr':
-				$eofPer = 'PERIODE BERAKHIR'.strtoupper(self::eofLaporan($periode));
+				$eofPer = 'PERIODE BERAKHIR '.strtoupper(self::eofLaporan($periode));
 				break;
 			case 'prb':
 			case 'cfl':

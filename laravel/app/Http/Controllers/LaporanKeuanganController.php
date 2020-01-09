@@ -205,7 +205,7 @@ class LaporanKeuanganController extends TableController
 		
 		$html_out.= '<tr>
 			<th rowspan="2">URAIAN</th>
-			<th rowspan="2">RKAP '.$tahun.'</th>
+			<th rowspan="2" style="width:150px;">RKAP '.$tahun.'</th>
 			<th colspan="3">s.d '.self::getPeriode($periode).' '.$tahun.'</th>
 			<th rowspan="2">%</th>
 		</tr>';
@@ -234,16 +234,16 @@ class LaporanKeuanganController extends TableController
 		// list of account
 		$nrc = array(
 			'Z' => array( '&nbsp;', '', '', '', '', '' ),
-			'11' => array( $nbsp.'JUMLAH '.$data['ca']->nmakun, $data['ca']->saldo, 0, 0, 0, 0 ),
-			'12' => array( $nbsp.'JUMLAH '.$data['fa']->nmakun, $data['fa']->saldo, 0, 0, 0, 0 ),
-			'A'  => array( $nbsp.'JUMLAH ASET ', $data['ca']->saldo + $data['fa']->saldo, 0, 0, 0, 0 ),
-			'21' => array( $nbsp.'JUMLAH '.$data['stl']->nmakun, $data['stl']->saldo, 0, 0, 0, 0 ),
-			'22' => array( $nbsp.'JUMLAH '.$data['ltl']->nmakun, $data['ltl']->saldo, 0, 0, 0, 0 ),
-			'L'  => array( $nbsp.'JUMLAH KEWAJIBAN ', $data['stl']->saldo + $data['ltl']->saldo, 0, 0, 0, 0 ),
-			'31' => array( $nbsp.'JUMLAH '.$data['sc']->nmakun, $data['sc']->saldo, 0, 0, 0, 0 ),
-			'32' => array( $nbsp.'JUMLAH '.$data['re']->nmakun, $data['re']->saldo, 0, 0, 0, 0 ),
-			'E'  => array( $nbsp.'JUMLAH EKUITAS ', $data['sc']->saldo + $data['re']->saldo, 0, 0, 0, 0 ),
-			'LE'  => array( $nbsp.'JUMLAH KEWAJIBAN DAN EKUITAS', ($data['stl']->saldo + $data['ltl']->saldo + $data['sc']->saldo + $data['re']->saldo), 0, 0, 0, 0 ),
+			'11' => array( $nbsp.'JUMLAH '.$data['ca']->nmakun, 0, 0, $data['ca']->saldo, 0, 0 ),
+			'12' => array( $nbsp.'JUMLAH '.$data['fa']->nmakun, 0, 0, $data['fa']->saldo, 0, 0 ),
+			'A'  => array( $nbsp.'JUMLAH ASET ', 0, 0, $data['ca']->saldo + $data['fa']->saldo, 0, 0 ),
+			'21' => array( $nbsp.'JUMLAH '.$data['stl']->nmakun, 0, 0, $data['stl']->saldo, 0, 0 ),
+			'22' => array( $nbsp.'JUMLAH '.$data['ltl']->nmakun, 0, 0, $data['ltl']->saldo, 0, 0 ),
+			'L'  => array( $nbsp.'JUMLAH KEWAJIBAN ', 0, 0, $data['stl']->saldo + $data['ltl']->saldo, 0, 0 ),
+			'31' => array( $nbsp.'JUMLAH '.$data['sc']->nmakun, 0, 0, $data['sc']->saldo, 0, 0 ),
+			'32' => array( $nbsp.'JUMLAH '.$data['re']->nmakun, 0, 0, $data['re']->saldo, 0, 0 ),
+			'E'  => array( $nbsp.'JUMLAH EKUITAS ', 0, 0, $data['sc']->saldo + $data['re']->saldo, 0, 0 ),
+			'LE'  => array( $nbsp.'JUMLAH KEWAJIBAN DAN EKUITAS', 0, 0, ($data['stl']->saldo + $data['ltl']->saldo + $data['sc']->saldo + $data['re']->saldo), 0, 0 ),
 		);
 
 		// CURRENT ASSETS
@@ -252,9 +252,10 @@ class LaporanKeuanganController extends TableController
 		$akun11 = \App\Neraca::getAkun3($data['ca']->kdakun2, $arrParam);
 		foreach($akun11 as $a11) {
 			if($a11->saldo != 0) {
-				$html_out.= self::rowContent([$nbsp.$nbsp.$a11->nmakun, $a11->saldo, 0, 0, 0, 0]);
+				$html_out.= self::rowContent([$nbsp.$nbsp.$a11->nmakun, 0, 0, $a11->saldo, 0, 0]);
 			} 
 		}
+		
 		$html_out.= self::rowContent($nrc['11']);
 
 		$html_out.= self::rowContent($nrc['Z']);
@@ -264,7 +265,7 @@ class LaporanKeuanganController extends TableController
 		$akun12 = \App\Neraca::getAkun3($data['fa']->kdakun2, $arrParam);
 		foreach($akun12 as $a12) {
 			if( $a12->saldo != 0) {
-				$html_out.= self::rowContent([$nbsp.$nbsp.$a12->nmakun, $a12->saldo, 0, 0, 0, 0]);
+				$html_out.= self::rowContent([$nbsp.$nbsp.$a12->nmakun, 0, 0, $a12->saldo, 0, 0]);
 			}
 		}
 		$html_out.= self::rowContent($nrc['12']);
@@ -282,7 +283,7 @@ class LaporanKeuanganController extends TableController
 		$akun21 = \App\Neraca::getAkun3($data['stl']->kdakun2, $arrParam);
 		foreach($akun21 as $a21) {
 			if( $a21->saldo != 0) {
-				$html_out.= self::rowContent([$nbsp.$nbsp.$a21->nmakun, $a21->saldo, 0, 0, 0, 0]);
+				$html_out.= self::rowContent([$nbsp.$nbsp.$a21->nmakun, 0, 0, $a21->saldo, 0, 0]);
 			}
 		}
 		$html_out.= self::rowContent($nrc['21']);
@@ -293,7 +294,7 @@ class LaporanKeuanganController extends TableController
 		$akun22 = \App\Neraca::getAkun3($data['ltl']->kdakun2, $arrParam);
 		foreach($akun22 as $a22) {
 			if( $a22->saldo != 0) {
-				$html_out.= self::rowContent([$nbsp.$nbsp.$a22->nmakun, $a22->saldo, 0, 0, 0, 0]);
+				$html_out.= self::rowContent([$nbsp.$nbsp.$a22->nmakun, 0, 0, $a22->saldo, 0, 0]);
 			}
 		}
 		$html_out.= self::rowContent($nrc['22']);
@@ -307,7 +308,7 @@ class LaporanKeuanganController extends TableController
 		$akun31 = \App\Neraca::getAkun3($data['sc']->kdakun2, $arrParam);
 		foreach($akun31 as $a31) {
 			if( $a31->saldo != 0) {
-				$html_out.= self::rowContent([$nbsp.$nbsp.$a31->nmakun, $a31->saldo, 0, 0, 0, 0]);
+				$html_out.= self::rowContent([$nbsp.$nbsp.$a31->nmakun, 0, 0, $a31->saldo, 0, 0]);
 			}
 		}
 		$html_out.= self::rowContent($nrc['31']);
@@ -318,7 +319,7 @@ class LaporanKeuanganController extends TableController
 		$akun32 = \App\Neraca::getAkun3($data['re']->kdakun2, $arrParam);
 		foreach($akun32 as $a32) {
 			if( $a32->saldo != 0) {
-				$html_out.= self::rowContent([$nbsp.$nbsp.$a32->nmakun, $a32->saldo, 0, 0, 0, 0]);
+				$html_out.= self::rowContent([$nbsp.$nbsp.$a32->nmakun, 0, 0, $a32->saldo, 0, 0]);
 			}
 		}
 		$html_out.= self::rowContent($nrc['32']);

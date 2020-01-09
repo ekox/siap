@@ -47,7 +47,7 @@
 										<th rowspan="2">Akun</th>
 										<th rowspan="2">Uraian</th>
 										<th colspan="2">Neraca Disesuaikan</th>
-										<th colspan="2">Neraca Lajur</th>
+										<th colspan="3">Neraca Lajur</th>
 										<th colspan="2">Laporan Rugi Laba</th>
 									</tr>
 									<tr>
@@ -55,13 +55,14 @@
 										<th>Kredit</th>
 										<th>Debet</th>
 										<th>Kredit</th>
+										<th>Saldo</th>
 										<th>Debet</th>
 										<th>Kredit</th>
 									</tr>
 								</thead>
 								<tbody id="tabel-ruh">
 									<tr>
-										<td colspan="8">Sedang proses......</td>
+										<td colspan="9">Sedang proses......</td>
 									</tr>
 								</tbody>
 								<tfoot>
@@ -71,6 +72,7 @@
 										<td id="total-kredit" style="text-align:right;">0</td>
 										<td id="total-debet1" style="text-align:right;">0</td>
 										<td id="total-kredit1" style="text-align:right;">0</td>
+										<td id="total-saldo" style="text-align:right;">0</td>
 										<td id="total-debet2" style="text-align:right;">0</td>
 										<td id="total-kredit2" style="text-align:right;">0</td>
 									</tr>
@@ -80,6 +82,7 @@
 										<td></td>
 										<td id="total-debet3" style="text-align:right;">0</td>
 										<td id="total-kredit3" style="text-align:right;">0</td>
+										<td></td>
 										<td id="total-debet4" style="text-align:right;">0</td>
 										<td id="total-kredit4" style="text-align:right;">0</td>
 									</tr>
@@ -89,6 +92,7 @@
 										<td></td>
 										<td id="total-debet5" style="text-align:right;">0</td>
 										<td id="total-kredit5" style="text-align:right;">0</td>
+										<td></td>
 										<td id="total-debet6" style="text-align:right;">0</td>
 										<td id="total-kredit6" style="text-align:right;">0</td>
 									</tr>
@@ -135,6 +139,7 @@
 				jQuery('#total-kredit5').html(result.total_kredit5);
 				jQuery('#total-debet6').html(result.total_debet6);
 				jQuery('#total-kredit6').html(result.total_kredit6);
+				jQuery('#total-saldo').html(result.total_saldo);
 			});
 			
 		});

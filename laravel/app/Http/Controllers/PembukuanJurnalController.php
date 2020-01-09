@@ -7,7 +7,7 @@ use Illuminate\Http\Response;
 
 class PembukuanJurnalController extends Controller {
 
-	public function index(Request $request)
+	public function index(Request $request, $periode)
 	{
 		$rows = DB::select("
 			select  a.kdakun,
@@ -91,6 +91,7 @@ class PembukuanJurnalController extends Controller {
 						a.kdakun
 			) a
 			left join t_akun b on(a.kdakun=b.kdakun)
+			where a.periode<=?
 			group by a.kdakun,b.nmakun
 			order by a.kdakun,b.nmakun
 		",[
@@ -98,7 +99,8 @@ class PembukuanJurnalController extends Controller {
 			session('tahun'),
 			session('tahun'),
 			session('tahun'),
-			session('tahun')
+			session('tahun'),
+			$periode
 		]);
 		
 		$data = '';
@@ -304,6 +306,7 @@ class PembukuanJurnalController extends Controller {
 					d.nmakun,
 					nvl(b.debet,0) as debet1,
 					nvl(b.kredit,0) as kredit1,
+					nvl(b.saldo,0) as saldo,
 					nvl(c.debet,0) as debet2,
 					nvl(c.kredit,0) as kredit2
 			from(
@@ -317,7 +320,8 @@ class PembukuanJurnalController extends Controller {
 			left join(
 				select  a.kdakun,
 						sum(a.debet) as debet,
-						sum(a.kredit) as kredit
+						sum(a.kredit) as kredit,
+						decode(substr(a.kdakun,1,1),'1',sum(a.debet)-sum(a.kredit),0) as saldo
 				from d_buku_besar a
 				left join t_akun b on(a.kdakun=b.kdakun)
 				where a.thang=? and a.periode<=? and b.kdlap='NR'
@@ -348,6 +352,7 @@ class PembukuanJurnalController extends Controller {
 		$total_kredit = 0;
 		$total_debet1 = 0;
 		$total_kredit1 = 0;
+		$total_saldo = 0;
 		$total_debet2 = 0;
 		$total_kredit2 = 0;
 		foreach($rows as $row){
@@ -358,6 +363,7 @@ class PembukuanJurnalController extends Controller {
 						<td style="text-align:right;">'.number_format($row->kredit,0).'</td>
 						<td style="text-align:right;">'.number_format($row->debet1,0).'</td>
 						<td style="text-align:right;">'.number_format($row->kredit1,0).'</td>
+						<td style="text-align:right;">'.number_format($row->saldo,0).'</td>
 						<td style="text-align:right;">'.number_format($row->debet2,0).'</td>
 						<td style="text-align:right;">'.number_format($row->kredit2,0).'</td>
 					  </tr>';
@@ -367,6 +373,8 @@ class PembukuanJurnalController extends Controller {
 			$total_kredit1 += $row->kredit1;
 			$total_debet2 += $row->debet2;
 			$total_kredit2 += $row->kredit2;
+			$total_saldo += $row->saldo;
+			
 		}
 		
 		//hitung rugi laba
@@ -409,7 +417,8 @@ class PembukuanJurnalController extends Controller {
 			'total_debet5' => number_format($total_debet5,0),
 			'total_kredit5' => number_format($total_kredit5,0),
 			'total_debet6' => number_format($total_debet6,0),
-			'total_kredit6' => number_format($total_kredit6,0)
+			'total_kredit6' => number_format($total_kredit6,0),
+			'total_saldo' => number_format($total_saldo,0),
 		));
 	}
 	
