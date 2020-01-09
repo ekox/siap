@@ -21,13 +21,12 @@ class MonitoringController extends Controller {
 					nvl(b.nilai,0) as realisasi
 			from t_unit a
 			left join(
-				select  substr(b.kdunit,1,4) as kdunit,
-						sum(a.nilai) as nilai
-				from d_trans_akun a
-				left join d_trans b on(a.id_trans=b.id)
-				left join t_alur c on(b.id_alur=c.id)
-				where a.kddk='K' and c.menu=2 and b.thang=?
-				group by substr(b.kdunit,1,4)
+				select  substr(a.kdunit,1,4) as kdunit,
+						sum(a.nilai_bersih) as nilai
+				from d_trans a
+				left join t_alur c on(a.id_alur=c.id)
+				where c.menu in(1,2) and a.thang=?
+				group by substr(a.kdunit,1,4)
 			) b on(a.kdunit=b.kdunit)
 			left join(
 				select  substr(a.kdunit,1,4) as kdunit,
@@ -187,13 +186,12 @@ class MonitoringController extends Controller {
 					nvl(c.nilai,0)-nvl(b.nilai,0) as sisa
 			from t_unit a
 			left join(
-				select  substr(b.kdunit,1,4) as kdunit,
-						sum(a.nilai) as nilai
-				from d_trans_akun a
-				left join d_trans b on(a.id_trans=b.id)
-				left join t_alur c on(b.id_alur=c.id)
-				where a.kddk='D' and c.menu=4 and b.thang=?
-				group by substr(b.kdunit,1,4)
+				select  substr(a.kdunit,1,4) as kdunit,
+						sum(a.nilai_bersih) as nilai
+				from d_trans a
+				left join t_alur c on(a.id_alur=c.id)
+				where c.menu=4 and a.thang=?
+				group by substr(a.kdunit,1,4)
 			) b on(a.kdunit=b.kdunit)
 			left join(
 				select  substr(a.kdunit,1,4) as kdunit,
@@ -354,13 +352,31 @@ class MonitoringController extends Controller {
 					nvl(c.sawal,0)+nvl(b.debet,0)-nvl(b.kredit,0) as saldo
 			from t_akun a
 			left join(
-				select  kdakun,
-						sum(decode(kddk,'D',nilai,0)) as debet,
-						sum(decode(kddk,'K',nilai,0)) as kredit
-				from d_trans_akun a
-				left join d_trans b on(a.id_trans=b.id)
-				where b.thang=?
-				group by kdakun
+				
+				select	a.kdakun,
+						sum(decode(a.kddk,'D',a.nilai,0)) as debet,
+						sum(decode(a.kddk,'K',a.nilai,0)) as kredit
+				from(
+				
+					select  debet as kdakun,
+							'D' as kddk,
+							sum(nilai) as nilai
+					from d_trans a
+					where a.thang=?
+					group by debet
+					
+					union all
+					
+					select  kredit as kdakun,
+							'K' as kddk,
+							sum(nilai) as nilai
+					from d_trans a
+					where a.thang=?
+					group by kredit
+					
+				) a
+				group by a.kdakun
+				
 			) b on(a.kdakun=b.kdakun)
 			left join(
 				select  kdakun,
@@ -373,7 +389,8 @@ class MonitoringController extends Controller {
 			order by a.kdakun
 		",[
 			session('tahun'),
-			session('tahun')
+			session('tahun'),
+			session('tahun'),
 		]);
 		
 		if(count($rows)>0){

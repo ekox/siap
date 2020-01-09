@@ -44,8 +44,8 @@ class LaporanKeuanganController extends TableController
 		//header of content
 		$html_out.= '<tr>
 			<th>URAIAN</th>
-			<th>s.d '.self::getPeriode($periode).' '.$tahun.'</th>
-			<th>'.self::getPeriode($periode).' '.$tahun.'</th>
+			<th style="width:25%;">s.d '.self::getPeriode($periode).' '.$tahun.'</th>
+			<th style="width:25%;">'.self::getPeriode($periode).' '.$tahun.'</th>
 		</tr>';
 
 		//column info
@@ -468,71 +468,56 @@ class LaporanKeuanganController extends TableController
 		$html_out.= self::$thead_open;
 
 		$html_out.= '<tr>
-			<th rowspan="2" style="">URAIAN</th>
-			<th rowspan="2" style="">RKAP 2019</th>
-			<th colspan="2" style="">RKAP '.self::getPeriode($periode).' '.$tahun.'</th>
-			<th colspan="2" style="">Realisasi '.self::getPeriode($periode).' '.$tahun.'</th>
-			<th rowspan="2" style="">%</th>
-			<th rowspan="2" style="">%</th>
-		</tr>';
-
-		$html_out.= '<tr>
-			<th>Rencana</th>
-			<th>Realisasi</th>
-			<th>Rencana</th>
-			<th>Realisasi</th>
+			<th>URAIAN</th>
+			<th style="width:25%;">s.d '.self::getPeriode($periode).' '.$tahun.'</th>
+			<th style="width:25%;">'.self::getPeriode($periode).' '.$tahun.'</th>
 		</tr>';
 
 		$html_out.= '<tr>
 			<th>1</th>
 			<th>2</th>
 			<th>3</th>
-			<th>4</th>
-			<th>5</th>
-			<th>6</th>
-			<th>7</th>
-			<th>8</th>
 		</tr>';
 
 		$html_out.= self::$thead_close;
 
 		$cfl = array(
-			'Z' => array('&nbsp;', '', '', '', '', '', '', ''),
-			'AO' => array('ARUS KAS DARI AKTIVITAS OPERASI ', '', '', '', '', '', '', ''),
-			'JAO' => array($this->nbsp.'JUMLAH KAS BERSIH DARI AKTIVITAS OPERASI ', 0, 0, 0, 0, 0, 0, 0),
-			'AI' => array('ARUS KAS DARI AKTIVITAS INVESTASI ', '', '', '', '', '', '', ''),
-			'JAI' => array($this->nbsp.'JUMLAH KAS BERSIH DARI DARI AKTIVITAS INVESTASI ',0, 0, 0, 0, 0, 0, 0),
-			'AP' => array('ARUS KAS DARI AKTIVITAS PENDANAAN ', '', '', '', '', '', '', ''),
-			'JAP' => array($this->nbsp.'JUMLAH KAS BERSIH DARI DARI AKTIVITAS PENDANAAN ',0, 0, 0, 0, 0, 0, 0),
-			'NT' => array('KENAIKAN (PENURUNAN) BERSIH KAS DAN SETARA KAS ', 0, 0, 0, 0, 0, 0, 0),
-			'KAW' => array('KAS DAN SETARA KAS PADA AWAL PERIODE ', 0, 0, 0, 0, 0, 0, 0),
-			'KAK' => array('KAS DAN SETARA KAS PADA AKHIR PERIODE ', 0, 0, 0, 0, 0, 0, 0),
+			'Z' => array('&nbsp;', '', ''),
+			'AO' => array('ARUS KAS DARI AKTIVITAS OPERASI ', '', ''),
+			'JAO' => array($this->nbsp.'JUMLAH KAS BERSIH DARI AKTIVITAS OPERASI ', 0, 0),
+			'AI' => array('ARUS KAS DARI AKTIVITAS INVESTASI ', '', ''),
+			'JAI' => array($this->nbsp.'JUMLAH KAS BERSIH DARI DARI AKTIVITAS INVESTASI ',0, 0),
+			'AP' => array('ARUS KAS DARI AKTIVITAS PENDANAAN ', '', ''),
+			'JAP' => array($this->nbsp.'JUMLAH KAS BERSIH DARI DARI AKTIVITAS PENDANAAN ',0, 0),
+			'NT' => array('KENAIKAN (PENURUNAN) BERSIH KAS DAN SETARA KAS ', 0, 0),
+			'KAW' => array('KAS DAN SETARA KAS PADA AWAL PERIODE ', 0, 0),
+			'KAK' => array('KAS DAN SETARA KAS PADA AKHIR PERIODE ', 0, 0),
 		);
 
 		$opr = array(
-			'MDB' => array($this->nbsp.'Penerimaan dari Pengembangan Lingkungan', 0, 0, 0, 0, 0, 0, 0),
-			'MPK' => array($this->nbsp.'Penerimaan dari Pengelolaan Aktiva', 0, 0, 0, 0, 0, 0, 0),
-			'MPJ' => array($this->nbsp.'Penerimaan dari Jasa', 0, 0, 0, 0, 0, 0, 0),
-			'MPL' => array($this->nbsp.'Penerimaan Lainnya', 0, 0, 0, 0, 0, 0, 0),
-			'KBO' => array($this->nbsp.'Pembayaran Biaya Operasional', 0, 0, 0, 0, 0, 0, 0),
-			'KBP' => array($this->nbsp.'Pembayaran Biaya Pemasaan, Kantor, dan Pemeliharaan Umum', 0, 0, 0, 0, 0, 0, 0),
-			'KBJ' => array($this->nbsp.'Pembayaran Biaya Jasa Produksi', 0, 0, 0, 0, 0, 0, 0),
-			'KDS' => array($this->nbsp.'Pembayaran Dana Pensiun, THT, Pendidikan, dan Sosial', 0, 0, 0, 0, 0, 0, 0),
-			'KDG' => array($this->nbsp.'Pembayaran kepada Pegawai', 0, 0, 0, 0, 0, 0, 0),
+			'MDB' => array($this->nbsp.'Penerimaan dari Pengembangan Lingkungan', 0, 0),
+			'MPK' => array($this->nbsp.'Penerimaan dari Pengelolaan Aktiva', 0, 0),
+			'MPJ' => array($this->nbsp.'Penerimaan dari Jasa', 0, 0),
+			'MPL' => array($this->nbsp.'Penerimaan Lainnya', 0, 0),
+			'KBO' => array($this->nbsp.'Pembayaran Biaya Operasional', 0, 0),
+			'KBP' => array($this->nbsp.'Pembayaran Biaya Pemasaan, Kantor, dan Pemeliharaan Umum', 0, 0),
+			'KBJ' => array($this->nbsp.'Pembayaran Biaya Jasa Produksi', 0, 0),
+			'KDS' => array($this->nbsp.'Pembayaran Dana Pensiun, THT, Pendidikan, dan Sosial', 0, 0),
+			'KDG' => array($this->nbsp.'Pembayaran kepada Pegawai', 0, 0),
 		);
 
 		$inv = array(
-			'MDE' => array($this->nbsp.'Penerimaan Dividen dari entitas asosiasi', 0, 0, 0, 0, 0, 0, 0),
-			'MIV' => array($this->nbsp.'Penempatan Investasi Ventura Bersama', 0, 0, 0, 0, 0, 0, 0),
-			'MAR' => array($this->nbsp.'Penambahan Aset Real Estate', 0, 0, 0, 0, 0, 0, 0),
-			'MPP' => array($this->nbsp.'Penempatan Properti Investasi', 0, 0, 0, 0, 0, 0, 0),
-			'MPA' => array($this->nbsp.'Perolehan Aset Tetap', 0, 0, 0, 0, 0, 0, 0),
-			'MPM' => array($this->nbsp.'Penempatan Modal pada entitas asosiasi', 0, 0, 0, 0, 0, 0, 0),
+			'MDE' => array($this->nbsp.'Penerimaan Dividen dari entitas asosiasi', 0, 0),
+			'MIV' => array($this->nbsp.'Penempatan Investasi Ventura Bersama', 0, 0),
+			'MAR' => array($this->nbsp.'Penambahan Aset Real Estate', 0, 0),
+			'MPP' => array($this->nbsp.'Penempatan Properti Investasi', 0, 0),
+			'MPA' => array($this->nbsp.'Perolehan Aset Tetap', 0, 0),
+			'MPM' => array($this->nbsp.'Penempatan Modal pada entitas asosiasi', 0, 0),
 		);
 
 		$fnd = array(
-			'PMD' => array($this->nbsp.'Penyertaan Modal Daerah/Pinjaman',0 ,0, 0, 0, 0, 0, 0),
-			'PAD' => array($this->nbsp.'Pembayaran PAD',0 ,0, 0, 0, 0, 0, 0),
+			'PMD' => array($this->nbsp.'Penyertaan Modal Daerah/Pinjaman',0 ,0),
+			'PAD' => array($this->nbsp.'Pembayaran PAD',0 ,0),
 		);
 
 		$html_out.= self::$tbody_open;
