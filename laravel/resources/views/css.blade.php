@@ -22,6 +22,7 @@
 	.br {border-right:1px solid;}
 	.bb {border-bottom:1px solid;}
 	.bo {font-weight:bold;}
+	.fb {font-weight:bold;}
 	.pad2 {padding:2px 2px 2px 2px;}
 	.pl2 {padding-left:2px;}
 	.pr2 {padding-right:2px;}
