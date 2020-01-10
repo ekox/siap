@@ -16,17 +16,34 @@ class LaporanRealisasiController extends Controller
      */
     public function pendapatan()
     {
-        $realisasi = [
-            ['uraian'=>'Pengembangan Aset', 'rkap'=>2500, 'rc'=>2500, 'rl'=>2450, 'rcsd'=>2450, 'rlsd'=>2350],
-            ['uraian'=>'Pengelolaan Aset', 'rkap'=>3500, 'rc'=>3000, 'rl'=>2750, 'rcsd'=>2650, 'rlsd'=>2500],
+        $pendapatan = [
+			['uraian' => 'Pengembangan Aset', 'rkap' => 0, 'rctw' => 0, 'rltw' => 0, 'psn1' => 0, 'rcsdtw' => 0, 'rlsdtw' => 0, 'psn2' => 0, 'psn3' => 0],
+			['uraian' => 'Pengelolaan Aset', 'rkap' => 0, 'rctw' => 0, 'rltw' => 0, 'psn1' => 0, 'rcsdtw' => 0, 'rlsdtw' => 0, 'psn2' => 0, 'psn3' => 0],
         ];
-
+        
         $data = [
             'tahun' => session('tahun'),
-            'rows' => $realisasi
+            'rows' => $pendapatan,
         ];
 
-        return view('realisasi.pendapatan', $data);
+        $html_out = view('realisasi.pendapatan', $data);
+
+		$mpdf = new Mpdf([
+			'mode' => 'utf-8',
+			'format' => 'A4-P',
+			'margin_left' => 8,
+			'margin_right' => 8,
+			'margin_top' => 18,
+			'margin_bottom' => 18,
+		]);
+
+		//mode portrait or landscape
+		$mpdf->AddPage('L');
+
+		//write content to PDF
+		$mpdf->writeHTML($html_out);
+		$mpdf->Output('rincian realisasi pendapatan.pdf', 'I');
+		exit;
     }
 
     /**
@@ -56,7 +73,24 @@ class LaporanRealisasiController extends Controller
             'rows' => $rows,
         ];
 
-        return view('realisasi.pendapatan-pengembangan', $data);
+        $html_out = view('realisasi.pendapatan-pengembangan', $data);
+
+		$mpdf = new Mpdf([
+			'mode' => 'utf-8',
+			'format' => 'A4-P',
+			'margin_left' => 8,
+			'margin_right' => 8,
+			'margin_top' => 18,
+			'margin_bottom' => 18,
+		]);
+
+		//mode portrait or landscape
+		$mpdf->AddPage('L');
+
+		//write content to PDF
+		$mpdf->writeHTML($html_out);		
+		$mpdf->Output('rincian realisasi pendapatan pengembangan.pdf', 'I');
+		exit;
     }
 
     /**
@@ -90,7 +124,32 @@ class LaporanRealisasiController extends Controller
             'rows2' => $rows2,
         ];
 
-        return view('realisasi.pendapatan-pengelolaan', $data);
+        $html_out = view('realisasi.pendapatan-pengelolaan', $data);
+        $html_out_add = view('realisasi.pendapatan-pengelolaan-tambahan', $data);
+
+		$mpdf = new Mpdf([
+			'mode' => 'utf-8',
+			'format' => 'A4-P',
+			'margin_left' => 8,
+			'margin_right' => 8,
+			'margin_top' => 18,
+			'margin_bottom' => 18,
+		]);
+
+		//mode portrait or landscape
+		$mpdf->AddPage('L');
+
+		//write content to PDF
+		$mpdf->writeHTML($html_out);
+
+		//mode portrait or landscape
+		$mpdf->AddPage('L');
+
+		//write content to PDF
+		$mpdf->writeHTML($html_out_add);
+		
+		$mpdf->Output('rincian realisasi pendapatan pengelolaan.pdf', 'I');
+		exit;
     }
 
     /**
@@ -98,17 +157,34 @@ class LaporanRealisasiController extends Controller
      */
     public function beban()
     {
-        $realisasi = [
-            ['uraian'=>'Beban Pokok Penjualan', 'rkap'=>2500, 'rc'=>2500, 'rl'=>2450, 'rcsd'=>2450, 'rlsd'=>2350],
-            ['uraian'=>'Beban Usaha', 'rkap'=>3500, 'rc'=>3000, 'rl'=>2750, 'rcsd'=>2650, 'rlsd'=>2500],
+        $beban = [
+			['uraian' => 'Beban Pokok Penjualan', 'rkap' => 0, 'rctw' => 0, 'rltw' => 0, 'psn1' => 0, 'rcsdtw' => 0, 'rlsdtw' => 0, 'psn2' => 0, 'psn3' => 0],
+			['uraian' => 'Beban Usaha', 'rkap' => 0, 'rctw' => 0, 'rltw' => 0, 'psn1' => 0, 'rcsdtw' => 0, 'rlsdtw' => 0, 'psn2' => 0, 'psn3' => 0],
         ];
         
         $data = [
             'tahun' => session('tahun'),
-            'rows' => $realisasi
+            'rows' => $beban,
         ];
 
-        return view('realisasi.beban', $data);
+        $html_out = view('realisasi.beban', $data);
+
+		$mpdf = new Mpdf([
+			'mode' => 'utf-8',
+			'format' => 'A4-P',
+			'margin_left' => 8,
+			'margin_right' => 8,
+			'margin_top' => 18,
+			'margin_bottom' => 18,
+		]);
+
+		//mode portrait or landscape
+		$mpdf->AddPage('L');
+
+		//write content to PDF
+		$mpdf->writeHTML($html_out);
+		$mpdf->Output('rincian realisasi beban.pdf', 'I');
+		exit;
     }
 
     /**
@@ -140,7 +216,24 @@ class LaporanRealisasiController extends Controller
             'rows2' => $BPP2, 
         ];
 
-        return view('realisasi.beban-pokok-penjualan', $data);
+        $html_out = view('realisasi.beban-pokok-penjualan', $data);
+
+        $mpdf = new Mpdf([
+			'mode' => 'utf-8',
+			'format' => 'A4-P',
+			'margin_left' => 8,
+			'margin_right' => 8,
+			'margin_top' => 18,
+			'margin_bottom' => 18,
+		]);
+
+		//mode portrait or landscape
+		$mpdf->AddPage('L');
+
+		//write content to PDF
+		$mpdf->writeHTML($html_out);
+		$mpdf->Output('rincian realisasi beban pokok penjualan.pdf', 'I');
+		exit;
     }
 
     /**
@@ -158,7 +251,7 @@ class LaporanRealisasiController extends Controller
 		];
 		
 		$BU2 = [
-			['uraian' => 'BebanAdm. Bank & Pajak Jasa Giro', 'rkap' => 0, 'rctw' => 0, 'rltw' => 0, 'psn1' => 0, 'rcsdtw' => 0, 'rlsdtw' => 0, 'psn2' => 0, 'psn3' => 0],
+			['uraian' => 'Beban Adm. Bank & Pajak Jasa Giro', 'rkap' => 0, 'rctw' => 0, 'rltw' => 0, 'psn1' => 0, 'rcsdtw' => 0, 'rlsdtw' => 0, 'psn2' => 0, 'psn3' => 0],
 			['uraian' => 'PPh Final', 'rkap' => 0, 'rctw' => 0, 'rltw' => 0, 'psn1' => 0, 'rcsdtw' => 0, 'rlsdtw' => 0, 'psn2' => 0, 'psn3' => 0],
 			['uraian' => 'Lain-lain', 'rkap' => 0, 'rctw' => 0, 'rltw' => 0, 'psn1' => 0, 'rcsdtw' => 0, 'rlsdtw' => 0, 'psn2' => 0, 'psn3' => 0],
 		];
@@ -169,7 +262,32 @@ class LaporanRealisasiController extends Controller
             'rows2' => $BU2,
         ];
 
-        return view('realisasi.beban-usaha', $data);
+        $html_out = view('realisasi.beban-usaha', $data);
+        $html_out_add = view('realisasi.beban-usaha-tambahan', $data);
+
+        $mpdf = new Mpdf([
+			'mode' => 'utf-8',
+			'format' => 'A4-P',
+			'margin_left' => 8,
+			'margin_right' => 8,
+			'margin_top' => 18,
+			'margin_bottom' => 18,
+		]);
+
+		//mode portrait or landscape
+		$mpdf->AddPage('L');
+
+		//write content to PDF
+		$mpdf->writeHTML($html_out);
+		
+		//mode portrait or landscape
+		$mpdf->AddPage('L');
+
+		//write content to PDF
+		$mpdf->writeHTML($html_out_add);
+		
+		$mpdf->Output('rincian realisasi beban usaha.pdf', 'I');
+		exit;
     }
 
     /**
