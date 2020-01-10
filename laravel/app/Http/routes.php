@@ -345,7 +345,10 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get('/beban-umum', 'LaporanRealisasiController@beban');
 		Route::get('/beban-penjualan', 'LaporanRealisasiController@bebanPokokPenjualan');
 		Route::get('/beban-usaha', 'LaporanRealisasiController@bebanUsaha');
-			
+
+		//realisasi investasi
+		Route::get('/investasi', 'LaporanRealisasiController@investasi');
+		
 	});
 	
 	//laporan
