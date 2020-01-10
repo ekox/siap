@@ -7,9 +7,12 @@
 	.vm {vertical-align:middle;}
 	.vb {vertical-align:bottom;}
 	.fs8 {font-size:8px;}
+	.fs9 {font-size:9px;}
 	.fs10 {font-size:10px;}
 	.fs11 {font-size:11px;}
 	.fs12 {font-size:12px;}
+	.fs14 {font-size:14px;}
+	.fs16 {font-size:16px;}
 	.bd {border:1px solid;}
 	.ball {border:1px solid;}
 	.blr {border-left:1px solid; border-right:1px solid;}
@@ -40,5 +43,11 @@
 	.wd15 {width:15%;}
 	.wd20 {width:20%;}
 	.wd25 {width:25%;}
+	.wd30 {width:30%;}
+	.wd40 {width:40%;}
 	.wd50 {width:50%;}
+	.wd60 {width:60%;}
+	.wd70 {width:70%;}
+	.wd80 {width:80%;}
+	.wd90 {width:90%;}
 </style>
