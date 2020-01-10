@@ -10,6 +10,7 @@
 	.fs10 {font-size:10px;}
 	.fs11 {font-size:11px;}
 	.fs12 {font-size:12px;}
+	.bd {border:1px solid;}
 	.ball {border:1px solid;}
 	.blr {border-left:1px solid; border-right:1px solid;}
 	.btb {border-top:1px solid; border-bottom:1px solid;}
@@ -30,7 +31,10 @@
 	.pb3 {padding-bottom:3px;}
 	.wd2 {width:2%;}
 	.wd3 {width:3%;}
+	.wd4 {width:4%;}
 	.wd5 {width:5%;}
+	.wd7 {width:7%;}
+	.wd8 {width:8%;}
 	.wd10 {width:10%;}
 	.wd12 {width:12%;}
 	.wd15 {width:15%;}
