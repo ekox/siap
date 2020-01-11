@@ -384,11 +384,13 @@
 		
 		jQuery('#parent_id').change(function(){
 			var data = jQuery(this).val().split('|');
-			jQuery('#id_proyek').val(data[5]).trigger('chosen:updated');
-			jQuery('#id_pelanggan').val(data[1]).trigger('chosen:updated');
+			var proyek = data[5].split('-');
+			jQuery('#id_proyek').val(proyek[0]).trigger('chosen:updated');
+			jQuery('#id_pelanggan').val(proyek[1]).trigger('chosen:updated');
 			jQuery('#uraian').val(data[2]);
 			jQuery('#nilai').val(digit_grouping(data[3]));
 			jQuery('#kredit').val(data[4]).trigger('chosen:updated');
+			console.log(data);
 			jQuery('#id_proyek,#id_pelanggan,#kredit').prop('disabled', true).trigger('chosen:updated');
 		});
 		

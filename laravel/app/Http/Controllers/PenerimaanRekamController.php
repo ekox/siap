@@ -705,7 +705,7 @@ class PenerimaanRekamController extends Controller {
 							a.id_penerima as id_pelanggan,
 							a.uraian,
 							nvl(a.nilai,0) as nilai,
-							a.kredit as kdakun,
+							a.debet as kdakun,
 							a.id_proyek
 					from d_trans a
 					where a.kdtran=?

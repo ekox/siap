@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Mpdf\Mpdf;
+use DB;
 
 class LaporanKeuanganController extends TableController
 {
@@ -480,44 +481,203 @@ class LaporanKeuanganController extends TableController
 		</tr>';
 
 		$html_out.= self::$thead_close;
+		
+		$rows = DB::select("
+			select  sum(decode(kddk,'D',nilai,-nilai)) as nilai
+			from d_sawal
+			where thang='".$tahun."' and substr(kdakun,1,3)='111'
+		");
+		
+		$tot_sawal = $rows[0]->nilai;
+		
+		$rows = DB::select("
+			select  a.uraian,
+					decode(a.kddk,'D',a.nilai,a.nilai*-1) as nilai
+			from(
+				select  c.lak,
+						c.lak1,
+						c.uraian,
+						c.kddk,
+						sum(a.nilai) as nilai
+				from(
+					
+					select  decode(a.parent_id,null,
+								decode(substr(a.debet,1,3),'111',a.kredit,a.debet),
+								decode(substr(a.debet,1,3),'111',b.kredit,b.debet)
+							) as kdakun,
+							sum(a.nilai) as nilai
+					from d_trans a
+					left join d_trans b on(a.parent_id=b.id)
+					where a.thang='".session('tahun')."' and a.tgdok<=last_day(to_date('01/".$periode."/".$tahun."','DD/MM/YYYY')) and (substr(a.debet,1,3)='111' or substr(a.kredit,1,3)='111')
+					group by decode(a.parent_id,null,
+								decode(substr(a.debet,1,3),'111',a.kredit,a.debet),
+								decode(substr(a.debet,1,3),'111',b.kredit,b.debet)
+							)
+							
+					union all
+					
+					select  '614400' as kdakun,
+							sum(c.nilai) as nilai
+					from d_trans a
+					left join t_alur b on(a.id_alur=b.id)
+					left join d_trans_akun c on(a.id=c.id_trans)
+					where thang='".$tahun."' and b.neraca1=0 and a.tgdok<=last_day(to_date('01/".$periode."/".$tahun."','DD/MM/YYYY')) and substr(kdakun,1,3)='111' and c.kddk='D'
+
+					union all
+
+					select  '624200' as kdakun,
+							sum(c.nilai) as nilai
+					from d_trans a
+					left join t_alur b on(a.id_alur=b.id)
+					left join d_trans_akun c on(a.id=c.id_trans)
+					where thang='".$tahun."' and b.neraca1=0 and a.tgdok<=last_day(to_date('01/".$periode."/".$tahun."','DD/MM/YYYY')) and substr(kdakun,1,3)='111' and c.kddk='K'
+					
+				) a
+				left join t_akun b on(a.kdakun=b.kdakun)
+				left join t_lak_kelompok c on(b.lak=c.lak and b.lak1=c.lak1)
+				where b.lak='1'
+				group by c.lak,c.lak1,c.uraian,c.kddk
+			) a
+			order by a.lak,a.lak1
+		");
+		
+		$opr = array();
+		$tot_opr = 0;
+		foreach($rows as $row){
+			$opr[] = array($this->nbsp.$row->uraian,$row->nilai,0);
+			$tot_opr += $row->nilai;
+		}
+		
+		$rows = DB::select("
+			select  a.uraian,
+					decode(a.kddk,'D',a.nilai,a.nilai*-1) as nilai
+			from(
+				select  c.lak,
+						c.lak1,
+						c.uraian,
+						c.kddk,
+						sum(a.nilai) as nilai
+				from(
+					
+					select  decode(a.parent_id,null,
+								decode(substr(a.debet,1,3),'111',a.kredit,a.debet),
+								decode(substr(a.debet,1,3),'111',b.kredit,b.debet)
+							) as kdakun,
+							sum(a.nilai) as nilai
+					from d_trans a
+					left join d_trans b on(a.parent_id=b.id)
+					where a.thang='".session('tahun')."' and a.tgdok<=last_day(to_date('01/".$periode."/".$tahun."','DD/MM/YYYY')) and (substr(a.debet,1,3)='111' or substr(a.kredit,1,3)='111')
+					group by decode(a.parent_id,null,
+								decode(substr(a.debet,1,3),'111',a.kredit,a.debet),
+								decode(substr(a.debet,1,3),'111',b.kredit,b.debet)
+							)
+							
+					union all
+					
+					select  '614400' as kdakun,
+							sum(c.nilai) as nilai
+					from d_trans a
+					left join t_alur b on(a.id_alur=b.id)
+					left join d_trans_akun c on(a.id=c.id_trans)
+					where thang='".$tahun."' and b.neraca1=0 and a.tgdok<=last_day(to_date('01/".$periode."/".$tahun."','DD/MM/YYYY')) and substr(kdakun,1,3)='111' and c.kddk='D'
+
+					union all
+
+					select  '624200' as kdakun,
+							sum(c.nilai) as nilai
+					from d_trans a
+					left join t_alur b on(a.id_alur=b.id)
+					left join d_trans_akun c on(a.id=c.id_trans)
+					where thang='".$tahun."' and b.neraca1=0 and a.tgdok<=last_day(to_date('01/".$periode."/".$tahun."','DD/MM/YYYY')) and substr(kdakun,1,3)='111' and c.kddk='K'
+					
+				) a
+				left join t_akun b on(a.kdakun=b.kdakun)
+				left join t_lak_kelompok c on(b.lak=c.lak and b.lak1=c.lak1)
+				where b.lak='3'
+				group by c.lak,c.lak1,c.uraian,c.kddk
+			) a
+			order by a.lak,a.lak1
+		");
+		
+		$inv = array();
+		$tot_inv = 0;
+		foreach($rows as $row){
+			$inv[] = array($this->nbsp.$row->uraian,$row->nilai,0);
+			$tot_inv += $row->nilai;
+		}
+		
+		$rows = DB::select("
+			select  a.uraian,
+					decode(a.kddk,'D',a.nilai,a.nilai*-1) as nilai
+			from(
+				select  c.lak,
+						c.lak1,
+						c.uraian,
+						c.kddk,
+						sum(a.nilai) as nilai
+				from(
+					
+					select  decode(a.parent_id,null,
+								decode(substr(a.debet,1,3),'111',a.kredit,a.debet),
+								decode(substr(a.debet,1,3),'111',b.kredit,b.debet)
+							) as kdakun,
+							sum(a.nilai) as nilai
+					from d_trans a
+					left join d_trans b on(a.parent_id=b.id)
+					where a.thang='".session('tahun')."' and a.tgdok<=last_day(to_date('01/".$periode."/".$tahun."','DD/MM/YYYY')) and (substr(a.debet,1,3)='111' or substr(a.kredit,1,3)='111')
+					group by decode(a.parent_id,null,
+								decode(substr(a.debet,1,3),'111',a.kredit,a.debet),
+								decode(substr(a.debet,1,3),'111',b.kredit,b.debet)
+							)
+							
+					union all
+					
+					select  '614400' as kdakun,
+							sum(c.nilai) as nilai
+					from d_trans a
+					left join t_alur b on(a.id_alur=b.id)
+					left join d_trans_akun c on(a.id=c.id_trans)
+					where thang='".$tahun."' and b.neraca1=0 and a.tgdok<=last_day(to_date('01/".$periode."/".$tahun."','DD/MM/YYYY')) and substr(kdakun,1,3)='111' and c.kddk='D'
+
+					union all
+
+					select  '624200' as kdakun,
+							sum(c.nilai) as nilai
+					from d_trans a
+					left join t_alur b on(a.id_alur=b.id)
+					left join d_trans_akun c on(a.id=c.id_trans)
+					where thang='".$tahun."' and b.neraca1=0 and a.tgdok<=last_day(to_date('01/".$periode."/".$tahun."','DD/MM/YYYY')) and substr(kdakun,1,3)='111' and c.kddk='K'
+					
+				) a
+				left join t_akun b on(a.kdakun=b.kdakun)
+				left join t_lak_kelompok c on(b.lak=c.lak and b.lak1=c.lak1)
+				where b.lak='2'
+				group by c.lak,c.lak1,c.uraian,c.kddk
+			) a
+			order by a.lak,a.lak1
+		");
+		
+		$fnd = array();
+		$tot_fnd = 0;
+		foreach($rows as $row){
+			$fnd[] = array($this->nbsp.$row->uraian,$row->nilai,0);
+			$tot_fnd += $row->nilai;
+		}
+
+		$tot_bersih = $tot_opr + $tot_inv + $tot_fnd;
+		$tot_sakhir = $tot_sawal + $tot_bersih;
 
 		$cfl = array(
 			'Z' => array('&nbsp;', '', ''),
 			'AO' => array('ARUS KAS DARI AKTIVITAS OPERASI ', '', ''),
-			'JAO' => array($this->nbsp.'JUMLAH KAS BERSIH DARI AKTIVITAS OPERASI ', 0, 0),
+			'JAO' => array($this->nbsp.'JUMLAH KAS BERSIH DARI AKTIVITAS OPERASI ', $tot_opr, 0),
 			'AI' => array('ARUS KAS DARI AKTIVITAS INVESTASI ', '', ''),
-			'JAI' => array($this->nbsp.'JUMLAH KAS BERSIH DARI DARI AKTIVITAS INVESTASI ',0, 0),
+			'JAI' => array($this->nbsp.'JUMLAH KAS BERSIH DARI DARI AKTIVITAS INVESTASI ', $tot_inv, 0),
 			'AP' => array('ARUS KAS DARI AKTIVITAS PENDANAAN ', '', ''),
-			'JAP' => array($this->nbsp.'JUMLAH KAS BERSIH DARI DARI AKTIVITAS PENDANAAN ',0, 0),
-			'NT' => array('KENAIKAN (PENURUNAN) BERSIH KAS DAN SETARA KAS ', 0, 0),
-			'KAW' => array('KAS DAN SETARA KAS PADA AWAL PERIODE ', 0, 0),
-			'KAK' => array('KAS DAN SETARA KAS PADA AKHIR PERIODE ', 0, 0),
-		);
-
-		$opr = array(
-			'MDB' => array($this->nbsp.'Penerimaan dari Pengembangan Lingkungan', 0, 0),
-			'MPK' => array($this->nbsp.'Penerimaan dari Pengelolaan Aktiva', 0, 0),
-			'MPJ' => array($this->nbsp.'Penerimaan dari Jasa', 0, 0),
-			'MPL' => array($this->nbsp.'Penerimaan Lainnya', 0, 0),
-			'KBO' => array($this->nbsp.'Pembayaran Biaya Operasional', 0, 0),
-			'KBP' => array($this->nbsp.'Pembayaran Biaya Pemasaan, Kantor, dan Pemeliharaan Umum', 0, 0),
-			'KBJ' => array($this->nbsp.'Pembayaran Biaya Jasa Produksi', 0, 0),
-			'KDS' => array($this->nbsp.'Pembayaran Dana Pensiun, THT, Pendidikan, dan Sosial', 0, 0),
-			'KDG' => array($this->nbsp.'Pembayaran kepada Pegawai', 0, 0),
-		);
-
-		$inv = array(
-			'MDE' => array($this->nbsp.'Penerimaan Dividen dari entitas asosiasi', 0, 0),
-			'MIV' => array($this->nbsp.'Penempatan Investasi Ventura Bersama', 0, 0),
-			'MAR' => array($this->nbsp.'Penambahan Aset Real Estate', 0, 0),
-			'MPP' => array($this->nbsp.'Penempatan Properti Investasi', 0, 0),
-			'MPA' => array($this->nbsp.'Perolehan Aset Tetap', 0, 0),
-			'MPM' => array($this->nbsp.'Penempatan Modal pada entitas asosiasi', 0, 0),
-		);
-
-		$fnd = array(
-			'PMD' => array($this->nbsp.'Penyertaan Modal Daerah/Pinjaman',0 ,0),
-			'PAD' => array($this->nbsp.'Pembayaran PAD',0 ,0),
+			'JAP' => array($this->nbsp.'JUMLAH KAS BERSIH DARI DARI AKTIVITAS PENDANAAN ', $tot_fnd, 0),
+			'NT' => array('KENAIKAN (PENURUNAN) BERSIH KAS DAN SETARA KAS ', $tot_bersih, 0),
+			'KAW' => array('KAS DAN SETARA KAS PADA AWAL PERIODE ', $tot_sawal, 0),
+			'KAK' => array('KAS DAN SETARA KAS PADA AKHIR PERIODE ', $tot_sakhir, 0),
 		);
 
 		$html_out.= self::$tbody_open;
@@ -525,31 +685,34 @@ class LaporanKeuanganController extends TableController
 		$html_out.= self::rowContent($cfl['Z']);
 		
 		$html_out.= self::rowContent($cfl['AO']);
-		$html_out.= self::rowContent($opr['MDB']);
-		$html_out.= self::rowContent($opr['MPK']);
-		$html_out.= self::rowContent($opr['MPJ']);
-		$html_out.= self::rowContent($opr['MPL']);
-		$html_out.= self::rowContent($opr['KBO']);
-		$html_out.= self::rowContent($opr['KBP']);
-		$html_out.= self::rowContent($opr['KBJ']);
-		$html_out.= self::rowContent($opr['KDS']);
-		$html_out.= self::rowContent($opr['KDG']);
+		
+		//isi konten operasi
+		for($i=0;$i<count($opr);$i++){
+			$html_out.= self::rowContent($opr[$i]);
+		}
+		
 		$html_out.= self::rowContent($cfl['JAO']);
 		$html_out.= self::rowContent($cfl['Z']);
 		
 		$html_out.= self::rowContent($cfl['AI']);
-		$html_out.= self::rowContent($inv['MDE']);
-		$html_out.= self::rowContent($inv['MIV']);
-		$html_out.= self::rowContent($inv['MAR']);
-		$html_out.= self::rowContent($inv['MPP']);
-		$html_out.= self::rowContent($inv['MPA']);
-		$html_out.= self::rowContent($inv['MPM']);
+		
+		$i = 0;
+		//isi konten investasi
+		for($i=0;$i<count($inv);$i++){
+			$html_out.= self::rowContent($inv[$i]);
+		}
+		
 		$html_out.= self::rowContent($cfl['JAI']);
 		$html_out.= self::rowContent($cfl['Z']);
 		
 		$html_out.= self::rowContent($cfl['AP']);
-		$html_out.= self::rowContent($fnd['PMD']);
-		$html_out.= self::rowContent($fnd['PAD']);
+		
+		$i = 0;
+		//isi konten pendanaan
+		for($i=0;$i<count($fnd);$i++){
+			$html_out.= self::rowContent($fnd[$i]);
+		}
+		
 		$html_out.= self::rowContent($cfl['JAP']);
 		$html_out.= self::rowContent($cfl['Z']);
 		$html_out.= self::rowContent($cfl['NT']);

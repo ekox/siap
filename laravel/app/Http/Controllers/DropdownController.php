@@ -498,6 +498,7 @@ class DropdownController extends Controller {
 			select	kdakun,
 					nmakun
 			from t_akun
+			where lvl=6
 			order by kdakun asc
 		");
 		
