@@ -158,7 +158,7 @@ class TagihanRekamController extends Controller {
 					a.kdunit,
 					a.id_alur,
 					a.kdtran,
-					a.id_proyek||'-'||a.id_penerima as id_proyek,
+					a.id_proyek,
 					a.id_penerima as id_pelanggan,
 					a.nodok as nopks,
 					to_char(a.tgdok,'yyyy-mm-dd') as tgpks,

@@ -562,7 +562,6 @@
 						jQuery('.val_num').mask('000,000,000,000,000', {reverse: true});
 					});
 					
-					jQuery('#id_proyek').html(result.dropdown_p).trigger('chosen:updated');
 					jQuery('#debet').html(result.dropdown_d).trigger('chosen:updated');
 					jQuery('#kredit').html(result.dropdown_k).trigger('chosen:updated');
 					
@@ -571,7 +570,7 @@
 					jQuery('#x').val(result.x);
 					jQuery('#kdunit').val(result.message.kdunit);
 					jQuery('#id_alur').val(result.message.id_alur).prop('disabled',true);
-					jQuery('#id_proyek').val(result.message.id_proyek+'-'+result.message.id_pelanggan);
+					jQuery('#id_proyek').val(result.message.id_proyek);
 					jQuery('#id_pelanggan').val(result.message.id_pelanggan);
 					jQuery('#nopks').val(result.message.nopks);
 					jQuery('#tgpks').val(result.message.tgpks);
