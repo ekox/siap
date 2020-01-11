@@ -65,6 +65,24 @@ Route::group(['middleware' => 'auth'], function(){
 			
 		});
 		
+		Route::group(['prefix' => 'proyek'], function () {
+			
+			Route::get('', 'AnggaranProyekController@index');
+			Route::get('/pilih/{param}', 'AnggaranProyekController@pilih')->middleware('role:00');
+			Route::post('', 'AnggaranProyekController@simpan')->middleware('role:00');
+			Route::post('/hapus', 'AnggaranProyekController@hapus')->middleware('role:00');
+			
+		});
+		
+		Route::group(['prefix' => 'rencana'], function () {
+			
+			Route::get('', 'AnggaranRencanaController@index');
+			Route::get('/pilih/{param}', 'AnggaranRencanaController@pilih')->middleware('role:00');
+			Route::post('', 'AnggaranRencanaController@simpan')->middleware('role:00');
+			Route::post('/hapus', 'AnggaranRencanaController@hapus')->middleware('role:00');
+			
+		});
+		
 	});
 	
 	//tagihan
@@ -415,9 +433,11 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get('/akun/kredit/{param}', 'DropdownController@akun_kredit');
 		Route::get('/akun/belanja', 'DropdownController@akun_belanja');
 		Route::get('/periode', 'DropdownController@periode');
+		Route::get('/triwulan', 'DropdownController@triwulan');
 		Route::get('/tahun', 'DropdownController@tahun');
 		Route::get('/proyek', 'DropdownController@proyek');
 		Route::get('/nourut/{param}', 'DropdownController@nourut');
+		Route::get('/jenis-lap', 'DropdownController@jenisLap');
 		
 	});
 	

@@ -5,41 +5,23 @@ use Session;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class AnggaranPaguUnitController extends Controller {
+class AnggaranProyekController extends Controller {
 
 	public function index(Request $request)
 	{
-		$where = "";
-		if(session('kdlevel')=='04'||session('kdlevel')=='05'){
-			$where = " and a.kdunit='".session('kdunit')."' ";
-		}
-		elseif(session('kdlevel')=='06'||session('kdlevel')=='07'||session('kdlevel')=='08'||session('kdlevel')=='11'){
-			$where = " and a.kdunit='".substr(session('kdunit'),0,4)."' ";
-		}
-		
-		$aColumns = array('id','nmunit','kdakun','pagu','realisasi','sisa');
+		$aColumns = array('id','nmproyek','kdakun','nmakun','nilai');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
 		/* DB table to use */
 		$sTable = "select  a.id,
-							c.nmunit,
+							b.nmproyek,
 							a.kdakun,
-							a.nilai as pagu,
-							nvl(d.nilai,0) as realisasi,
-							a.nilai-nvl(d.nilai,0) as sisa
-					from d_pagu a
-					left outer join t_unit c on(a.kdunit=c.kdunit)
-					left outer join(
-						select  a.thang,
-								a.kdunit,
-								a.debet as kdakun,
-								sum(a.nilai) as nilai
-						from d_trans a
-						left join t_alur b on(a.id_alur=b.id)
-						where b.menu=4
-						group by a.thang,a.kdunit,a.debet
-					) d on(a.thang=d.thang and a.kdunit=d.kdunit and a.kdakun=d.kdakun)
-					where a.thang='".session('tahun')."' ".$where."
+							c.nmakun,
+							a.nilai
+					from d_pagu_proyek a
+					left join t_proyek b on(a.id_proyek=b.id)
+					left join t_akun c on(a.kdakun=c.kdakun)
+					where a.thang='".session('tahun')."'
 					order by a.id desc";
 		
 		/*
@@ -85,7 +67,9 @@ class AnggaranPaguUnitController extends Controller {
 		if(isset($_GET['sSearch'])){
 			$sSearch=$_GET['sSearch'];
 			if((isset($sSearch))&&($sSearch!='')){
-				$sWhere=" where lower(nmunit) like lower('".$sSearch."%') or lower(nmunit) like lower('%".$sSearch."%')";
+				$sWhere=" where lower(nmproyek) like lower('".$sSearch."%') or lower(nmproyek) like lower('%".$sSearch."%') or
+								lower(kdakun) like lower('".$sSearch."%') or lower(kdakun) like lower('%".$sSearch."%') or
+								lower(nmakun) like lower('".$sSearch."%') or lower(nmakun) like lower('%".$sSearch."%') ";
 			}
 		}
 		
@@ -144,11 +128,10 @@ class AnggaranPaguUnitController extends Controller {
 			
 			$output['aaData'][] = array(
 				$row->no,
-				$row->nmunit,
+				$row->nmproyek,
 				$row->kdakun,
-				'<div style="text-align:right;">'.number_format($row->pagu).'</div>',
-				'<div style="text-align:right;">'.number_format($row->realisasi).'</div>',
-				'<div style="text-align:right;">'.number_format($row->sisa).'</div>',
+				$row->nmakun,
+				'<div style="text-align:right;">'.number_format($row->nilai).'</div>',
 				$aksi
 			);
 		}
@@ -160,11 +143,10 @@ class AnggaranPaguUnitController extends Controller {
 	{
 		try{
 			$rows = DB::select("
-				select  id,
-						kdunit,
-						nilai,
-						kdakun
-				from d_pagu a
+				select  a.*,
+						b.id_penerima
+				from d_pagu_proyek a
+				left join t_proyek b on(a.id_proyek=b.id)
 				where a.id=?
 			",[
 				$id
@@ -185,23 +167,27 @@ class AnggaranPaguUnitController extends Controller {
 		try{
 			if($request->input('inp-rekambaru')=='1'){
 				
+				$arr_proyek = explode('-', $request->input('id_proyek'));
+				$id_proyek = $arr_proyek[0];
+				
 				$rows = DB::select("
 					SELECT	count(*) AS jml
-					from d_pagu
-					where thang=? and kdunit=? and kdakun=?
+					from d_pagu_proyek
+					where thang=? and id_proyek=? and kdakun=?
 				",[
 					session('tahun'),
-					$request->input('kdunit'),
-					$request->input('kdakun'),
+					$id_proyek,
+					$request->input('kdakun')
 				]);
 				
 				if($rows[0]->jml==0){
 					
-					$insert = DB::table('d_pagu')->insert([
+					$insert = DB::table('d_pagu_proyek')->insert([
 						'thang' => session('tahun'),
-						'kdunit' => $request->input('kdunit'),
+						'id_proyek' => $id_proyek,
 						'kdakun' => $request->input('kdakun'),
-						'nilai' => str_replace(",", "", $request->input('nilai'))
+						'nilai' => str_replace(",", "", $request->input('nilai')),
+						'id_user' => session('id_user')
 					]);
 					
 					if($insert){
@@ -220,11 +206,14 @@ class AnggaranPaguUnitController extends Controller {
 			else{
 				
 				$update = DB::update("
-					update d_pagu
-					set nilai=?
+					update d_pagu_proyek
+					set nilai=?,
+						id_user=?,
+						updated_at=sysdate
 					where id=?
 				",[
 					str_replace(",", "", $request->input('nilai')),
+					session('id_user'),
 					$request->input('inp-id')
 				]);
 				
@@ -246,7 +235,7 @@ class AnggaranPaguUnitController extends Controller {
 	{
 		try{
 			$delete = DB::delete("
-				delete from d_pagu
+				delete from d_pagu_proyek
 				where id=?
 			",[
 				$request->input('id')
@@ -257,117 +246,6 @@ class AnggaranPaguUnitController extends Controller {
 			}
 			else {
 				return 'Proses hapus gagal. Hubungi Administrator.';
-			}
-			
-		}
-		catch(\Exception $e){
-			return 'Terdapat kesalahan lainnya, hubungi Administrator!';
-		}		
-	}
-	
-	public function sisaPagu()
-	{
-		$id_output = "";
-		if(isset($_GET['id_output'])){
-			$id_output = " and id_output='".$_GET['id_output']."' ";
-		}
-		
-		$kdakun = "";
-		if(isset($_GET['kdakun'])){
-			$kdakun = " and kdakun='".$_GET['kdakun']."' ";
-		}
-		
-		$kdakun1 = "";
-		if(isset($_GET['kdakun'])){
-			$kdakun1 = " and debet='".$_GET['kdakun']."' ";
-		}
-		
-		$rows = DB::select("
-			select  nvl(a.nilai,0) as pagu,
-					nvl(b.nilai,0) as realisasi,
-					nvl(a.nilai,0)-nvl(b.nilai,0) as sisa
-			from(
-				select  sum(nilai) as nilai
-				from d_pagu
-				where kdunit=? and thang=? ".$id_output." ".$kdakun."
-			) a,
-			(
-				select  sum(nilai) as nilai
-				from d_trans
-				where kdunit=? and thang=? ".$id_output." ".$kdakun1."
-			) b
-		",[
-			substr(session('kdunit'),0,4),
-			session('tahun'),
-			substr(session('kdunit'),0,4),
-			session('tahun')
-		]);
-		
-		return response()->json($rows[0]);
-	}
-	
-	public function revisike(Request $request)
-	{
-		try{
-			$rows = DB::select("
-				select  nvl(max(revisike),0)+1 as revisike
-				from d_pagu
-				where thang=?
-			",[
-				session('tahun')
-			]);
-			
-			if(count($rows)>0){
-				return response()->json($rows[0]);
-			}
-			
-		}
-		catch(\Exception $e){
-			return 'Kesalahan lainnya!';
-		}
-	}
-	
-	public function simpanRevisi(Request $request)
-	{
-		try{
-			DB::beginTransaction();
-			
-			$insert = DB::insert("
-				insert into h_pagu(kdunit,thang,nodok,tgdok,revisike,kdakun,nilai,created_at,updated_at)
-				select  kdunit,
-						thang,
-						nodok,
-						tgdok,
-						nvl(revisike,0) as revisike,
-						kdakun,
-						nilai,
-						created_at,
-						updated_at
-				from d_pagu
-				where thang=?
-			",[
-				session('tahun')
-			]);
-			
-			$update = DB::update("
-				update d_pagu
-				set nodok=?,
-					tgdok=to_date(?,'yyyy-mm-dd'),
-					revisike=?
-				where thang=?
-			",[
-				$request->input('nodok'),
-				$request->input('tgdok'),
-				$request->input('revisike'),
-				session('tahun')
-			]);
-			
-			if($update) {
-				DB::commit();
-				return 'success';
-			}
-			else {
-				return 'Proses simpan revisi gagal. Hubungi Administrator.';
 			}
 			
 		}

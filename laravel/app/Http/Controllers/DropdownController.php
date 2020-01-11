@@ -461,6 +461,7 @@ class DropdownController extends Controller {
 		$rows = DB::select("
 			select	*
 			from t_akun
+			where lvl=6
 			order by kdakun asc
 		");
 		
@@ -588,6 +589,23 @@ class DropdownController extends Controller {
 		return $data;
 		
 	}
+	
+	public function triwulan()
+	{
+		$rows = DB::select("
+			select	*
+			from t_triwulan
+			order by kdtriwulan asc
+		");
+		
+		$data = '<option value="" style="display:none;">Pilih Data</option>';
+		foreach($rows as $row){
+			$data .= '<option value="'.$row->kdtriwulan.'"> '.$row->nmtriwulan.'</option>';
+		}
+		
+		return $data;
+		
+	}
 
 	/**
 	 * description 
@@ -601,6 +619,23 @@ class DropdownController extends Controller {
 			$html_out.= '<option value="'.$row->tahun.'">'.$row->tahun.'</option>';
 		}
 		return $html_out;
+	}
+	
+	public function jenisLap()
+	{
+		$rows = DB::select("
+			select	*
+			from t_realisasi
+			order by id asc
+		");
+		
+		$data = '<option value="" style="display:none;">Pilih Data</option>';
+		foreach($rows as $row){
+			$data .= '<option value="'.$row->url.'"> '.$row->uraian.'</option>';
+		}
+		
+		return $data;
+		
 	}
 	
 	public function proyek()

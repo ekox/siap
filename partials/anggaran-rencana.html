@@ -9,7 +9,7 @@
 	
 	<div class="row">
         <div class="col-sm-12">
-            <div class="content-header">Anggaran/ Pagu per Unit</div>
+            <div class="content-header">Anggaran/ Rencana Triwulanan Per Proyek</div>
         </div>
     </div>
 	
@@ -27,27 +27,48 @@
 							<input type="hidden" id="_token" name="_token">
 							<div class="form-body">
 			                    <div class="form-group row">
-	                            	<label class="col-md-3 label-control" for="kdunit">Divisi </label>
+	                            	<label class="col-md-3 label-control" for="kdunit">Proyek </label>
 		                            <div class="col-md-7">
-		                            	<select id="kdunit" name="kdunit" class="form-control chosen">
+		                            	<select id="id_proyek" name="id_proyek" class="form-control chosen">
 										</select>
 		                            </div>
-									<label id="warning-kdunit" class="col-md-2 label-control label-warning warning">required!</label>
+									<label id="warning-id_proyek" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
-	                            	<label class="col-md-3 label-control" for="id_output">Akun </label>
-									<div class="col-md-7">
-	                            		<select id="kdakun" name="kdakun" class="form-control chosen">
+	                            	<label class="col-md-3 label-control" for="kdunit">Akun </label>
+		                            <div class="col-md-7">
+		                            	<select id="kdakun" name="kdakun" class="form-control chosen">
 										</select>
-	                            	</div>
+		                            </div>
 									<label id="warning-kdakun" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
-	                            	<label class="col-md-3 label-control" for="nilai">Nilai </label>
-									<div class="col-md-7">
-	                            		<input type="text" id="nilai" name="nilai" class="form-control val_num" style="text-align:right;" maxlength="19">
+	                            	<label class="col-md-3 label-control" for="nilai">Triwulan I </label>
+									<div class="col-md-3">
+	                            		<input type="text" id="nilai03" name="nilai03" class="form-control val_num" style="text-align:right;" maxlength="19">
 	                            	</div>
-									<label id="warning-nilai" class="col-md-2 label-control label-warning warning">required!</label>
+									<label id="warning-nilai03" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-3 label-control" for="nilai">Triwulan II </label>
+									<div class="col-md-3">
+	                            		<input type="text" id="nilai06" name="nilai06" class="form-control val_num" style="text-align:right;" maxlength="19">
+	                            	</div>
+									<label id="warning-nilai06" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-3 label-control" for="nilai">Triwulan III </label>
+									<div class="col-md-3">
+	                            		<input type="text" id="nilai09" name="nilai09" class="form-control val_num" style="text-align:right;" maxlength="19">
+	                            	</div>
+									<label id="warning-nilai09" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-3 label-control" for="nilai">Triwulan IV </label>
+									<div class="col-md-3">
+	                            		<input type="text" id="nilai12" name="nilai12" class="form-control val_num" style="text-align:right;" maxlength="19">
+	                            	</div>
+									<label id="warning-nilai12" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 							</div>
 	                        <div class="form-actions">
@@ -70,61 +91,6 @@
 	    </div>
 	</div>
 	
-	<div class="row" id="div-form1" style="display:none;">
-	    <div class="col-md-12">
-	        <div class="card">
-	            <div class="card-header">
-	                <h4 class="card-title" id="horz-layout-basic">Form</h4>
-	            </div>
-	            <div class="card-body">
-	                <div class="px-3">
-	                    <form id="form-ruh1" class="form form-horizontal">
-	                    	<input type="hidden" id="inp-rekambaru1" name="inp-rekambaru">
-							<input type="hidden" id="inp-id1" name="inp-id">
-							<input type="hidden" id="_token1" name="_token">
-							<div class="form-body">
-								<div class="form-group row">
-	                            	<label class="col-md-3 label-control" for="nilai">Revisi Ke- </label>
-									<div class="col-md-7">
-	                            		<input type="text" id="revisike" name="revisike" class="form-control val_num" readonly>
-	                            	</div>
-									<label id="warning-revisike" class="col-md-2 label-control label-warning warning">required!</label>
-		                        </div>
-								<div class="form-group row">
-	                            	<label class="col-md-3 label-control" for="nilai">Nomor Dokumen </label>
-									<div class="col-md-7">
-	                            		<input type="text" id="nodok" name="nodok" class="form-control">
-	                            	</div>
-									<label id="warning-nodok" class="col-md-2 label-control label-warning warning">required!</label>
-		                        </div>
-								<div class="form-group row">
-	                            	<label class="col-md-3 label-control" for="nilai">Tanggal Dokumen </label>
-									<div class="col-md-7">
-	                            		<input type="date" id="tgdok" name="tgdok" class="form-control">
-	                            	</div>
-									<label id="warning-tgdok" class="col-md-2 label-control label-warning warning">required!</label>
-		                        </div>
-							</div>
-	                        <div class="form-actions">
-	                            <div class="form-group row">
-		                            <label class="col-md-3 label-control" for="projectinput4"></label>
-		                            <div class="col-md-7">
-		                            	<button type="button" class="btn btn-raised btn-warning mr-1 batal">
-											<i class="ft-x"></i> Batal
-										</button>
-										<button id="simpan1" type="button" class="btn btn-raised btn-primary">
-											<i class="fa fa-check-square-o"></i> Simpan
-										</button>
-		                            </div>
-		                        </div>
-	                        </div>
-	                    </form>
-	                </div>
-	            </div>
-	        </div>
-	    </div>
-	</div>
-	
 	<div class="row" id="div-tabel">
         <div class="col-12">
             <div class="card">
@@ -132,8 +98,7 @@
 					<div class="clearfix">
 						<h4 class="card-title float-left">Data</h4>
 						<div class="actions float-right">
-							<button type="button" class="btn btn-sm btn-raised btn-icon btn-success" id="tambah1" title="Tambah Revisi" style="display:none;"><i class="fa fa-check"></i></button>
-							<button type="button" class="btn btn-sm btn-raised btn-icon btn-danger" id="tambah" title="Tambah Pagu" style="display:none;"><i class="fa fa-plus"></i></button>
+							<button type="button" class="btn btn-sm btn-raised btn-icon btn-danger" id="tambah" title="Tambah data" style="display:none;"><i class="fa fa-plus"></i></button>
 						</div>
 					</div>
                 </div>
@@ -144,11 +109,13 @@
 								<thead>
 									<tr>
 										<th>No</th>
-										<th>Divisi</th>
-										<th>Akun</th>
-										<th>Pagu</th>
-										<th>Realisasi</th>
-										<th>Sisa</th>
+										<th>Proyek</th>
+										<th>Kode Akun</th>
+										<th>Nama Akun</th>
+										<th>Triwulan I</th>
+										<th>Triwulan II</th>
+										<th>Triwulan III</th>
+										<th>Triwulan IV</th>
 										<th>Aksi</th>
 									</tr>
 								</thead>
@@ -186,8 +153,8 @@
 		//aktivasi chosen
 		jQuery('.chosen').chosen();
 		
-		jQuery.get('dropdown/unit/4', function(result){
-			jQuery('#kdunit').html(result).trigger('chosen:updated');
+		jQuery.get('dropdown/proyek', function(result){
+			jQuery('#id_proyek').html(result).trigger('chosen:updated');
 		});
 		
 		jQuery.get('dropdown/akun/html/all', function(result){
@@ -196,16 +163,16 @@
 		
 		jQuery.get('cek/level', function(result){
 			if(result=='00'){ //admin
-				jQuery('#tambah,#tambah1').show();
+				jQuery('#tambah').show();
 			}
 		});
 		
 		//tampilan default
 		function form_default() {
 			jQuery('input,textarea,select').val('');
-			jQuery('.warning, #div-form, #div-form1').hide();
+			jQuery('.warning, #div-form').hide();
 			jQuery('#div-tabel').show();
-			jQuery('#kdunit,#kdakun').prop('disabled', false);
+			jQuery('#id_proyek,#kdakun').prop('disabled', false);
 			jQuery('#simpan').prop('disabled', false);
 			jQuery('.chosen').trigger('chosen:updated');
 		}
@@ -218,16 +185,6 @@
 			jQuery('#inp-rekambaru').val('1');
 			jQuery('#div-form').show();
 			jQuery('#div-tabel').hide();
-		});
-		
-		//klik tambah
-		jQuery('#tambah1').click(function(){
-			jQuery('#inp-rekambaru1').val('1');
-			jQuery('#div-form1').show();
-			jQuery('#div-tabel').hide();
-			jQuery.getJSON('anggaran/pagu/unit/revisike', function(result){
-				jQuery('#revisike').val(result.revisike);
-			});
 		});
 		
 		//data tabel
@@ -259,7 +216,7 @@
 			},
 			aaSorting: [],
 			bServerSide: true,
-			sAjaxSource: "anggaran/pagu/unit"
+			sAjaxSource: "anggaran/rencana"
 		});
 		
 		//validasi isian form
@@ -278,13 +235,16 @@
 		//cari data user yang akan di edit berdasarkan id user
 		function cari_data(id){
 			jQuery('.chosen').val('').trigger('chosen:updated');
-			jQuery.getJSON('anggaran/pagu/unit/pilih/'+id, function(result){
+			jQuery.getJSON('anggaran/rencana/pilih/'+id, function(result){
 				if(result) {
 					jQuery('#inp-id').val(id);
 					jQuery('#inp-rekambaru').val('0');
-					jQuery('#kdunit').val(result.kdunit).prop('disabled', true);
-					jQuery('#nilai').val(digit_grouping(result.nilai));
+					jQuery('#id_proyek').val(result.id_proyek+'-'+result.id_penerima).prop('disabled', true);
 					jQuery('#kdakun').val(result.kdakun).prop('disabled', true);
+					jQuery('#nilai03').val(digit_grouping(result.nilai03));
+					jQuery('#nilai06').val(digit_grouping(result.nilai06));
+					jQuery('#nilai09').val(digit_grouping(result.nilai09));
+					jQuery('#nilai12').val(digit_grouping(result.nilai12));
 					jQuery('.chosen').trigger('chosen:updated');
 				}
 			});
@@ -307,62 +267,14 @@
 		jQuery('#simpan').click(function(){
 			jQuery(this).html('<span class="loading"><i class="fa fa-refresh"></i> Loading.....</span>');
 			jQuery(this).prop('disabled',true);
-			var next = form_valid('kdunit,nilai,kdakun');
+			var next = form_valid('id_proyek,kdakun');
 			if(next==true){
 				jQuery.get('token', function(token){
 					if(token){
 						jQuery('#_token').val(token);
 						var data = jQuery('#form-ruh').serialize();
 						jQuery.ajax({
-							url: 'anggaran/pagu/unit',
-							method: 'POST',
-							data: data,
-							success: function(result){
-								if(result=='success') {
-									jQuery('#simpan').html('<i class="fa fa-check-square-o"></i> Simpan');
-									jQuery('#simpan').prop('disabled',false);
-									alertify.log('Proses simpan berhasil');
-									form_default();
-									table.ajax.reload();
-								} else {
-									jQuery('#simpan').html('<i class="fa fa-check-square-o"></i> Simpan');
-									jQuery('#simpan').prop('disabled',false);
-									alertify.log(result);
-								} 
-							},
-							error: function(result){
-								jQuery('#simpan').html('<i class="fa fa-check-square-o"></i> Simpan');
-								jQuery('#simpan').prop('disabled',false);
-								alertify.log('Data tidak dapat disimpan. Koneksi pada aplikasi/database terputus atau data sudah pernah direkam atau format data salah. Hubungi Administrator.');
-							}
-						})
-					} 
-					else{
-						jQuery('#simpan').html('<i class="fa fa-check-square-o"></i> Simpan');
-						jQuery('#simpan').prop('disabled',false);
-						alertify.log('Sesi telah habis, silahkan refresh browser Anda!');
-					}
-				});
-			}
-			else{
-				jQuery('#simpan').html('<i class="fa fa-check-square-o"></i> Simpan');
-				jQuery('#simpan').prop('disabled',false);
-				alertify.log('Data tidak dapat dikosongkan!');
-			}
-		});
-		
-		//klik simpan
-		jQuery('#simpan1').click(function(){
-			jQuery(this).html('<span class="loading"><i class="fa fa-refresh"></i> Loading.....</span>');
-			jQuery(this).prop('disabled',true);
-			var next = form_valid('revisike,nodok,tgdok');
-			if(next==true){
-				jQuery.get('token', function(token){
-					if(token){
-						jQuery('#_token1').val(token);
-						var data = jQuery('#form-ruh1').serialize();
-						jQuery.ajax({
-							url: 'anggaran/pagu/unit/revisi',
+							url: 'anggaran/rencana',
 							method: 'POST',
 							data: data,
 							success: function(result){
@@ -407,7 +319,7 @@
 					jQuery.get('token', function(token){
 						if(token) {
 							jQuery.ajax({
-								url:'anggaran/pagu/unit/hapus',
+								url:'anggaran/rencana/hapus',
 								method:'POST',
 								data:{
 									_token:token, 

@@ -65,7 +65,7 @@
 		</tr>
 
 		<tr>
-			<td class="bl bt plr3 al">Beban Lain-lain</td>
+			<td class="bl bt plr3 al">Pendapatan Lain-lain</td>
 			<td class="bl bt plr3 ar">0</td>
 			<td class="bl bt plr3 ar">0</td>
 			<td class="bl bt plr3 ar">0</td>
