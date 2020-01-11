@@ -648,7 +648,7 @@ class DropdownController extends Controller {
 		
 		$data = '<option value="" style="display:none;">Pilih Data</option>';
 		foreach($rows as $row){
-			$data .= '<option value="'.$row->id.'-'.$row->id_penerima.'"> '.$row->nmproyek.' : Rp.'.number_format($row->nilai).',-</option>';
+			$data .= '<option value="'.$row->id.'"> '.$row->nmproyek.'</option>';
 		}
 		
 		return $data;

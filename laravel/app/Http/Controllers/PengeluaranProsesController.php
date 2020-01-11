@@ -314,6 +314,7 @@ class PengeluaranProsesController extends Controller {
 					a.kdunit,
 					a.thang,
 					c.nmunit,
+					l.nmproyek,
 					d.nama as nmpelanggan,
 					k.nmtrans,
 					a.nodok as nopks,
@@ -335,6 +336,7 @@ class PengeluaranProsesController extends Controller {
 			left outer join t_trans k on(a.kdtran=k.id)
 			left outer join t_akun f on(a.debet=f.kdakun)
 			left outer join t_akun i on(a.kredit=i.kdakun)
+			left outer join t_proyek l on(a.id_proyek=l.id)
 			left outer join(
 				select	a.id_trans,
 						sum(decode(b.kddk,'D',a.nilai,-a.nilai)) as nilai
@@ -402,29 +404,26 @@ class PengeluaranProsesController extends Controller {
 				from(
 					select  substr(a.kdunit,1,4) as kdunit,
 							a.thang,
-							a.id_output,
 							a.kdakun,
 							sum(a.nilai) as pagu
 					from d_pagu a
-					group by substr(a.kdunit,1,4),a.thang,a.id_output,a.kdakun
+					group by substr(a.kdunit,1,4),a.thang,a.kdakun
 				) a
 				left join(
 					select  substr(b.kdunit,1,4) as kdunit,
 							b.thang,
-							b.id_output,
 							a.kdakun,
 							sum(a.nilai) as nilai
 					from d_trans_akun a
 					left join d_trans b on(a.id_trans=b.id)
 					where a.kddk='D' and b.id<>?
-					group by substr(b.kdunit,1,4),b.thang,b.id_output,a.kdakun
-				) b on(a.kdunit=b.kdunit and a.thang=b.thang and a.id_output=b.id_output and a.kdakun=b.kdakun)
-				where a.kdunit=? and a.thang=? and a.id_output=? and a.kdakun=?
+					group by substr(b.kdunit,1,4),b.thang,a.kdakun
+				) b on(a.kdunit=b.kdunit and a.thang=b.thang and a.kdakun=b.kdakun)
+				where a.kdunit=? and a.thang=? and a.kdakun=?
 			",[
 				$id,
 				substr($detil->kdunit,0,4),
 				$detil->thang,
-				$detil->id_output,
 				$detil->kdakun
 			]);
 			

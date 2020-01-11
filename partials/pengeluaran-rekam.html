@@ -35,14 +35,14 @@
 	                            	</div>
 									<button id="cari-nourut" class="btn btn-xs btn-raised btn-warning mr-1"><i class="fa fa-refresh"></i></button>
 		                        </div>
-								<div class="form-group row">
+								<!--<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="id_output">Jenis Program </label>
 									<div class="col-md-7">
 	                            		<select id="id_output" name="id_output" class="form-control chosen">
 										</select>
 	                            	</div>
 									<label id="warning-id_output" class="col-md-2 label-control label-warning warning">required!</label>
-		                        </div>
+		                        </div>-->
 								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="id_alur">Jenis Kegiatan </label>
 									<div class="col-md-7">
@@ -58,6 +58,14 @@
 										</select>
 	                            	</div>
 									<label id="warning-kdtran" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="id_proyek">Proyek </label>
+									<div class="col-md-7">
+	                            		<select id="id_proyek" name="id_proyek" class="form-control chosen">
+										</select>
+	                            	</div>
+									<label id="warning-id_proyek" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row" id="div-tagihan" style="display:none;">
 	                            	<label class="col-md-2 label-control" for="kdtran">SPJ UMK </label>
@@ -353,6 +361,10 @@
 		//aktivasi chosen
 		jQuery('.chosen').chosen();
 		
+		jQuery.get('dropdown/proyek', function(result){
+			jQuery('#id_proyek').html(result).trigger('chosen:updated');
+		});
+		
 		jQuery.get('dropdown/alur-pengeluaran', function(result){
 			jQuery('#id_alur').html(result).trigger('chosen:updated');
 		});
@@ -551,7 +563,6 @@
 					if(result.message.parent_id!==''){
 						jQuery('#parent_id').html(result.tagihan).trigger('chosen:updated');
 						jQuery('#div-tagihan').show();
-						jQuery('#id_pelanggan').prop('disabled', true).trigger('chosen:updated');
 					}
 					
 					jQuery('#tabel-rincian').html('');
@@ -583,7 +594,7 @@
 					jQuery('#id_alur').val(result.message.id_alur);
 					jQuery('#nourut').val(result.message.nourut);
 					jQuery('#id_pelanggan').val(result.message.id_pelanggan);
-					jQuery('#id_output').val(result.message.id_output);
+					jQuery('#id_proyek').val(result.message.id_proyek);
 					jQuery('#nopks').val(result.message.nopks);
 					jQuery('#tgpks').val(result.message.tgpks);
 					jQuery('#tgjtempo').val(result.message.tgjtempo);
@@ -626,7 +637,7 @@
 			jQuery(this).html('<span class="loading"><i class="fa fa-refresh"></i> Loading.....</span>');
 			jQuery(this).prop('disabled',true);
 			jQuery('#id_pelanggan,#kredit').prop('disabled', false).trigger('chosen:updated');
-			var next = form_valid('nourut,kdunit,id_alur,id_output,id_pelanggan,kdtran,nopks,tgpks,uraian,tgjtempo,nilai,debet,kredit');
+			var next = form_valid('nourut,kdunit,id_alur,id_pelanggan,kdtran,nopks,tgpks,uraian,tgjtempo,nilai,debet,kredit');
 			if(next==true){
 				jQuery.get('token', function(token){
 					if(token){
