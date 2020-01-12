@@ -43,12 +43,12 @@
 		@foreach($rows as $row)
 		<tr>
 			<td class="bl al plr3">{{ ucwords($row['uraian']) }}</td>
-			<td class="wd12 bl ar plr3">{{ number_format($row['rkap']) }}</td>
-			<td class="wd12 bl ar plr3">{{ number_format($row['rctw']) }}</td>
-			<td class="wd12 bl ar plr3">{{ number_format($row['rltw']) }}</td>
+			<td class="wd12 bl ar plr3">{{ number_format($row['rkap'],0,",",".") }}</td>
+			<td class="wd12 bl ar plr3">{{ number_format($row['rctw'],0,",",".") }}</td>
+			<td class="wd12 bl ar plr3">{{ number_format($row['rltw'],0,",",".") }}</td>
 			<td class="wd5 bl ar plr3">{{ $row['psn1'] }}</td>
-			<td class="wd12 bl ar plr3">{{ number_format($row['rcsdtw']) }}</td>
-			<td class="wd12 bl ar plr3">{{ number_format($row['rlsdtw']) }}</td>
+			<td class="wd12 bl ar plr3">{{ number_format($row['rcsdtw'],0,",",".") }}</td>
+			<td class="wd12 bl ar plr3">{{ number_format($row['rlsdtw'],0,",",".") }}</td>
 			<td class="wd5 bl ar plr3">{{ $row['psn2'] }}</td>
 			<td class="wd5 bl br ar plr3">{{ $row['psn3'] }}</td>
 		</tr>
@@ -56,12 +56,12 @@
 
 		<tr>
 			<td class="bl bt bb plr3 ac fb">Total</td>
-			<td class="bl bt bb plr3 ar">{{ number_format($total['rkap']) }}</td>
-			<td class="bl bt bb plr3 ar">{{ number_format($total['rctw']) }}</td>
-			<td class="bl bt bb plr3 ar">{{ number_format($total['rltw']) }}</td>
+			<td class="bl bt bb plr3 ar">{{ number_format($total['rkap'],0,",",".") }}</td>
+			<td class="bl bt bb plr3 ar">{{ number_format($total['rctw'],0,",",".") }}</td>
+			<td class="bl bt bb plr3 ar">{{ number_format($total['rltw'],0,",",".") }}</td>
 			<td class="bl bt bb plr3 ar">{{ $total['psn1'] }}</td>
-			<td class="bl bt bb plr3 ar">{{ number_format($total['rcsdtw']) }}</td>
-			<td class="bl bt bb plr3 ar">{{ number_format($total['rlsdtw']) }}</td>
+			<td class="bl bt bb plr3 ar">{{ number_format($total['rcsdtw'],0,",",".") }}</td>
+			<td class="bl bt bb plr3 ar">{{ number_format($total['rlsdtw'],0,",",".") }}</td>
 			<td class="bl bt bb plr3 ar">{{ $total['psn2'] }}</td>
 			<td class="bl bt br bb plr3 ar">{{ $total['psn3'] }}</td>
 		</tr>
