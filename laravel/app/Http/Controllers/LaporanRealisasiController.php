@@ -290,48 +290,56 @@ class LaporanRealisasiController extends Controller
 		
 		$rows = DB::select($query);
 		
-		$rows_tot = DB::select("
-			select	sum(a.rkap) as rkap,
-					sum(a.rcsdtw) as rcsdtw,
-					sum(a.rlsdtw) as rlsdtw,
-					decode(sum(a.rcsdtw),0,0,round(sum(a.rlsdtw)/sum(a.rcsdtw)*100)) as psn2,
-					sum(a.rctw) as rctw,
-					sum(a.rltw) as rltw,
-					decode(sum(a.rctw),0,0,round(sum(a.rltw)/sum(a.rctw)*100)) as psn1,
-					decode(sum(a.rkap),0,0,round(sum(a.rlsdtw)/sum(a.rkap)*100)) as psn3
-			from(
-				".$query."
-			) a
-		");
+		if(count($rows)>0){
+			
+			$rows_tot = DB::select("
+				select	sum(a.rkap) as rkap,
+						sum(a.rcsdtw) as rcsdtw,
+						sum(a.rlsdtw) as rlsdtw,
+						decode(sum(a.rcsdtw),0,0,round(sum(a.rlsdtw)/sum(a.rcsdtw)*100)) as psn2,
+						sum(a.rctw) as rctw,
+						sum(a.rltw) as rltw,
+						decode(sum(a.rctw),0,0,round(sum(a.rltw)/sum(a.rctw)*100)) as psn1,
+						decode(sum(a.rkap),0,0,round(sum(a.rlsdtw)/sum(a.rkap)*100)) as psn3
+				from(
+					".$query."
+				) a
+			");
+			
+			$rows = json_decode(json_encode($rows), true);
+			$rows_tot = json_decode(json_encode($rows_tot[0]), true);
+			
+			$data = [
+				'tahun' => session('tahun'),
+				'periode' => $rows[0]['triwulan'],
+				'rows' => $rows,
+				'total' => $rows_tot,
+			];
+
+			$html_out = view('realisasi.pendapatan-pengembangan', $data);
+
+			$mpdf = new Mpdf([
+				'mode' => 'utf-8',
+				'format' => 'A4-P',
+				'margin_left' => 8,
+				'margin_right' => 8,
+				'margin_top' => 18,
+				'margin_bottom' => 18,
+			]);
+
+			//mode portrait or landscape
+			$mpdf->AddPage('L');
+
+			//write content to PDF
+			$mpdf->writeHTML($html_out);		
+			$mpdf->Output('rincian realisasi pendapatan pengembangan.pdf', 'I');
+			exit;
+			
+		}
+		else{
+			return 'Data tidak ditemukan!';
+		}
 		
-		$rows = json_decode(json_encode($rows), true);
-		$rows_tot = json_decode(json_encode($rows_tot[0]), true);
-        
-        $data = [
-            'tahun' => session('tahun'),
-			'periode' => $rows[0]['triwulan'],
-            'rows' => $rows,
-			'total' => $rows_tot,
-        ];
-
-        $html_out = view('realisasi.pendapatan-pengembangan', $data);
-
-		$mpdf = new Mpdf([
-			'mode' => 'utf-8',
-			'format' => 'A4-P',
-			'margin_left' => 8,
-			'margin_right' => 8,
-			'margin_top' => 18,
-			'margin_bottom' => 18,
-		]);
-
-		//mode portrait or landscape
-		$mpdf->AddPage('L');
-
-		//write content to PDF
-		$mpdf->writeHTML($html_out);		
-		$mpdf->Output('rincian realisasi pendapatan pengembangan.pdf', 'I');
-		exit;
     }
 
     /**
@@ -459,49 +467,57 @@ class LaporanRealisasiController extends Controller
 		
 		$rows = DB::select($query);
 		
-		$rows_tot = DB::select("
-			select	sum(a.rkap) as rkap,
-					sum(a.rcsdtw) as rcsdtw,
-					sum(a.rlsdtw) as rlsdtw,
-					decode(sum(a.rcsdtw),0,0,round(sum(a.rlsdtw)/sum(a.rcsdtw)*100)) as psn2,
-					sum(a.rctw) as rctw,
-					sum(a.rltw) as rltw,
-					decode(sum(a.rctw),0,0,round(sum(a.rltw)/sum(a.rctw)*100)) as psn1,
-					decode(sum(a.rkap),0,0,round(sum(a.rlsdtw)/sum(a.rkap)*100)) as psn3
-			from(
-				".$query."
-			) a
-		");
+		if(count($rows)>0){
+			
+			$rows_tot = DB::select("
+				select	sum(a.rkap) as rkap,
+						sum(a.rcsdtw) as rcsdtw,
+						sum(a.rlsdtw) as rlsdtw,
+						decode(sum(a.rcsdtw),0,0,round(sum(a.rlsdtw)/sum(a.rcsdtw)*100)) as psn2,
+						sum(a.rctw) as rctw,
+						sum(a.rltw) as rltw,
+						decode(sum(a.rctw),0,0,round(sum(a.rltw)/sum(a.rctw)*100)) as psn1,
+						decode(sum(a.rkap),0,0,round(sum(a.rlsdtw)/sum(a.rkap)*100)) as psn3
+				from(
+					".$query."
+				) a
+			");
+			
+			$rows = json_decode(json_encode($rows), true);
+			$rows_tot = json_decode(json_encode($rows_tot[0]), true);
+			
+			$data = [
+				'tahun' => session('tahun'),
+				'periode' => $rows[0]['triwulan'],
+				'rows' => $rows,
+				'total' => $rows_tot,
+			];
+
+			$html_out = view('realisasi.pendapatan-pengelolaan', $data);
+
+			$mpdf = new Mpdf([
+				'mode' => 'utf-8',
+				'format' => 'A4-P',
+				'margin_left' => 8,
+				'margin_right' => 8,
+				'margin_top' => 18,
+				'margin_bottom' => 18,
+			]);
+
+			//mode portrait or landscape
+			$mpdf->AddPage('L');
+
+			//write content to PDF
+			$mpdf->writeHTML($html_out);
+			
+			$mpdf->Output('rincian realisasi pendapatan pengelolaan.pdf', 'I');
+			exit;
+			
+		}
+		else{
+			return 'Data tidak ditemukan!';
+		}
 		
-		$rows = json_decode(json_encode($rows), true);
-		$rows_tot = json_decode(json_encode($rows_tot[0]), true);
-        
-        $data = [
-            'tahun' => session('tahun'),
-			'periode' => $rows[0]['triwulan'],
-            'rows' => $rows,
-			'total' => $rows_tot,
-        ];
-
-        $html_out = view('realisasi.pendapatan-pengelolaan', $data);
-
-		$mpdf = new Mpdf([
-			'mode' => 'utf-8',
-			'format' => 'A4-P',
-			'margin_left' => 8,
-			'margin_right' => 8,
-			'margin_top' => 18,
-			'margin_bottom' => 18,
-		]);
-
-		//mode portrait or landscape
-		$mpdf->AddPage('L');
-
-		//write content to PDF
-		$mpdf->writeHTML($html_out);
-		
-		$mpdf->Output('rincian realisasi pendapatan pengelolaan.pdf', 'I');
-		exit;
     }
 
     /**
@@ -662,48 +678,176 @@ class LaporanRealisasiController extends Controller
      */
     public function bebanPokokPenjualan()
     {
-		$BPP1 = [
-			['uraian' => 'BPP Tanah - CBD Pulo Jahe', 'rkap' => 0, 'rctw' => 0, 'rltw' => 0, 'psn1' => 0, 'rcsdtw' => 0, 'rlsdtw' => 0, 'psn2' => 0, 'psn3' => 0],
-			['uraian' => 'BPP Tanah Situ Gintung', 'rkap' => 0, 'rctw' => 0, 'rltw' => 0, 'psn1' => 0, 'rcsdtw' => 0, 'rlsdtw' => 0, 'psn2' => 0, 'psn3' => 0],
-			['uraian' => 'BPP Tanah Ujung Menteng', 'rkap' => 0, 'rctw' => 0, 'rltw' => 0, 'psn1' => 0, 'rcsdtw' => 0, 'rlsdtw' => 0, 'psn2' => 0, 'psn3' => 0],
-			['uraian' => 'BPP Tanah 15.6 Ha', 'rkap' => 0, 'rctw' => 0, 'rltw' => 0, 'psn1' => 0, 'rcsdtw' => 0, 'rlsdtw' => 0, 'psn2' => 0, 'psn3' => 0],
-			['uraian' => 'BPP Gedung JPM', 'rkap' => 0, 'rctw' => 0, 'rltw' => 0, 'psn1' => 0, 'rcsdtw' => 0, 'rlsdtw' => 0, 'psn2' => 0, 'psn3' => 0],
-		];
+		$periode = '';
+		if(isset($_GET['periode'])){
+			if($_GET['periode']!==''){
+				$periode = $_GET['periode'];
+			}
+		}
 		
-		$BPP2 = [
-			['uraian' => 'BPP Gedung Sarana Jaya Tebet', 'rkap' => 0, 'rctw' => 0, 'rltw' => 0, 'psn1' => 0, 'rcsdtw' => 0, 'rlsdtw' => 0, 'psn2' => 0, 'psn3' => 0],
-			['uraian' => 'BPP Pondok Kelapa Town Square', 'rkap' => 0, 'rctw' => 0, 'rltw' => 0, 'psn1' => 0, 'rcsdtw' => 0, 'rlsdtw' => 0, 'psn2' => 0, 'psn3' => 0],
-			['uraian' => 'BPP Gedung Ciks', 'rkap' => 0, 'rctw' => 0, 'rltw' => 0, 'psn1' => 0, 'rcsdtw' => 0, 'rlsdtw' => 0, 'psn2' => 0, 'psn3' => 0],
-			['uraian' => 'BPP Ciks Mansion', 'rkap' => 0, 'rctw' => 0, 'rltw' => 0, 'psn1' => 0, 'rcsdtw' => 0, 'rlsdtw' => 0, 'psn2' => 0, 'psn3' => 0],
-			['uraian' => 'BPP Gedung Sarana Jaya 3', 'rkap' => 0, 'rctw' => 0, 'rltw' => 0, 'psn1' => 0, 'rcsdtw' => 0, 'rlsdtw' => 0, 'psn2' => 0, 'psn3' => 0],
-			['uraian' => 'BPP Plaza Atrium', 'rkap' => 0, 'rctw' => 0, 'rltw' => 0, 'psn1' => 0, 'rcsdtw' => 0, 'rlsdtw' => 0, 'psn2' => 0, 'psn3' => 0],
-			['uraian' => 'BPP Hotel Veranda', 'rkap' => 0, 'rctw' => 0, 'rltw' => 0, 'psn1' => 0, 'rcsdtw' => 0, 'rlsdtw' => 0, 'psn2' => 0, 'psn3' => 0],
-		];
+		$periode1 = "";
+		$periode2 = "";
 		
-        $data = [
-            'tahun' => session('tahun'),
-            'rows1' => $BPP1,
-            'rows2' => $BPP2, 
-        ];
+		if($periode!==''){
+			
+			if($periode=='03'){
+				$periode1 = "'01','02','03'";
+				$periode2 = "nilai03";
+			}
+			elseif($periode=='06'){
+				$periode1 = "'04','05','06'";
+				$periode2 = "nilai03+nilai06";
+			}
+			elseif($periode=='09'){
+				$periode1 = "'07','08','09'";
+				$periode2 = "nilai03+nilai06+nilai09";
+			}
+			elseif($periode=='12'){
+				$periode1 = "'10','11','12'";
+				$periode2 = "nilai03+nilai06+nilai09+nilai12";
+			}
+			
+		}
+		
+		$query = "
+			select  f.nmtriwulan1 as triwulan,
+					a.nmakun||' - '||a.nmproyek as uraian,
+					nvl(e.nilai,0) as rkap,
+					nvl(b.nilai,0) as rcsdtw,
+					nvl(a.nilai,0) as rlsdtw,
+					decode(nvl(b.nilai,0),0,0,round(nvl(a.nilai,0)/b.nilai*100)) as psn2,
+					nvl(d.nilai,0) as rctw,
+					nvl(c.nilai,0) as rltw,
+					decode(nvl(d.nilai,0),0,0,round(nvl(c.nilai,0)/d.nilai*100)) as psn1,
+					decode(nvl(e.nilai,0),0,0,round(nvl(a.nilai,0)/e.nilai*100)) as psn3
+			from(
+				select  nvl(a.id_proyek,0) as id_proyek,
+						c.nmproyek,
+						substr(a.kdakun,1,3) as kdakun,
+						b.nmakun,
+						sum(a.nilai) as nilai
+				from(
+					select  a.id_proyek,
+							a.debet as kdakun,
+							sum(a.nilai_bersih) as nilai
+					from d_trans a
+					left join d_trans b on(a.parent_id=b.id)
+					left join t_alur c on(a.id_alur=c.id)
+					where a.thang='".session('tahun')."' and to_char(a.tgdok,'mm')<='".$periode."' and c.menu in(4)
+					group by a.id_proyek,
+							 a.debet
+				) a
+				left join t_akun b on(substr(a.kdakun,1,3)||'000'=b.kdakun)
+				left join t_proyek c on(a.id_proyek=c.id)
+				where substr(a.kdakun,1,2)='51'
+				group by a.id_proyek,c.nmproyek,substr(a.kdakun,1,3),b.nmakun
+			) a
+			left join(
+				select  id_proyek,
+						substr(kdakun,1,3) as kdakun,
+						sum(".$periode2.") as nilai
+				from d_rencana
+				where thang='".session('tahun')."'
+				group by id_proyek,substr(kdakun,1,3)
+			) b on(a.id_proyek=b.id_proyek and a.kdakun=b.kdakun)
+			left join(
+				select  nvl(a.id_proyek,0) as id_proyek,
+						c.nmproyek,
+						substr(a.kdakun,1,3) as kdakun,
+						b.nmakun,
+						sum(a.nilai) as nilai
+				from(
+					select  a.id_proyek,
+							a.debet as kdakun,
+							sum(a.nilai_bersih) as nilai
+					from d_trans a
+					left join d_trans b on(a.parent_id=b.id)
+					left join t_alur c on(a.id_alur=c.id)
+					where a.thang='".session('tahun')."' and to_char(a.tgdok,'mm') in(".$periode1.") and c.menu in(4)
+					group by a.id_proyek,
+							 a.debet
+				) a
+				left join t_akun b on(substr(a.kdakun,1,3)||'000'=b.kdakun)
+				left join t_proyek c on(a.id_proyek=c.id)
+				where substr(a.kdakun,1,2)='51'
+				group by a.id_proyek,c.nmproyek,substr(a.kdakun,1,3),b.nmakun
+			) c on(a.id_proyek=c.id_proyek and a.kdakun=c.kdakun)
+			left join(
+				select  id_proyek,
+						substr(kdakun,1,3) as kdakun,
+						sum(nilai".$periode.") as nilai
+				from d_rencana
+				where thang='".session('tahun')."'
+				group by id_proyek,substr(kdakun,1,3)
+			) d on(a.id_proyek=d.id_proyek and a.kdakun=d.kdakun)
+			left join(
+				select  id_proyek,
+						substr(kdakun,1,3) as kdakun,
+						sum(nilai) as nilai
+				from d_pagu_proyek
+				where thang='".session('tahun')."'
+				group by id_proyek,substr(kdakun,1,3)
+			) e on(a.id_proyek=e.id_proyek and a.kdakun=e.kdakun),
+			(
+				select  nmtriwulan1
+				from t_triwulan
+				where kdtriwulan='".$periode."'
+			) f
+			order by a.kdakun,a.id_proyek
+		";
+		
+		$rows = DB::select($query);
+		
+		if(count($rows)>0){
+			
+			$rows_tot = DB::select("
+				select	sum(a.rkap) as rkap,
+						sum(a.rcsdtw) as rcsdtw,
+						sum(a.rlsdtw) as rlsdtw,
+						decode(sum(a.rcsdtw),0,0,round(sum(a.rlsdtw)/sum(a.rcsdtw)*100)) as psn2,
+						sum(a.rctw) as rctw,
+						sum(a.rltw) as rltw,
+						decode(sum(a.rctw),0,0,round(sum(a.rltw)/sum(a.rctw)*100)) as psn1,
+						decode(sum(a.rkap),0,0,round(sum(a.rlsdtw)/sum(a.rkap)*100)) as psn3
+				from(
+					".$query."
+				) a
+			");
+			
+			$rows = json_decode(json_encode($rows), true);
+			$rows_tot = json_decode(json_encode($rows_tot[0]), true);
+			
+			$data = [
+				'tahun' => session('tahun'),
+				'periode' => $rows[0]['triwulan'],
+				'rows' => $rows,
+				'total' => $rows_tot,
+			];
 
-        $html_out = view('realisasi.beban-pokok-penjualan', $data);
+			$html_out = view('realisasi.beban-pokok-penjualan', $data);
 
-        $mpdf = new Mpdf([
-			'mode' => 'utf-8',
-			'format' => 'A4-P',
-			'margin_left' => 8,
-			'margin_right' => 8,
-			'margin_top' => 18,
-			'margin_bottom' => 18,
-		]);
+			$mpdf = new Mpdf([
+				'mode' => 'utf-8',
+				'format' => 'A4-P',
+				'margin_left' => 8,
+				'margin_right' => 8,
+				'margin_top' => 18,
+				'margin_bottom' => 18,
+			]);
 
-		//mode portrait or landscape
-		$mpdf->AddPage('L');
+			//mode portrait or landscape
+			$mpdf->AddPage('L');
 
-		//write content to PDF
-		$mpdf->writeHTML($html_out);
-		$mpdf->Output('rincian realisasi beban pokok penjualan.pdf', 'I');
-		exit;
+			//write content to PDF
+			$mpdf->writeHTML($html_out);
+			$mpdf->Output('rincian realisasi beban pokok penjualan.pdf', 'I');
+			exit;
+			
+		}
+		else{
+			return 'Data tidak ditemukan!';
+		}
+		
     }
 
     /**
@@ -711,53 +855,176 @@ class LaporanRealisasiController extends Controller
      */
     public function bebanUsaha()
     {
-		$BU1 = [
-			['uraian' => 'Biaya Pemasaran', 'rkap' => 0, 'rctw' => 0, 'rltw' => 0, 'psn1' => 0, 'rcsdtw' => 0, 'rlsdtw' => 0, 'psn2' => 0, 'psn3' => 0],
-			['uraian' => 'Biaya Pegawai', 'rkap' => 0, 'rctw' => 0, 'rltw' => 0, 'psn1' => 0, 'rcsdtw' => 0, 'rlsdtw' => 0, 'psn2' => 0, 'psn3' => 0],
-			['uraian' => 'Biaya Kantor', 'rkap' => 0, 'rctw' => 0, 'rltw' => 0, 'psn1' => 0, 'rcsdtw' => 0, 'rlsdtw' => 0, 'psn2' => 0, 'psn3' => 0],
-			['uraian' => 'Biaya Pemeliharaan', 'rkap' => 0, 'rctw' => 0, 'rltw' => 0, 'psn1' => 0, 'rcsdtw' => 0, 'rlsdtw' => 0, 'psn2' => 0, 'psn3' => 0],
-			['uraian' => 'Biaya Penyusutan/Amortisasi', 'rkap' => 0, 'rctw' => 0, 'rltw' => 0, 'psn1' => 0, 'rcsdtw' => 0, 'rlsdtw' => 0, 'psn2' => 0, 'psn3' => 0],
-			['uraian' => 'Biaya Umum', 'rkap' => 0, 'rctw' => 0, 'rltw' => 0, 'psn1' => 0, 'rcsdtw' => 0, 'rlsdtw' => 0, 'psn2' => 0, 'psn3' => 0],
-		];
+		$periode = '';
+		if(isset($_GET['periode'])){
+			if($_GET['periode']!==''){
+				$periode = $_GET['periode'];
+			}
+		}
 		
-		$BU2 = [
-			['uraian' => 'Beban Adm. Bank & Pajak Jasa Giro', 'rkap' => 0, 'rctw' => 0, 'rltw' => 0, 'psn1' => 0, 'rcsdtw' => 0, 'rlsdtw' => 0, 'psn2' => 0, 'psn3' => 0],
-			['uraian' => 'PPh Final', 'rkap' => 0, 'rctw' => 0, 'rltw' => 0, 'psn1' => 0, 'rcsdtw' => 0, 'rlsdtw' => 0, 'psn2' => 0, 'psn3' => 0],
-			['uraian' => 'Lain-lain', 'rkap' => 0, 'rctw' => 0, 'rltw' => 0, 'psn1' => 0, 'rcsdtw' => 0, 'rlsdtw' => 0, 'psn2' => 0, 'psn3' => 0],
-		];
+		$periode1 = "";
+		$periode2 = "";
 		
-        $data = [
-            'tahun' => session('tahun'),
-            'rows1' => $BU1,
-            'rows2' => $BU2,
-        ];
+		if($periode!==''){
+			
+			if($periode=='03'){
+				$periode1 = "'01','02','03'";
+				$periode2 = "nilai03";
+			}
+			elseif($periode=='06'){
+				$periode1 = "'04','05','06'";
+				$periode2 = "nilai03+nilai06";
+			}
+			elseif($periode=='09'){
+				$periode1 = "'07','08','09'";
+				$periode2 = "nilai03+nilai06+nilai09";
+			}
+			elseif($periode=='12'){
+				$periode1 = "'10','11','12'";
+				$periode2 = "nilai03+nilai06+nilai09+nilai12";
+			}
+			
+		}
+		
+		$query = "
+			select  f.nmtriwulan1 as triwulan,
+					a.nmakun||' - '||a.nmproyek as uraian,
+					nvl(e.nilai,0) as rkap,
+					nvl(b.nilai,0) as rcsdtw,
+					nvl(a.nilai,0) as rlsdtw,
+					decode(nvl(b.nilai,0),0,0,round(nvl(a.nilai,0)/b.nilai*100)) as psn2,
+					nvl(d.nilai,0) as rctw,
+					nvl(c.nilai,0) as rltw,
+					decode(nvl(d.nilai,0),0,0,round(nvl(c.nilai,0)/d.nilai*100)) as psn1,
+					decode(nvl(e.nilai,0),0,0,round(nvl(a.nilai,0)/e.nilai*100)) as psn3
+			from(
+				select  nvl(a.id_proyek,0) as id_proyek,
+						c.nmproyek,
+						substr(a.kdakun,1,3) as kdakun,
+						b.nmakun,
+						sum(a.nilai) as nilai
+				from(
+					select  a.id_proyek,
+							a.debet as kdakun,
+							sum(a.nilai_bersih) as nilai
+					from d_trans a
+					left join d_trans b on(a.parent_id=b.id)
+					left join t_alur c on(a.id_alur=c.id)
+					where a.thang='".session('tahun')."' and to_char(a.tgdok,'mm')<='".$periode."' and c.menu in(4)
+					group by a.id_proyek,
+							 a.debet
+				) a
+				left join t_akun b on(substr(a.kdakun,1,3)||'000'=b.kdakun)
+				left join t_proyek c on(a.id_proyek=c.id)
+				where substr(a.kdakun,1,2)='52'
+				group by a.id_proyek,c.nmproyek,substr(a.kdakun,1,3),b.nmakun
+			) a
+			left join(
+				select  id_proyek,
+						substr(kdakun,1,3) as kdakun,
+						sum(".$periode2.") as nilai
+				from d_rencana
+				where thang='".session('tahun')."'
+				group by id_proyek,substr(kdakun,1,3)
+			) b on(a.id_proyek=b.id_proyek and a.kdakun=b.kdakun)
+			left join(
+				select  nvl(a.id_proyek,0) as id_proyek,
+						c.nmproyek,
+						substr(a.kdakun,1,3) as kdakun,
+						b.nmakun,
+						sum(a.nilai) as nilai
+				from(
+					select  a.id_proyek,
+							a.debet as kdakun,
+							sum(a.nilai_bersih) as nilai
+					from d_trans a
+					left join d_trans b on(a.parent_id=b.id)
+					left join t_alur c on(a.id_alur=c.id)
+					where a.thang='".session('tahun')."' and to_char(a.tgdok,'mm') in(".$periode1.") and c.menu in(4)
+					group by a.id_proyek,
+							 a.debet
+				) a
+				left join t_akun b on(substr(a.kdakun,1,3)||'000'=b.kdakun)
+				left join t_proyek c on(a.id_proyek=c.id)
+				where substr(a.kdakun,1,2)='52'
+				group by a.id_proyek,c.nmproyek,substr(a.kdakun,1,3),b.nmakun
+			) c on(a.id_proyek=c.id_proyek and a.kdakun=c.kdakun)
+			left join(
+				select  id_proyek,
+						substr(kdakun,1,3) as kdakun,
+						sum(nilai".$periode.") as nilai
+				from d_rencana
+				where thang='".session('tahun')."'
+				group by id_proyek,substr(kdakun,1,3)
+			) d on(a.id_proyek=d.id_proyek and a.kdakun=d.kdakun)
+			left join(
+				select  id_proyek,
+						substr(kdakun,1,3) as kdakun,
+						sum(nilai) as nilai
+				from d_pagu_proyek
+				where thang='".session('tahun')."'
+				group by id_proyek,substr(kdakun,1,3)
+			) e on(a.id_proyek=e.id_proyek and a.kdakun=e.kdakun),
+			(
+				select  nmtriwulan1
+				from t_triwulan
+				where kdtriwulan='".$periode."'
+			) f
+			order by a.kdakun,a.id_proyek
+		";
+		
+		$rows = DB::select($query);
+		
+		if(count($rows)>0){
+			
+			$rows_tot = DB::select("
+				select	sum(a.rkap) as rkap,
+						sum(a.rcsdtw) as rcsdtw,
+						sum(a.rlsdtw) as rlsdtw,
+						decode(sum(a.rcsdtw),0,0,round(sum(a.rlsdtw)/sum(a.rcsdtw)*100)) as psn2,
+						sum(a.rctw) as rctw,
+						sum(a.rltw) as rltw,
+						decode(sum(a.rctw),0,0,round(sum(a.rltw)/sum(a.rctw)*100)) as psn1,
+						decode(sum(a.rkap),0,0,round(sum(a.rlsdtw)/sum(a.rkap)*100)) as psn3
+				from(
+					".$query."
+				) a
+			");
+			
+			$rows = json_decode(json_encode($rows), true);
+			$rows_tot = json_decode(json_encode($rows_tot[0]), true);
+			
+			$data = [
+				'tahun' => session('tahun'),
+				'periode' => $rows[0]['triwulan'],
+				'rows' => $rows,
+				'total' => $rows_tot,
+			];
 
         $html_out = view('realisasi.beban-usaha', $data);
-        $html_out_add = view('realisasi.beban-usaha-tambahan', $data);
 
-        $mpdf = new Mpdf([
-			'mode' => 'utf-8',
-			'format' => 'A4-P',
-			'margin_left' => 8,
-			'margin_right' => 8,
-			'margin_top' => 18,
-			'margin_bottom' => 18,
-		]);
+			$mpdf = new Mpdf([
+				'mode' => 'utf-8',
+				'format' => 'A4-P',
+				'margin_left' => 8,
+				'margin_right' => 8,
+				'margin_top' => 18,
+				'margin_bottom' => 18,
+			]);
 
-		//mode portrait or landscape
-		$mpdf->AddPage('L');
+			//mode portrait or landscape
+			$mpdf->AddPage('L');
 
-		//write content to PDF
-		$mpdf->writeHTML($html_out);
-		
-		//mode portrait or landscape
-		$mpdf->AddPage('L');
-
-		//write content to PDF
-		$mpdf->writeHTML($html_out_add);
-		
-		$mpdf->Output('rincian realisasi beban usaha.pdf', 'I');
-		exit;
+			//write content to PDF
+			$mpdf->writeHTML($html_out);
+			
+			$mpdf->Output('rincian realisasi beban usaha.pdf', 'I');
+			exit;
+			
+		}
+		else{
+			return 'Data tidak ditemukan!';
+		}
     }
 
     /**
