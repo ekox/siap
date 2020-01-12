@@ -4,6 +4,8 @@
 	<thead>
 		<tr>
 			<th colspan="9" class="">
+				PERUMDA PEMBANGUNAN SARANA JAYA
+				<br>
 				RINCIAN REALISASI PENDAPATAN TAHUN {{$tahun}}
 				<br>
 				<span class="fs10">(Disajikan dalam jutaan Rupiah)</span>
@@ -15,11 +17,11 @@
 		<tr>
 			<th class="bl bt plr3">Uraian</th>
 			<th class="bl bt plr3 wd12">RKAP {{$tahun}}</th>
-			<th class="bl bt plr3 wd12">Rencana TW.II {{$tahun}}</th>
-			<th class="bl bt plr3 wd12">Realisasi TW.II {{$tahun}}</th>
+			<th class="bl bt plr3 wd12">Rencana {{$periode}} {{$tahun}}</th>
+			<th class="bl bt plr3 wd12">Realisasi {{$periode}} {{$tahun}}</th>
 			<th class="bl bt plr3 wd5">%</th>
-			<th class="bl bt plr3 wd12">Rencana s.d TW.II {{$tahun}}</th>
-			<th class="bl bt plr3 wd12">Realisasi s.d TW.II {{$tahun}}</th>
+			<th class="bl bt plr3 wd12">Rencana s.d {{$periode}} {{$tahun}}</th>
+			<th class="bl bt plr3 wd12">Realisasi s.d {{$periode}} {{$tahun}}</th>
 			<th class="bl bt plr3 wd5">%</th>
 			<th class="bl bt br plr3 wd5">%</th>
 		</tr>
@@ -37,55 +39,31 @@
 	</thead>
 </table>
 <table width="100%" border="0" cellspacing="0" cellpadding="0" style="border:0px solid #000;font-size:11px;">
-	<tbody>		
+	<tbody>
 		@foreach($rows as $row)
 		<tr>
-			<td class="bl al plr3">{{ $row['uraian'] }}</td>
-			<td class="wd12 bl ar plr3">{{ $row['rkap'] }}</td>
-			<td class="wd12 bl ar plr3">{{ $row['rctw'] }}</td>
-			<td class="wd12 bl ar plr3">{{ $row['rltw'] }}</td>
+			<td class="bl al plr3">{{ ucwords($row['uraian']) }}</td>
+			<td class="wd12 bl ar plr3">{{ number_format($row['rkap']) }}</td>
+			<td class="wd12 bl ar plr3">{{ number_format($row['rctw']) }}</td>
+			<td class="wd12 bl ar plr3">{{ number_format($row['rltw']) }}</td>
 			<td class="wd5 bl ar plr3">{{ $row['psn1'] }}</td>
-			<td class="wd12 bl ar plr3">{{ $row['rcsdtw'] }}</td>
-			<td class="wd12 bl ar plr3">{{ $row['rlsdtw'] }}</td>
+			<td class="wd12 bl ar plr3">{{ number_format($row['rcsdtw']) }}</td>
+			<td class="wd12 bl ar plr3">{{ number_format($row['rlsdtw']) }}</td>
 			<td class="wd5 bl ar plr3">{{ $row['psn2'] }}</td>
 			<td class="wd5 bl br ar plr3">{{ $row['psn3'] }}</td>
 		</tr>
 		@endforeach
 
 		<tr>
-			<td class="bl bt plr3 ac fb">Jumlah</td>
-			<td class="bl bt  plr3 ar">0</td>
-			<td class="bl bt plr3 ar">0</td>
-			<td class="bl bt plr3 ar">0</td>
-			<td class="bl bt plr3 ar">0</td>
-			<td class="bl bt plr3 ar">0</td>
-			<td class="bl bt plr3 ar">0</td>
-			<td class="bl bt plr3 ar">0</td>
-			<td class="bl bt br plr3 ar">0</td>
-		</tr>
-
-		<tr>
-			<td class="bl bt plr3 al">Pendapatan Lain-lain</td>
-			<td class="bl bt plr3 ar">0</td>
-			<td class="bl bt plr3 ar">0</td>
-			<td class="bl bt plr3 ar">0</td>
-			<td class="bl bt plr3 ar">0</td>
-			<td class="bl bt plr3 ar">0</td>
-			<td class="bl bt plr3 ar">0</td>
-			<td class="bl bt plr3 ar">0</td>
-			<td class="bl bt br plr3 ar">0</td>
-		</tr>
-
-		<tr>
 			<td class="bl bt bb plr3 ac fb">Total</td>
-			<td class="bl bt bb plr3 ar">0</td>
-			<td class="bl bt bb plr3 ar">0</td>
-			<td class="bl bt bb plr3 ar">0</td>
-			<td class="bl bt bb plr3 ar">0</td>
-			<td class="bl bt bb plr3 ar">0</td>
-			<td class="bl bt bb plr3 ar">0</td>
-			<td class="bl bt bb plr3 ar">0</td>
-			<td class="bl bt br bb plr3 ar">0</td>
+			<td class="bl bt bb plr3 ar">{{ number_format($total['rkap']) }}</td>
+			<td class="bl bt bb plr3 ar">{{ number_format($total['rctw']) }}</td>
+			<td class="bl bt bb plr3 ar">{{ number_format($total['rltw']) }}</td>
+			<td class="bl bt bb plr3 ar">{{ $total['psn1'] }}</td>
+			<td class="bl bt bb plr3 ar">{{ number_format($total['rcsdtw']) }}</td>
+			<td class="bl bt bb plr3 ar">{{ number_format($total['rlsdtw']) }}</td>
+			<td class="bl bt bb plr3 ar">{{ $total['psn2'] }}</td>
+			<td class="bl bt br bb plr3 ar">{{ $total['psn3'] }}</td>
 		</tr>
 		
 	</tbody>

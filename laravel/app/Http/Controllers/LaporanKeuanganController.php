@@ -489,16 +489,34 @@ class LaporanKeuanganController extends TableController
 		");
 		
 		$tot_sawal = $rows[0]->nilai;
+		$tot_sawal1 = $rows[0]->nilai;
+		
+		if($periode!=='01'){
+			
+			$rows = DB::select("
+				select sum(a.debet-a.kredit) as nilai  
+				from d_buku_besar a
+				where substr(a.kdakun,1,3)='111' and
+					  to_number(a.thang||a.periode)<=to_number(to_char(ADD_MONTHS (to_date('01".$periode.$tahun."','ddmmyyyy'), -1),'yyyymm'))
+			");
+			
+			if(count($rows)>0){
+				$tot_sawal1 = $rows[0]->nilai;
+			}
+			
+		}
 		
 		$rows = DB::select("
 			select  a.uraian,
-					decode(a.kddk,'D',a.nilai,a.nilai*-1) as nilai
+					decode(a.kddk,'D',a.nilai,a.nilai*-1) as nilai,
+					decode(a.kddk,'D',a.nilai1,a.nilai1*-1) as nilai1
 			from(
 				select  c.lak,
 						c.lak1,
 						c.uraian,
 						c.kddk,
-						sum(a.nilai) as nilai
+						sum(a.nilai) as nilai,
+						nvl(sum(d.nilai),0) as nilai1
 				from(
 					
 					select  decode(a.parent_id,null,
@@ -533,6 +551,40 @@ class LaporanKeuanganController extends TableController
 					where thang='".$tahun."' and b.neraca1=0 and a.tgdok<=last_day(to_date('01/".$periode."/".$tahun."','DD/MM/YYYY')) and substr(kdakun,1,3)='111' and c.kddk='K'
 					
 				) a
+				left join(
+					
+					select  decode(a.parent_id,null,
+								decode(substr(a.debet,1,3),'111',a.kredit,a.debet),
+								decode(substr(a.debet,1,3),'111',b.kredit,b.debet)
+							) as kdakun,
+							sum(a.nilai) as nilai
+					from d_trans a
+					left join d_trans b on(a.parent_id=b.id)
+					where a.thang='".session('tahun')."' and to_char(a.tgdok,'mmyyyy')='".$periode.$tahun."' and (substr(a.debet,1,3)='111' or substr(a.kredit,1,3)='111')
+					group by decode(a.parent_id,null,
+								decode(substr(a.debet,1,3),'111',a.kredit,a.debet),
+								decode(substr(a.debet,1,3),'111',b.kredit,b.debet)
+							)
+							
+					union all
+					
+					select  '614400' as kdakun,
+							sum(c.nilai) as nilai
+					from d_trans a
+					left join t_alur b on(a.id_alur=b.id)
+					left join d_trans_akun c on(a.id=c.id_trans)
+					where thang='".$tahun."' and b.neraca1=0 and to_char(a.tgdok,'mmyyyy')='".$periode.$tahun."' and substr(kdakun,1,3)='111' and c.kddk='D'
+
+					union all
+
+					select  '624200' as kdakun,
+							sum(c.nilai) as nilai
+					from d_trans a
+					left join t_alur b on(a.id_alur=b.id)
+					left join d_trans_akun c on(a.id=c.id_trans)
+					where thang='".$tahun."' and b.neraca1=0 and to_char(a.tgdok,'mmyyyy')='".$periode.$tahun."' and substr(kdakun,1,3)='111' and c.kddk='K'
+					
+				) d on(a.kdakun=d.kdakun)
 				left join t_akun b on(a.kdakun=b.kdakun)
 				left join t_lak_kelompok c on(b.lak=c.lak and b.lak1=c.lak1)
 				where b.lak='1'
@@ -543,20 +595,24 @@ class LaporanKeuanganController extends TableController
 		
 		$opr = array();
 		$tot_opr = 0;
+		$tot_opr1 = 0;
 		foreach($rows as $row){
-			$opr[] = array($this->nbsp.$row->uraian,$row->nilai,0);
+			$opr[] = array($this->nbsp.$row->uraian,$row->nilai,$row->nilai1);
 			$tot_opr += $row->nilai;
+			$tot_opr1 += $row->nilai1;
 		}
 		
 		$rows = DB::select("
 			select  a.uraian,
-					decode(a.kddk,'D',a.nilai,a.nilai*-1) as nilai
+					decode(a.kddk,'D',a.nilai,a.nilai*-1) as nilai,
+					decode(a.kddk,'D',a.nilai1,a.nilai1*-1) as nilai1
 			from(
 				select  c.lak,
 						c.lak1,
 						c.uraian,
 						c.kddk,
-						sum(a.nilai) as nilai
+						sum(a.nilai) as nilai,
+						nvl(sum(d.nilai),0) as nilai1
 				from(
 					
 					select  decode(a.parent_id,null,
@@ -591,6 +647,40 @@ class LaporanKeuanganController extends TableController
 					where thang='".$tahun."' and b.neraca1=0 and a.tgdok<=last_day(to_date('01/".$periode."/".$tahun."','DD/MM/YYYY')) and substr(kdakun,1,3)='111' and c.kddk='K'
 					
 				) a
+				left join(
+					
+					select  decode(a.parent_id,null,
+								decode(substr(a.debet,1,3),'111',a.kredit,a.debet),
+								decode(substr(a.debet,1,3),'111',b.kredit,b.debet)
+							) as kdakun,
+							sum(a.nilai) as nilai
+					from d_trans a
+					left join d_trans b on(a.parent_id=b.id)
+					where a.thang='".session('tahun')."' and to_char(a.tgdok,'mmyyyy')='".$periode.$tahun."' and (substr(a.debet,1,3)='111' or substr(a.kredit,1,3)='111')
+					group by decode(a.parent_id,null,
+								decode(substr(a.debet,1,3),'111',a.kredit,a.debet),
+								decode(substr(a.debet,1,3),'111',b.kredit,b.debet)
+							)
+							
+					union all
+					
+					select  '614400' as kdakun,
+							sum(c.nilai) as nilai
+					from d_trans a
+					left join t_alur b on(a.id_alur=b.id)
+					left join d_trans_akun c on(a.id=c.id_trans)
+					where thang='".$tahun."' and b.neraca1=0 and to_char(a.tgdok,'mmyyyy')='".$periode.$tahun."' and substr(kdakun,1,3)='111' and c.kddk='D'
+
+					union all
+
+					select  '624200' as kdakun,
+							sum(c.nilai) as nilai
+					from d_trans a
+					left join t_alur b on(a.id_alur=b.id)
+					left join d_trans_akun c on(a.id=c.id_trans)
+					where thang='".$tahun."' and b.neraca1=0 and to_char(a.tgdok,'mmyyyy')='".$periode.$tahun."' and substr(kdakun,1,3)='111' and c.kddk='K'
+					
+				) d on(a.kdakun=d.kdakun)
 				left join t_akun b on(a.kdakun=b.kdakun)
 				left join t_lak_kelompok c on(b.lak=c.lak and b.lak1=c.lak1)
 				where b.lak='3'
@@ -601,20 +691,24 @@ class LaporanKeuanganController extends TableController
 		
 		$inv = array();
 		$tot_inv = 0;
+		$tot_inv1 = 0;
 		foreach($rows as $row){
-			$inv[] = array($this->nbsp.$row->uraian,$row->nilai,0);
+			$inv[] = array($this->nbsp.$row->uraian,$row->nilai,$row->nilai1);
 			$tot_inv += $row->nilai;
+			$tot_inv1 += $row->nilai1;
 		}
 		
 		$rows = DB::select("
 			select  a.uraian,
-					decode(a.kddk,'D',a.nilai,a.nilai*-1) as nilai
+					decode(a.kddk,'D',a.nilai,a.nilai*-1) as nilai,
+					decode(a.kddk,'D',a.nilai1,a.nilai1*-1) as nilai1
 			from(
 				select  c.lak,
 						c.lak1,
 						c.uraian,
 						c.kddk,
-						sum(a.nilai) as nilai
+						sum(a.nilai) as nilai,
+						nvl(sum(d.nilai),0) as nilai1
 				from(
 					
 					select  decode(a.parent_id,null,
@@ -649,6 +743,40 @@ class LaporanKeuanganController extends TableController
 					where thang='".$tahun."' and b.neraca1=0 and a.tgdok<=last_day(to_date('01/".$periode."/".$tahun."','DD/MM/YYYY')) and substr(kdakun,1,3)='111' and c.kddk='K'
 					
 				) a
+				left join(
+					
+					select  decode(a.parent_id,null,
+								decode(substr(a.debet,1,3),'111',a.kredit,a.debet),
+								decode(substr(a.debet,1,3),'111',b.kredit,b.debet)
+							) as kdakun,
+							sum(a.nilai) as nilai
+					from d_trans a
+					left join d_trans b on(a.parent_id=b.id)
+					where a.thang='".session('tahun')."' and to_char(a.tgdok,'mmyyyy')='".$periode.$tahun."' and (substr(a.debet,1,3)='111' or substr(a.kredit,1,3)='111')
+					group by decode(a.parent_id,null,
+								decode(substr(a.debet,1,3),'111',a.kredit,a.debet),
+								decode(substr(a.debet,1,3),'111',b.kredit,b.debet)
+							)
+							
+					union all
+					
+					select  '614400' as kdakun,
+							sum(c.nilai) as nilai
+					from d_trans a
+					left join t_alur b on(a.id_alur=b.id)
+					left join d_trans_akun c on(a.id=c.id_trans)
+					where thang='".$tahun."' and b.neraca1=0 and to_char(a.tgdok,'mmyyyy')='".$periode.$tahun."' and substr(kdakun,1,3)='111' and c.kddk='D'
+
+					union all
+
+					select  '624200' as kdakun,
+							sum(c.nilai) as nilai
+					from d_trans a
+					left join t_alur b on(a.id_alur=b.id)
+					left join d_trans_akun c on(a.id=c.id_trans)
+					where thang='".$tahun."' and b.neraca1=0 and to_char(a.tgdok,'mmyyyy')='".$periode.$tahun."' and substr(kdakun,1,3)='111' and c.kddk='K'
+					
+				) d on(a.kdakun=d.kdakun)
 				left join t_akun b on(a.kdakun=b.kdakun)
 				left join t_lak_kelompok c on(b.lak=c.lak and b.lak1=c.lak1)
 				where b.lak='2'
@@ -659,25 +787,29 @@ class LaporanKeuanganController extends TableController
 		
 		$fnd = array();
 		$tot_fnd = 0;
+		$tot_fnd1 = 0;
 		foreach($rows as $row){
-			$fnd[] = array($this->nbsp.$row->uraian,$row->nilai,0);
+			$fnd[] = array($this->nbsp.$row->uraian,$row->nilai,$row->nilai1);
 			$tot_fnd += $row->nilai;
+			$tot_fnd1 += $row->nilai1;
 		}
 
 		$tot_bersih = $tot_opr + $tot_inv + $tot_fnd;
+		$tot_bersih1 = $tot_opr1 + $tot_inv1 + $tot_fnd1;
 		$tot_sakhir = $tot_sawal + $tot_bersih;
+		$tot_sakhir1 = $tot_sawal1 + $tot_bersih1;
 
 		$cfl = array(
 			'Z' => array('&nbsp;', '', ''),
 			'AO' => array('ARUS KAS DARI AKTIVITAS OPERASI ', '', ''),
-			'JAO' => array($this->nbsp.'JUMLAH KAS BERSIH DARI AKTIVITAS OPERASI ', $tot_opr, 0),
+			'JAO' => array($this->nbsp.'JUMLAH KAS BERSIH DARI AKTIVITAS OPERASI ', $tot_opr, $tot_opr1),
 			'AI' => array('ARUS KAS DARI AKTIVITAS INVESTASI ', '', ''),
-			'JAI' => array($this->nbsp.'JUMLAH KAS BERSIH DARI DARI AKTIVITAS INVESTASI ', $tot_inv, 0),
+			'JAI' => array($this->nbsp.'JUMLAH KAS BERSIH DARI DARI AKTIVITAS INVESTASI ', $tot_inv, $tot_inv1),
 			'AP' => array('ARUS KAS DARI AKTIVITAS PENDANAAN ', '', ''),
-			'JAP' => array($this->nbsp.'JUMLAH KAS BERSIH DARI DARI AKTIVITAS PENDANAAN ', $tot_fnd, 0),
-			'NT' => array('KENAIKAN (PENURUNAN) BERSIH KAS DAN SETARA KAS ', $tot_bersih, 0),
-			'KAW' => array('KAS DAN SETARA KAS PADA AWAL PERIODE ', $tot_sawal, 0),
-			'KAK' => array('KAS DAN SETARA KAS PADA AKHIR PERIODE ', $tot_sakhir, 0),
+			'JAP' => array($this->nbsp.'JUMLAH KAS BERSIH DARI DARI AKTIVITAS PENDANAAN ', $tot_fnd, $tot_fnd1),
+			'NT' => array('KENAIKAN (PENURUNAN) BERSIH KAS DAN SETARA KAS ', $tot_bersih, $tot_bersih1),
+			'KAW' => array('KAS DAN SETARA KAS PADA AWAL PERIODE ', $tot_sawal, $tot_sawal1),
+			'KAK' => array('KAS DAN SETARA KAS PADA AKHIR PERIODE ', $tot_sakhir, $tot_sakhir1),
 		);
 
 		$html_out.= self::$tbody_open;

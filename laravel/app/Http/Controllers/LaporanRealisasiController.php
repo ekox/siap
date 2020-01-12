@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Mpdf\Mpdf;
+use DB;
 
 class LaporanRealisasiController extends Controller
 {
@@ -16,14 +17,132 @@ class LaporanRealisasiController extends Controller
      */
     public function pendapatan()
     {
-        $pendapatan = [
-			['uraian' => 'Pengembangan Aset', 'rkap' => 0, 'rctw' => 0, 'rltw' => 0, 'psn1' => 0, 'rcsdtw' => 0, 'rlsdtw' => 0, 'psn2' => 0, 'psn3' => 0],
-			['uraian' => 'Pengelolaan Aset', 'rkap' => 0, 'rctw' => 0, 'rltw' => 0, 'psn1' => 0, 'rcsdtw' => 0, 'rlsdtw' => 0, 'psn2' => 0, 'psn3' => 0],
-        ];
+		$periode = '';
+		if(isset($_GET['periode'])){
+			if($_GET['periode']!==''){
+				$periode = $_GET['periode'];
+			}
+		}
+		
+		$periode1 = "";
+		$periode2 = "";
+		
+		if($periode!==''){
+			
+			if($periode=='03'){
+				$periode1 = "'01','02','03'";
+				$periode2 = "nilai03";
+			}
+			elseif($periode=='06'){
+				$periode1 = "'04','05','06'";
+				$periode2 = "nilai03+nilai06";
+			}
+			elseif($periode=='09'){
+				$periode1 = "'07','08','09'";
+				$periode2 = "nilai03+nilai06+nilai09";
+			}
+			elseif($periode=='12'){
+				$periode1 = "'10','11','12'";
+				$periode2 = "nilai03+nilai06+nilai09+nilai12";
+			}
+			
+		}
+		
+		$query = "
+			select  g.nmtriwulan1 as triwulan,
+					upper(a.nmakun) as uraian,
+					nvl(b.nilai,0) as rkap,
+					nvl(c.nilai,0) as rcsdtw,
+					abs(nvl(d.nilai,0)) as rlsdtw,
+					decode(nvl(c.nilai,0),0,0,round(abs(nvl(d.nilai,0))/c.nilai*100)) as psn2,
+					nvl(e.nilai,0) as rctw,
+					abs(nvl(f.nilai,0)) as rltw,
+					decode(nvl(e.nilai,0),0,0,round(abs(nvl(f.nilai,0))/e.nilai*100)) as psn1,
+					decode(nvl(b.nilai,0),0,0,round(abs(nvl(d.nilai,0))/b.nilai*100)) as psn3
+			from t_akun a
+			left join(
+				
+				/* cari RKAP tahunan */
+				select  substr(kdakun,1,2) as kdakun,
+						sum(nilai) as nilai
+				from d_pagu_proyek
+				where thang='".session('tahun')."'
+				group by substr(kdakun,1,2)
+				
+			) b on(substr(a.kdakun,1,2)=b.kdakun)
+			left join(
+				
+				/* cari RKAP sd triwulanan */
+				select  substr(kdakun,1,2) as kdakun,
+						sum(".$periode2.") as nilai
+				from d_rencana
+				where thang='".session('tahun')."'
+				group by substr(kdakun,1,2)
+				
+			) c on(substr(a.kdakun,1,2)=c.kdakun)
+			left join(
+				
+				/* cari realisasi sd triwulanan */
+				select  substr(a.kdakun,1,2) as kdakun,
+						sum(a.debet-a.kredit) as nilai
+				from d_buku_besar a
+				where a.thang='".session('tahun')."' and a.periode<='".$periode."'
+				group by substr(a.kdakun,1,2)
+				
+			) d on(substr(a.kdakun,1,2)=d.kdakun)
+			left join(
+				
+				/* cari RKAP triwulanan */
+				select  substr(kdakun,1,2) as kdakun,
+						sum(nilai".$periode.") as nilai
+				from d_rencana
+				where thang='".session('tahun')."'
+				group by substr(kdakun,1,2)
+				
+			) e on(substr(a.kdakun,1,2)=e.kdakun)
+			left join(
+				
+				/* cari realisasi triwulanan */
+				select  substr(a.kdakun,1,2) as kdakun,
+						sum(a.debet-a.kredit) as nilai
+				from d_buku_besar a
+				where a.thang='".session('tahun')."' and a.periode in(".$periode1.")
+				group by substr(a.kdakun,1,2)
+				
+			) f on(substr(a.kdakun,1,2)=f.kdakun),
+			(
+				select  nmtriwulan1
+				from t_triwulan
+				where kdtriwulan='".$periode."'
+			) g
+			where a.kdlap='LR' and a.kddk='K' and a.lvl=2
+			order by a.kdakun
+		";
+		
+		$rows = DB::select($query);
+		
+		$rows_tot = DB::select("
+			select	sum(a.rkap) as rkap,
+					sum(a.rcsdtw) as rcsdtw,
+					sum(a.rlsdtw) as rlsdtw,
+					decode(sum(a.rcsdtw),0,0,round(sum(a.rlsdtw)/sum(a.rcsdtw)*100)) as psn2,
+					sum(a.rctw) as rctw,
+					sum(a.rltw) as rltw,
+					decode(sum(a.rctw),0,0,round(sum(a.rltw)/sum(a.rctw)*100)) as psn1,
+					decode(sum(a.rkap),0,0,round(sum(a.rlsdtw)/sum(a.rkap)*100)) as psn3
+			from(
+				".$query."
+			) a
+		");
+		
+		$rows = json_decode(json_encode($rows), true);
+		$rows_tot = json_decode(json_encode($rows_tot[0]), true);
         
         $data = [
             'tahun' => session('tahun'),
-            'rows' => $pendapatan,
+			'periode' => $rows[0]['triwulan'],
+            'rows' => $rows,
+			'total' => $rows_tot,
         ];
 
         $html_out = view('realisasi.pendapatan', $data);
