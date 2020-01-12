@@ -197,7 +197,7 @@
 			<td colspan="3" class="pl3">&nbsp;</td>
 			<td colspan="2" class="bl">&nbsp;</td>
 			<td class="">&nbsp;</td>
-			<td class="vb ac">(...................................)</td>
+			<td class="vb ac">({{$ttd2}})</td>
 		</tr>
 		<tr>
 			<td colspan="3" class="pl3">&nbsp;</td>
@@ -230,7 +230,7 @@
 		</tr>
 		<tr>
 			<td colspan="3" class="pl3 ac">&nbsp;</td>
-			<td class="pl3 ac vt">(...................................)</td>
+			<td class="pl3 ac vt">({{$ttd1}})</td>
 		</tr>
 		
 		<tr>

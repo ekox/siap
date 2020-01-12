@@ -66,6 +66,30 @@ class BuktiTransaksiController extends TableController
 			
 			$rows = (array)$rows[0];
 			
+			$rows_ttd = DB::select("
+				select  '1' as kode,
+						nvl(b.nama,'N/A') as nmttd1,
+						nvl(c.nama,'N/A') as nmttd2
+				from dual a,
+				(
+					select  nama
+					from t_pejabat
+					where kdlevel='04'
+				) b,
+				(
+					select  nama
+					from t_pejabat
+					where kdlevel='06'
+				) c
+			");
+			
+			$nmttd1 = 'N/A';
+			$nmttd2 = 'N/A';
+			if(count($rows_ttd)>0){
+				$nmttd1 = $rows_ttd[0]->nmttd1;
+				$nmttd2 = $rows_ttd[0]->nmttd2;
+			}
+			
 			$data = array(
 				'nourut' => $rows['nourut'],
 				'thang' => $rows['thang'],
@@ -78,6 +102,8 @@ class BuktiTransaksiController extends TableController
 				'kredit' => $rows['kredit'],
 				'nmakun' => $rows['nmakun'],
 				'bayar' => $rows['bayar'],
+				'ttd1' => $nmttd1,
+				'ttd2' => $nmttd2
 			);
 
 			//~ return view('bukti.uang-masuk', $data);
@@ -123,7 +149,8 @@ class BuktiTransaksiController extends TableController
 					a.uraian,
 					a.debet,
 					c.nmakun,
-					'Cash' as bayar
+					'Cash' as bayar,
+					a.id_alur
 			from d_trans a
 			left join t_penerima b on(a.id_penerima=b.id)
 			left join t_akun c on(a.debet=c.kdakun)
@@ -135,6 +162,48 @@ class BuktiTransaksiController extends TableController
 		if(count($rows)>0){
 			
 			$rows = (array)$rows[0];
+			
+			$rows_ttd = DB::select("
+				select  '1' as kode,
+						nvl(b.nama,'N/A') as nmttd1,
+						nvl(c.nama,'N/A') as nmttd2,
+						nvl(d.nama,'N/A') as nmttd3
+				from dual a,
+				(
+					select  nama
+					from t_pejabat
+					where kdlevel='04'
+				) b,
+				(
+					select  nama
+					from t_pejabat
+					where kdlevel='02'
+				) c,
+				(
+					select  nama
+					from t_pejabat
+					where kdlevel='01'
+				) d
+			");
+			
+			$nmttd1 = 'N/A';
+			$nmttd2 = 'N/A';
+			if(count($rows_ttd)>0){
+				
+				if($rows['id_alur']==9){
+					$nmttd1 = $rows_ttd[0]->nmttd1;
+					$nmttd2 = '';
+				}
+				elseif($rows['id_alur']==7){
+					$nmttd1 = $rows_ttd[0]->nmttd1;
+					$nmttd2 = $rows_ttd[0]->nmttd2;
+				}
+				elseif($rows['id_alur']==8){
+					$nmttd1 = $rows_ttd[0]->nmttd1;
+					$nmttd2 = $rows_ttd[0]->nmttd3;
+				}
+				
+			}
 			
 			$data = array(
 				'nourut' => $rows['nourut'],
@@ -148,6 +217,8 @@ class BuktiTransaksiController extends TableController
 				'kdakun' => $rows['debet'],
 				'nmakun' => $rows['nmakun'],
 				'bayar' => $rows['bayar'],
+				'ttd1' => $nmttd1,
+				'ttd2' => $nmttd2,
 			);
 		
 			//~ return view('bukti.uang-keluar', $data);
