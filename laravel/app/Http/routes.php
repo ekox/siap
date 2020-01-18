@@ -438,6 +438,7 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get('/proyek', 'DropdownController@proyek');
 		Route::get('/nourut/{param}', 'DropdownController@nourut');
 		Route::get('/jenis-lap', 'DropdownController@jenisLap');
+		Route::get('/sdana', 'DropdownController@sdana');
 		
 	});
 	

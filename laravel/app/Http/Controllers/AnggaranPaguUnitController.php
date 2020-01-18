@@ -17,11 +17,12 @@ class AnggaranPaguUnitController extends Controller {
 			$where = " and a.kdunit='".substr(session('kdunit'),0,4)."' ";
 		}
 		
-		$aColumns = array('id','nmunit','kdakun','pagu','realisasi','sisa');
+		$aColumns = array('id','nmproyek','nmunit','kdakun','pagu','realisasi','sisa');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
 		/* DB table to use */
 		$sTable = "select  a.id,
+							e.nmproyek,
 							c.nmunit,
 							a.kdakun,
 							a.nilai as pagu,
@@ -39,6 +40,7 @@ class AnggaranPaguUnitController extends Controller {
 						where b.menu=4
 						group by a.thang,a.kdunit,a.debet
 					) d on(a.thang=d.thang and a.kdunit=d.kdunit and a.kdakun=d.kdakun)
+					left outer join t_proyek e on(a.id_proyek=e.id)
 					where a.thang='".session('tahun')."' ".$where."
 					order by a.id desc";
 		
@@ -144,6 +146,7 @@ class AnggaranPaguUnitController extends Controller {
 			
 			$output['aaData'][] = array(
 				$row->no,
+				$row->nmproyek,
 				$row->nmunit,
 				$row->kdakun,
 				'<div style="text-align:right;">'.number_format($row->pagu).'</div>',
@@ -161,6 +164,8 @@ class AnggaranPaguUnitController extends Controller {
 		try{
 			$rows = DB::select("
 				select  id,
+						kdsdana,
+						id_proyek,
 						kdunit,
 						nilai,
 						kdakun
@@ -185,7 +190,7 @@ class AnggaranPaguUnitController extends Controller {
 		try{
 			if($request->input('inp-rekambaru')=='1'){
 				
-				$rows = DB::select("
+				/*$rows = DB::select("
 					SELECT	count(*) AS jml
 					from d_pagu
 					where thang=? and kdunit=? and kdakun=?
@@ -195,10 +200,12 @@ class AnggaranPaguUnitController extends Controller {
 					$request->input('kdakun'),
 				]);
 				
-				if($rows[0]->jml==0){
+				if($rows[0]->jml==0){*/
 					
 					$insert = DB::table('d_pagu')->insert([
 						'thang' => session('tahun'),
+						'kdsdana' => $request->input('kdsdana'),
+						'id_proyek' => $request->input('id_proyek'),
 						'kdunit' => $request->input('kdunit'),
 						'kdakun' => $request->input('kdakun'),
 						'nilai' => str_replace(",", "", $request->input('nilai'))
@@ -211,19 +218,27 @@ class AnggaranPaguUnitController extends Controller {
 						return 'Data gagal disimpan!';
 					}
 					
-				}
+				/*}
 				else{
 					return 'Duplikasi data!';
-				}
+				}*/
 				
 			}
 			else{
 				
 				$update = DB::update("
 					update d_pagu
-					set nilai=?
+					set kdsdana=?,
+						id_proyek=?,
+						kdunit=?,
+						kdakun=?,
+						nilai=?
 					where id=?
 				",[
+					$request->input('kdsdana'),
+					$request->input('id_proyek'),
+					$request->input('kdunit'),
+					$request->input('kdakun'),
 					str_replace(",", "", $request->input('nilai')),
 					$request->input('inp-id')
 				]);
@@ -333,8 +348,10 @@ class AnggaranPaguUnitController extends Controller {
 			DB::beginTransaction();
 			
 			$insert = DB::insert("
-				insert into h_pagu(kdunit,thang,nodok,tgdok,revisike,kdakun,nilai,created_at,updated_at)
-				select  kdunit,
+				insert into h_pagu(id_proyek,kdsdana,kdunit,thang,nodok,tgdok,revisike,kdakun,nilai,created_at,updated_at)
+				select  id_proyek,
+						kdsdana,
+						kdunit,
 						thang,
 						nodok,
 						tgdok,

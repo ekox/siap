@@ -644,12 +644,28 @@ class DropdownController extends Controller {
 		$rows = DB::select("
 			select	*
 			from t_proyek
-			order by nmproyek asc
+			order by is_proyek,nmproyek asc
 		");
 		
 		$data = '<option value="" style="display:none;">Pilih Data</option>';
 		foreach($rows as $row){
 			$data .= '<option value="'.$row->id.'"> '.$row->nmproyek.'</option>';
+		}
+		
+		return $data;
+		
+	}
+	
+	public function sdana()
+	{
+		$rows = DB::select("
+			select	*
+			from t_sdana
+		");
+		
+		$data = '<option value="" style="display:none;">Pilih Data</option>';
+		foreach($rows as $row){
+			$data .= '<option value="'.$row->kdsdana.'"> '.$row->nmsdana.'</option>';
 		}
 		
 		return $data;

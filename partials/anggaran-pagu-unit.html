@@ -27,6 +27,22 @@
 							<input type="hidden" id="_token" name="_token">
 							<div class="form-body">
 			                    <div class="form-group row">
+	                            	<label class="col-md-3 label-control" for="kdunit">Sumber Dana </label>
+		                            <div class="col-md-7">
+		                            	<select id="kdsdana" name="kdsdana" class="form-control chosen">
+										</select>
+		                            </div>
+									<label id="warning-kdsdana" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-3 label-control" for="kdunit">Proyek </label>
+		                            <div class="col-md-7">
+		                            	<select id="id_proyek" name="id_proyek" class="form-control chosen">
+										</select>
+		                            </div>
+									<label id="warning-id_proyek" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
 	                            	<label class="col-md-3 label-control" for="kdunit">Divisi </label>
 		                            <div class="col-md-7">
 		                            	<select id="kdunit" name="kdunit" class="form-control chosen">
@@ -144,6 +160,7 @@
 								<thead>
 									<tr>
 										<th>No</th>
+										<th>Proyek</th>
 										<th>Divisi</th>
 										<th>Akun</th>
 										<th>Pagu</th>
@@ -188,6 +205,14 @@
 		
 		jQuery.get('dropdown/unit/4', function(result){
 			jQuery('#kdunit').html(result).trigger('chosen:updated');
+		});
+		
+		jQuery.get('dropdown/proyek', function(result){
+			jQuery('#id_proyek').html(result).trigger('chosen:updated');
+		});
+		
+		jQuery.get('dropdown/sdana', function(result){
+			jQuery('#kdsdana').html(result).trigger('chosen:updated');
 		});
 		
 		jQuery.get('dropdown/akun/html/all', function(result){
@@ -282,9 +307,11 @@
 				if(result) {
 					jQuery('#inp-id').val(id);
 					jQuery('#inp-rekambaru').val('0');
-					jQuery('#kdunit').val(result.kdunit).prop('disabled', true);
+					jQuery('#kdsdana').val(result.kdsdana);
+					jQuery('#id_proyek').val(result.id_proyek);
+					jQuery('#kdunit').val(result.kdunit);
 					jQuery('#nilai').val(digit_grouping(result.nilai));
-					jQuery('#kdakun').val(result.kdakun).prop('disabled', true);
+					jQuery('#kdakun').val(result.kdakun);
 					jQuery('.chosen').trigger('chosen:updated');
 				}
 			});
@@ -307,7 +334,7 @@
 		jQuery('#simpan').click(function(){
 			jQuery(this).html('<span class="loading"><i class="fa fa-refresh"></i> Loading.....</span>');
 			jQuery(this).prop('disabled',true);
-			var next = form_valid('kdunit,nilai,kdakun');
+			var next = form_valid('kdsdana,id_proyek,nilai,kdakun');
 			if(next==true){
 				jQuery.get('token', function(token){
 					if(token){
