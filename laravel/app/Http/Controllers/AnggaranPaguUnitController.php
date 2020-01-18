@@ -17,7 +17,7 @@ class AnggaranPaguUnitController extends Controller {
 			$where = " and a.kdunit='".substr(session('kdunit'),0,4)."' ";
 		}
 		
-		$aColumns = array('id','nmproyek','nmunit','kdakun','pagu','realisasi','sisa');
+		$aColumns = array('id','nmproyek','nmunit','kdakun','nmakun','pagu','realisasi','sisa');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
 		/* DB table to use */
@@ -25,10 +25,12 @@ class AnggaranPaguUnitController extends Controller {
 							e.nmproyek,
 							c.nmunit,
 							a.kdakun,
+							b.nmakun,
 							a.nilai as pagu,
 							nvl(d.nilai,0) as realisasi,
 							a.nilai-nvl(d.nilai,0) as sisa
 					from d_pagu a
+					left join t_akun b on(a.kdakun=b.kdakun)
 					left outer join t_unit c on(a.kdunit=c.kdunit)
 					left outer join(
 						select  a.thang,
@@ -149,6 +151,7 @@ class AnggaranPaguUnitController extends Controller {
 				$row->nmproyek,
 				$row->nmunit,
 				$row->kdakun,
+				$row->nmakun,
 				'<div style="text-align:right;">'.number_format($row->pagu).'</div>',
 				'<div style="text-align:right;">'.number_format($row->realisasi).'</div>',
 				'<div style="text-align:right;">'.number_format($row->sisa).'</div>',
@@ -282,9 +285,14 @@ class AnggaranPaguUnitController extends Controller {
 	
 	public function sisaPagu()
 	{
-		$id_output = "";
-		if(isset($_GET['id_output'])){
-			$id_output = " and id_output='".$_GET['id_output']."' ";
+		$kdsdana = "";
+		if(isset($_GET['kdsdana'])){
+			$kdsdana = " and kdsdana='".$_GET['kdsdana']."' ";
+		}
+		
+		$id_proyek = "";
+		if(isset($_GET['id_proyek'])){
+			$id_output = " and id_proyek='".$_GET['id_proyek']."' ";
 		}
 		
 		$kdakun = "";
@@ -304,12 +312,12 @@ class AnggaranPaguUnitController extends Controller {
 			from(
 				select  sum(nilai) as nilai
 				from d_pagu
-				where kdunit=? and thang=? ".$id_output." ".$kdakun."
+				where kdunit=? and thang=? ".$kdsdana." ".$id_proyek." ".$kdakun."
 			) a,
 			(
 				select  sum(nilai) as nilai
 				from d_trans
-				where kdunit=? and thang=? ".$id_output." ".$kdakun1."
+				where kdunit=? and thang=? ".$kdsdana." ".$id_proyek." ".$kdakun1."
 			) b
 		",[
 			substr(session('kdunit'),0,4),

@@ -820,14 +820,15 @@
 			});
 		});
 		
-		jQuery('#id_output,#debet').change(function(){
+		jQuery('#kdsdana,#id_proyek,#debet').change(function(){
 			
-			var id_output = jQuery('#id_output').val();
+			var kdsdana = jQuery('#kdsdana').val();
+			var id_proyek = jQuery('#id_proyek').val();
 			var kdakun = jQuery('#debet').val();
 			
-			if(id_output!=='' && kdakun!==''){
+			if(kdsdana!=='' && id_proyek!=='' && kdakun!==''){
 				
-				jQuery.getJSON('anggaran/pagu/unit/sisa?id_output='+id_output+'&kdakun='+kdakun, function(result){
+				jQuery.getJSON('anggaran/pagu/unit/sisa?kdsdana='+kdsdana+'&id_proyek='+id_proyek+'&kdakun='+kdakun, function(result){
 					if(result){
 						jQuery('#pagu').val(digit_grouping(result.pagu));
 						jQuery('#realisasi').val(digit_grouping(result.realisasi));
