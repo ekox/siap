@@ -472,6 +472,23 @@ class PengeluaranProsesController extends Controller {
 			if(count($rows)>0){
 				
 				$lanjut = true;
+				$error = $rows[0]->ket;
+				
+				if($rows[0]->is_bayar=='1'){
+					
+					$rows_bayar = DB::select("
+						select nvl(nocek,'') as nocek
+						from d_trans
+						where id=?
+					",[
+						$request->input('inp-id'),
+					]);
+					
+					if($rows_bayar[0]->nocek==''){
+						$lanjut = false;
+					}
+					
+				}
 				
 				if($lanjut){
 					
