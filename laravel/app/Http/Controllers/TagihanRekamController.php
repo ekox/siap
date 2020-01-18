@@ -156,6 +156,7 @@ class TagihanRekamController extends Controller {
 			select  a.id,
 					lpad(a.nourut,5,'0') as nourut,
 					a.kdunit,
+					a.kdsdana,
 					a.id_alur,
 					a.kdtran,
 					a.id_proyek,
@@ -290,6 +291,7 @@ class TagihanRekamController extends Controller {
 				if($rows[0]->jml==0){
 					
 					$id_trans = DB::table('d_trans')->insertGetId([
+						'kdsdana' => $request->input('kdsdana'),
 						'kdunit' => $request->input('kdunit'),
 						'thang' => session('tahun'),
 						'id_alur' => $request->input('id_alur'),
@@ -380,7 +382,8 @@ class TagihanRekamController extends Controller {
 			else{
 				$update = DB::update("
 					update d_trans
-					set kdtran=?,
+					set kdsdana=?,
+						kdtran=?,
 						id_proyek=?,
 						id_penerima=?,
 						nodok=?,
@@ -395,6 +398,7 @@ class TagihanRekamController extends Controller {
 						updated_at=sysdate
 					where id=?
 				",[
+					$request->input('kdsdana'),
 					$request->input('kdtran'),
 					$id_proyek,
 					$request->input('id_pelanggan'),

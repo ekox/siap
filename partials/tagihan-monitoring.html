@@ -35,6 +35,13 @@
 	                            	</div>
 		                        </div>
 								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="nmunit">Sumber Dana </label>
+									<div class="col-md-7">
+	                            		<input id="nmsdana" name="nmsdana" class="form-control" readonly>
+	                            	</div>
+									<label id="warning-nmsdana" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="nmunit">Divisi/ Unit </label>
 									<div class="col-md-7">
 	                            		<input id="nmunit" name="nmunit" class="form-control" readonly>
@@ -271,6 +278,7 @@
 					jQuery('#nmunit').val(result.message.nmunit);
 					jQuery('#id_alur').val(result.message.id_alur);
 					jQuery('#status').val(result.message.status);
+					jQuery('#nmsdana').val(result.message.nmsdana);
 					jQuery('#nmunit').val(result.message.nmunit);
 					jQuery('#nmalur').val(result.message.nmalur);
 					jQuery('#nmtrans').val(result.message.nmtrans);

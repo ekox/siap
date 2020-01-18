@@ -26,7 +26,7 @@ class TagihanProsesController extends Controller {
 								c.nmstatus as status,
 								decode(c.is_unit,null,
 									1,
-									decode(substr(a.kdunit,1,c.is_unit),'".session('kdlevel')."',
+									decode(substr(a.kdunit,1,4),'".substr(session('kdunit'),0,4)."',
 										1,
 										0
 									)
@@ -308,6 +308,7 @@ class TagihanProsesController extends Controller {
 					b.nmalur,
 					c.nmunit,
 					j.nmproyek,
+					k.nmsdana,
 					d.nama as nmpelanggan,
 					e.nmtrans,
 					a.nodok as nopks,
@@ -329,6 +330,7 @@ class TagihanProsesController extends Controller {
 			left outer join t_akun f on(a.debet=f.kdakun)
 			left outer join t_akun i on(a.kredit=i.kdakun)
 			left outer join t_proyek j on(a.id_proyek=j.id)
+			left outer join t_sdana k on(a.kdsdana=k.kdsdana)
 			where a.id=?
 		",[
 			$id

@@ -185,6 +185,7 @@ class PenerimaanRekamController extends Controller {
 		$rows = DB::select("
 			select  a.id,
 					a.kdunit,
+					a.kdsdana,
 					a.id_alur,
 					a.kdtran,
 					nvl(a.id_proyek,'') as id_proyek,
@@ -423,6 +424,7 @@ class PenerimaanRekamController extends Controller {
 						'nourut' => str_replace('0', '', $request->input('nourut')),
 						'id_alur' => $request->input('id_alur'),
 						'kdtran' => $request->input('kdtran'),
+						'kdsdana' => $request->input('kdsdana'),
 						'id_proyek' => $id_proyek,
 						'id_penerima' => $request->input('id_pelanggan'),
 						'nodok' => $request->input('nopks'),
@@ -509,7 +511,8 @@ class PenerimaanRekamController extends Controller {
 			else{
 				$update = DB::update("
 					update d_trans
-					set kdtran=?,
+					set kdsdana=?,
+						kdtran=?,
 						id_proyek=?,
 						id_penerima=?,
 						nodok=?,
@@ -524,6 +527,7 @@ class PenerimaanRekamController extends Controller {
 						updated_at=sysdate
 					where id=?
 				",[
+					$request->input('kdsdana'),
 					$request->input('kdtran'),
 					$id_proyek,
 					$request->input('id_pelanggan'),

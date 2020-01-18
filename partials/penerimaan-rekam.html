@@ -36,6 +36,14 @@
 									<button id="cari-nourut" class="btn btn-xs btn-raised btn-warning mr-1"><i class="fa fa-refresh"></i></button>
 		                        </div>
 								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="id_alur">Sumber Dana </label>
+									<div class="col-md-7">
+	                            		<select id="kdsdana" name="kdsdana" class="form-control chosen">
+										</select>
+	                            	</div>
+									<label id="warning-kdsdana" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="id_alur">Jenis Kegiatan </label>
 									<div class="col-md-7">
 	                            		<select id="id_alur" name="id_alur" class="form-control chosen">
@@ -332,6 +340,10 @@
 		//aktivasi chosen
 		jQuery('.chosen').chosen();
 		
+		jQuery.get('dropdown/sdana', function(result){
+			jQuery('#kdsdana').html(result).trigger('chosen:updated');
+		});
+		
 		jQuery.get('dropdown/alur-penerimaan', function(result){
 			jQuery('#id_alur').html(result).trigger('chosen:updated');
 		});
@@ -571,6 +583,7 @@
 					jQuery('#inp-rekambaru').val('0');
 					jQuery('#x').val(result.x);
 					jQuery('#kdunit').val(result.message.kdunit);
+					jQuery('#kdsdana').val(result.message.kdsdana);
 					jQuery('#id_alur').val(result.message.id_alur).prop('disabled',true);
 					jQuery('#id_proyek').val(result.message.id_proyek);
 					jQuery('#id_pelanggan').val(result.message.id_pelanggan);
@@ -618,7 +631,7 @@
 			jQuery(this).html('<span class="loading"><i class="fa fa-refresh"></i> Loading.....</span>');
 			jQuery(this).prop('disabled',true);
 			jQuery('#id_pelanggan,#kredit').prop('disabled', false).trigger('chosen:updated');
-			var next = form_valid('nourut,kdunit,id_alur,id_pelanggan,kdtran,nopks,tgpks,uraian,tgjtempo,nilai,debet,kredit');
+			var next = form_valid('kdsdana,nourut,kdunit,id_alur,id_pelanggan,kdtran,nopks,tgpks,uraian,tgjtempo,nilai,debet,kredit');
 			if(next==true){
 				jQuery.get('token', function(token){
 					if(token){

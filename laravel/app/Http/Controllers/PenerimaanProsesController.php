@@ -27,7 +27,7 @@ class PenerimaanProsesController extends Controller {
 								c.nmstatus as status,
 								decode(c.is_unit,null,
 									1,
-									decode(substr(a.kdunit,1,c.is_unit),'".session('kdlevel')."',
+									decode(substr(a.kdunit,1,4),'".substr(session('kdunit'),0,4)."',
 										1,
 										0
 									)
@@ -311,6 +311,7 @@ class PenerimaanProsesController extends Controller {
 					lpad(a.nourut,5,'0') as nourut,
 					b.nmalur,
 					c.nmunit,
+					l.nmsdana,
 					k.nmproyek,
 					d.nama as nmpelanggan,
 					e.nmtrans,
@@ -333,6 +334,7 @@ class PenerimaanProsesController extends Controller {
 			left outer join t_akun f on(a.debet=f.kdakun)
 			left outer join t_akun i on(a.kredit=i.kdakun)
 			left join t_proyek k on(a.id_proyek=k.id)
+			left join t_sdana l on(a.kdsdana=l.kdsdana)
 			left join(
 				select	id_trans,
 						sum(nilai) as nilai
