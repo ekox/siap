@@ -9,11 +9,12 @@ class AnggaranRencanaController extends Controller {
 
 	public function index(Request $request)
 	{
-		$aColumns = array('id','nmproyek','kdakun','nmakun','t01','t02','t03','t04');
+		$aColumns = array('id','nmsdana','nmproyek','kdakun','nmakun','t01','t02','t03','t04');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
 		/* DB table to use */
 		$sTable = "select  a.id,
+							d.nmsdana,
 							b.nmproyek,
 							a.kdakun,
 							c.nmakun,
@@ -24,6 +25,7 @@ class AnggaranRencanaController extends Controller {
 					from d_rencana a
 					left join t_proyek b on(a.id_proyek=b.id)
 					left join t_akun c on(a.kdakun=c.kdakun)
+					left join t_sdana d on(a.kdsdana=d.kdsdana)
 					where a.thang='".session('tahun')."'
 					order by a.id desc";
 		
@@ -131,6 +133,7 @@ class AnggaranRencanaController extends Controller {
 			
 			$output['aaData'][] = array(
 				$row->no,
+				$row->nmsdana,
 				$row->nmproyek,
 				$row->kdakun,
 				$row->nmakun,
@@ -191,6 +194,7 @@ class AnggaranRencanaController extends Controller {
 					$insert = DB::table('d_rencana')->insert([
 						'thang' => session('tahun'),
 						'id_proyek' => $id_proyek,
+						'kdsdana' => $request->input('kdsdana'),
 						'kdakun' => $request->input('kdakun'),
 						'nilai03' => str_replace(",", "", $request->input('nilai03')),
 						'nilai06' => str_replace(",", "", $request->input('nilai06')),

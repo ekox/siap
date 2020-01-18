@@ -27,6 +27,14 @@
 							<input type="hidden" id="_token" name="_token">
 							<div class="form-body">
 			                    <div class="form-group row">
+	                            	<label class="col-md-3 label-control" for="kdunit">Sumber Dana </label>
+		                            <div class="col-md-7">
+		                            	<select id="kdsdana" name="kdsdana" class="form-control chosen">
+										</select>
+		                            </div>
+									<label id="warning-kdsdana" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
 	                            	<label class="col-md-3 label-control" for="kdunit">Proyek </label>
 		                            <div class="col-md-7">
 		                            	<select id="id_proyek" name="id_proyek" class="form-control chosen">
@@ -109,6 +117,7 @@
 								<thead>
 									<tr>
 										<th>No</th>
+										<th>Sumber Dana</th>
 										<th>Proyek</th>
 										<th>Kode Akun</th>
 										<th>Nama Akun</th>
@@ -153,6 +162,10 @@
 		//aktivasi chosen
 		jQuery('.chosen').chosen();
 		
+		jQuery.get('dropdown/sdana', function(result){
+			jQuery('#kdsdana').html(result).trigger('chosen:updated');
+		});
+		
 		jQuery.get('dropdown/proyek', function(result){
 			jQuery('#id_proyek').html(result).trigger('chosen:updated');
 		});
@@ -172,7 +185,7 @@
 			jQuery('input,textarea,select').val('');
 			jQuery('.warning, #div-form').hide();
 			jQuery('#div-tabel').show();
-			jQuery('#id_proyek,#kdakun').prop('disabled', false);
+			jQuery('#kdsdana,#id_proyek,#kdakun').prop('disabled', false);
 			jQuery('#simpan').prop('disabled', false);
 			jQuery('.chosen').trigger('chosen:updated');
 		}
@@ -239,7 +252,8 @@
 				if(result) {
 					jQuery('#inp-id').val(id);
 					jQuery('#inp-rekambaru').val('0');
-					jQuery('#id_proyek').val(result.id_proyek+'-'+result.id_penerima).prop('disabled', true);
+					jQuery('#kdsdana').val(result.kdsdana).prop('disabled', true);
+					jQuery('#id_proyek').val(result.id_proyek).prop('disabled', true);
 					jQuery('#kdakun').val(result.kdakun).prop('disabled', true);
 					jQuery('#nilai03').val(digit_grouping(result.nilai03));
 					jQuery('#nilai06').val(digit_grouping(result.nilai06));
@@ -267,7 +281,7 @@
 		jQuery('#simpan').click(function(){
 			jQuery(this).html('<span class="loading"><i class="fa fa-refresh"></i> Loading.....</span>');
 			jQuery(this).prop('disabled',true);
-			var next = form_valid('id_proyek,kdakun');
+			var next = form_valid('kdsdana,id_proyek,kdakun');
 			if(next==true){
 				jQuery.get('token', function(token){
 					if(token){
