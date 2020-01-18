@@ -187,6 +187,7 @@ class PengeluaranRekamController extends Controller {
 		$rows = DB::select("
 			select  a.id,
 					lpad(a.nourut,5,'0') as nourut,
+					a.kdsdana,
 					a.kdunit,
 					a.id_alur,
 					a.id_output,
@@ -408,6 +409,7 @@ class PengeluaranRekamController extends Controller {
 										'thang' => session('tahun'),
 										'nourut' => $nourut,
 										'id_proyek' => $id_proyek,
+										'kdsdana' => $request->input('kdsdana'),
 										'id_alur' => $request->input('id_alur'),
 										'kdtran' => $request->input('kdtran'),
 										'id_penerima' => $request->input('id_pelanggan'),
@@ -496,6 +498,7 @@ class PengeluaranRekamController extends Controller {
 								$update = DB::update("
 									update d_trans
 									set id_proyek=?,
+										kdsdana=?,
 										kdtran=?,
 										id_penerima=?,
 										nodok=?,
@@ -511,6 +514,7 @@ class PengeluaranRekamController extends Controller {
 									where id=?
 								",[
 									$id_proyek,
+									$request->input('kdsdana'),
 									$request->input('kdtran'),
 									$request->input('id_pelanggan'),
 									$request->input('nopks'),

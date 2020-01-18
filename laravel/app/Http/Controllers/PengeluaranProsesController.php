@@ -27,7 +27,7 @@ class PengeluaranProsesController extends Controller {
 								c.nmstatus as status,
 								decode(c.is_unit,null,
 									1,
-									decode(substr(a.kdunit,1,c.is_unit),'".session('kdlevel')."',
+									decode(substr(a.kdunit,1,4),'".substr(session('kdunit'),0,4)."',
 										1,
 										0
 									)
@@ -315,6 +315,7 @@ class PengeluaranProsesController extends Controller {
 					a.thang,
 					c.nmunit,
 					l.nmproyek,
+					m.nmsdana,
 					d.nama as nmpelanggan,
 					k.nmtrans,
 					a.nodok as nopks,
@@ -337,6 +338,7 @@ class PengeluaranProsesController extends Controller {
 			left outer join t_akun f on(a.debet=f.kdakun)
 			left outer join t_akun i on(a.kredit=i.kdakun)
 			left outer join t_proyek l on(a.id_proyek=l.id)
+			left outer join t_sdana m on(a.kdsdana=m.kdsdana)
 			left outer join(
 				select	a.id_trans,
 						sum(decode(b.kddk,'D',a.nilai,-a.nilai)) as nilai
