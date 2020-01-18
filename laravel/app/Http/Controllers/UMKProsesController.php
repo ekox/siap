@@ -27,7 +27,7 @@ class UMKProsesController extends Controller {
 								c.nmstatus as status,
 								decode(c.is_unit,null,
 									1,
-									decode(substr(a.kdunit,1,c.is_unit),'".session('kdlevel')."',
+									decode(substr(a.kdunit,1,4),'".substr(session('kdunit'),0,4)."',
 										1,
 										0
 									)
