@@ -9,16 +9,14 @@ class RefProyekController extends Controller {
 
 	public function index(Request $request)
 	{
-		$aColumns = array('id','nmproyek','nama','nilai');
+		$aColumns = array('id','nmproyek','jenis');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
 		/* DB table to use */
 		$sTable = "select  a.id,
 							a.nmproyek,
-							b.nama,
-							a.nilai
+							decode(a.is_proyek,'1','Proyek','Non Proyek') as jenis
 					from t_proyek a
-					left join t_penerima b on(a.id_penerima=b.id)
 					order by a.id desc
 				";
 		
@@ -126,8 +124,7 @@ class RefProyekController extends Controller {
 			$output['aaData'][] = array(
 				$row->no,
 				$row->nmproyek,
-				$row->nama,
-				'<div style="text-align:right;">'.number_format($row->nilai).'</div>',
+				$row->jenis,
 				$aksi
 			);
 		}
@@ -162,8 +159,7 @@ class RefProyekController extends Controller {
 				
 			$insert = DB::table('t_proyek')->insert([
 				'nmproyek' => $request->input('nmproyek'),
-				'id_penerima' => $request->input('id_penerima'),
-				'nilai' => str_replace(",","",$request->input('nilai')),
+				'is_proyek' => $request->input('is_proyek')
 			]);
 			
 			if($insert){
@@ -179,13 +175,11 @@ class RefProyekController extends Controller {
 			$update = DB::update("
 				update t_proyek
 				set nmproyek=?,
-					id_penerima=?,
-					nilai=?
+					is_proyek=?
 				where id=?
 			",[
 				$request->input('nmproyek'),
-				$request->input('id_penerima'),
-				str_replace(",","",$request->input('nilai')),
+				$request->input('is_proyek'),
 				$request->input('inp-id')
 			]);
 			
