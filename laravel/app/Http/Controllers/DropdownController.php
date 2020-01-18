@@ -257,6 +257,23 @@ class DropdownController extends Controller {
 		
 	}
 	
+	public function levelPejabat()
+	{
+		$rows = DB::select("
+			select	*
+			from t_level
+			where pejabat=1
+		");
+		
+		$data = '<option value="" style="display:none;">Pilih Data</option>';
+		foreach($rows as $row){
+			$data .= '<option value="'.$row->kdlevel.'"> '.$row->nmlevel.'</option>';
+		}
+		
+		return $data;
+		
+	}
+	
 	public function jenis_pagu()
 	{
 		$rows = DB::select("

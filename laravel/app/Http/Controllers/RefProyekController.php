@@ -63,8 +63,7 @@ class RefProyekController extends Controller {
 		if(isset($_GET['sSearch'])){
 			$sSearch=$_GET['sSearch'];
 			if((isset($sSearch))&&($sSearch!='')){
-				$sWhere=" where lower(nmproyek) like lower('".$sSearch."%') or lower(nmproyek) like lower('%".$sSearch."%') or
-								where lower(nama) like lower('".$sSearch."%') or lower(nama) like lower('%".$sSearch."%')";
+				$sWhere=" where lower(nmproyek) like lower('".$sSearch."%') or lower(nmproyek) like lower('%".$sSearch."%')";
 			}
 		}
 		

@@ -416,6 +416,7 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get('/unit', 'DropdownController@unit_all');
 		Route::get('/unit/{param}', 'DropdownController@unit');
 		Route::get('/level', 'DropdownController@level');
+		Route::get('/level-pejabat', 'DropdownController@levelPejabat');
 		Route::get('/jenis-pagu', 'DropdownController@jenis_pagu');
 		Route::get('/alur', 'DropdownController@alur');
 		Route::get('/alur-tagihan', 'DropdownController@alurTagihan');
@@ -526,6 +527,15 @@ Route::group(['middleware' => 'auth'], function(){
 			Route::get('/pilih/{param}', 'RefProyekController@pilih')->middleware('role:00.01');
 			Route::post('', 'RefProyekController@simpan')->middleware('role:00.01');
 			Route::post('/hapus', 'RefProyekController@hapus')->middleware('role:00.01');
+			
+		});
+		
+		Route::group(['prefix' => 'pejabat'], function(){
+			
+			Route::get('', 'RefPejabatController@index');
+			Route::get('/pilih/{param}', 'RefPejabatController@pilih')->middleware('role:00.01');
+			Route::post('', 'RefPejabatController@simpan')->middleware('role:00.01');
+			Route::post('/hapus', 'RefPejabatController@hapus')->middleware('role:00.01');
 			
 		});
 		
