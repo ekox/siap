@@ -382,6 +382,7 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get('/uang-muka/{param}', 'BuktiTransaksiController@uangMukaKerja');
 		Route::get('/uang-masuk/{param}', 'BuktiTransaksiController@uangMasuk');
 		Route::get('/uang-keluar/{param}', 'BuktiTransaksiController@uangKeluar');
+		Route::get('/tanda-terima/{param}', 'BuktiTransaksiController@tandaTerima');
 		
 	});
 	

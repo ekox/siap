@@ -491,5 +491,103 @@ class BuktiTransaksiController extends TableController
 		exit;
 		
     }
+	
+	public function tandaTerima($id)
+	{
+		$rows = DB::select("
+			select  a.id,
+					a.thang,
+					lpad(a.nourut,5,'0') as nourut,
+					a.kdtran,
+					c.nmtrans,
+					b.nmunit,
+					d.nama as nmrekam,
+					e.nama as nmverifikasi
+			from d_trans a
+			left join t_unit b on(substr(a.kdunit,1,4)=b.kdunit)
+			left join t_trans c on(a.kdtran=c.id)
+			left join t_user d on(a.id_user=d.id)
+			left join(
+				select  c.kdunit,
+						a.nama
+				from t_user a
+				left join t_user_level b on(a.id=b.id_user)
+				left join t_user_unit c on(a.id=c.id_user)
+				where b.kdlevel='08' and a.aktif='1' 
+			) e on(a.kdunit=e.kdunit)
+			where a.id=?
+		",[
+			$id
+		]);
+		
+		$data = (array)$rows[0];
+		
+		$rows_detil = DB::select("
+			select  c.nmtrans,
+					b.id,
+					b.uraian,
+					decode(d.nmfile,null,0,1) as cek
+			from t_trans_dok a
+			left join t_dok b on(a.id_dok=b.id)
+			left join t_trans c on(a.id_trans=c.id)
+			left join(
+				select  id_dok,
+						nmfile
+				from d_trans_dok
+				where id_trans=?
+			) d on(a.id_dok=d.id_dok)
+			where a.id_trans=?
+			order by a.id
+		",[
+			$id,
+			$rows[0]->kdtran
+		]);
+		
+		$tabel = '';
+		$i = 1;
+		foreach($rows_detil as $row){
+			
+			$ya = '';
+			$tidak = '';
+			if($row->cek==0){
+				$ya = '';
+				$tidak = 'X';
+			}
+			else{
+				$ya = 'V';
+				$tidak = '';
+			}
+			
+			$tabel .= '<tr>
+						<td>'.$i++.'</td>
+						<td>'.$row->uraian.'</td>
+						<td style="text-align:center;">'.$ya.'</td>
+						<td style="text-align:center;">'.$tidak.'</td>
+						<td></td>
+					   </tr>';
+		}
+		
+		$data['detil'] = $tabel;
+		
+		$html_out = view('bukti.tanda-terima', $data);
+		
+		$mpdf = new Mpdf([
+			'mode' => 'utf-8',
+			'format' => 'A4-P',
+			'margin_left' => 8,
+			'margin_right' => 8,
+			'margin_top' => 18,
+			'margin_bottom' => 18,
+		]);
+
+		//mode portrait or landscape
+		$mpdf->AddPage('P');
+
+		//write content to PDF
+		$mpdf->writeHTML($html_out);
+		$mpdf->Output('Tanda Terima.pdf', 'I');
+		exit;
+		
+	}
 
 }

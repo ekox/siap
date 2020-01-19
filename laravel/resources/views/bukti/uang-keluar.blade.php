@@ -203,7 +203,7 @@
 			<td colspan="3" class="pl3" style="border-right: 1px solid #000;">&nbsp;</td>
 			<td colspan="2" class="bl pl3">&nbsp;</td>
 			<td class="pl3">&nbsp;</td>
-			<td class="pl3 ac vb">{{$nip_ttd3}}</td>
+			<td class="pl3 ac vb" style="text-align:center;">{{$nip_ttd3}}</td>
 		</tr>
 		<tr>
 			<td colspan="3" class="bb pl3" style="border-right: 1px solid #000;">&nbsp;</td>
