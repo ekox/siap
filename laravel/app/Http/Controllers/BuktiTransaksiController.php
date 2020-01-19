@@ -146,14 +146,30 @@ class BuktiTransaksiController extends TableController
 					to_char(a.tgdok,'dd-mm-yyyy') as tgdok,
 					b.nama as nmpenerima,
 					a.nilai,
+					a.nilai_bersih,
 					a.uraian,
 					a.debet,
 					c.nmakun,
-					'Cash' as bayar,
-					a.id_alur
+					nvl(a.nocek,'....................') as nocek,
+					to_char(a.tgdok,'dd-mm-yyyy') as tgcek,
+					a.id_alur,
+					d.nmunit,
+					e.nip as nip_ttd1,
+					e.nama as nama_ttd1,
+					f.nip as nip_ttd2,
+					f.nama as nama_ttd2,
+					g.nip as nip_ttd3,
+					g.nama as nama_ttd3,
+					h.nip as nip_ttd4,
+					h.nama as nama_ttd4
 			from d_trans a
 			left join t_penerima b on(a.id_penerima=b.id)
 			left join t_akun c on(a.debet=c.kdakun)
+			left join t_unit d on(substr(a.kdunit,1,4)=d.kdunit)
+			left join t_pejabat e on(a.ttd1=e.id)
+			left join t_pejabat f on(a.ttd2=f.id)
+			left join t_pejabat g on(a.ttd3=g.id)
+			left join t_pejabat h on(a.ttd4=h.id)
 			where a.id=?
 		",[
 			$id
@@ -161,64 +177,137 @@ class BuktiTransaksiController extends TableController
 		
 		if(count($rows)>0){
 			
+			$rows_pajak = DB::select("
+				select	a.kdakun,
+						c.nmakun,
+						b.kddk,
+						a.nilai
+				from d_trans_pajak a
+				left join t_akun_pajak b on(a.kdakun=b.kdakun)
+				left join t_akun c on(b.kdakun=c.kdakun)
+				where a.id_trans=?
+				order by b.nourut
+			",[
+				$id
+			]);
+			
+			$kdakun_pajak1 = '....................';
+			$kdakun_pajak2 = '....................';
+			$kdakun_pajak3 = '....................';
+			$kdakun_pajak4 = '....................';
+			$nilai_pajak1 = '....................';
+			$nilai_pajak2 = '....................';
+			$nilai_pajak3 = '....................';
+			$nilai_pajak4 = '....................';
+			
+			$total_pajak = 0;
+			
+			if(isset($rows_pajak[0]->kdakun)){
+				$kdakun_pajak1 = $rows_pajak[0]->kdakun;
+				if($rows_pajak[0]->kddk=='D'){
+					$nilai_pajak1 = number_format($rows_pajak[0]->nilai);
+					$total_pajak += $rows_pajak[0]->nilai;
+				}
+				else{
+					$nilai_pajak1 = '('.number_format($rows_pajak[0]->nilai).')';
+					$total_pajak -= $rows_pajak[0]->nilai;
+				}
+			}
+			
+			if(isset($rows_pajak[1]->kdakun)){
+				$kdakun_pajak2 = $rows_pajak[1]->kdakun;
+				if($rows_pajak[1]->kddk=='D'){
+					$nilai_pajak2 = number_format($rows_pajak[1]->nilai);
+					$total_pajak += $rows_pajak[1]->nilai;
+				}
+				else{
+					$nilai_pajak2 = '('.number_format($rows_pajak[1]->nilai).')';
+					$total_pajak -= $rows_pajak[1]->nilai;
+				}
+			}
+			
+			if(isset($rows_pajak[2]->kdakun)){
+				$kdakun_pajak3 = $rows_pajak[2]->kdakun;
+				if($rows_pajak[2]->kddk=='D'){
+					$nilai_pajak3 = number_format($rows_pajak[2]->nilai);
+					$total_pajak += $rows_pajak[2]->nilai;
+				}
+				else{
+					$nilai_pajak3 = '('.number_format($rows_pajak[2]->nilai).')';
+					$total_pajak -= $rows_pajak[2]->nilai;
+				}
+			}
+			
+			if(isset($rows_pajak[3]->kdakun)){
+				$kdakun_pajak4 = $rows_pajak[3]->kdakun;
+				if($rows_pajak[3]->kddk=='D'){
+					$nilai_pajak4 = number_format($rows_pajak[3]->nilai);
+					$total_pajak += $rows_pajak[3]->nilai;
+				}
+				else{
+					$nilai_pajak4 = '('.number_format($rows_pajak[3]->nilai).')';
+					$total_pajak -= $rows_pajak[3]->nilai;
+				}
+			}
+			
+			
+			if($total_pajak<0){
+				$total_pajak = '('.number_format($total_pajak).')';
+			}
+			else{
+				$total_pajak = number_format($total_pajak);
+			}
+			
 			$rows = (array)$rows[0];
 			
-			$rows_ttd = DB::select("
-				select  '1' as kode,
-						nvl(b.nama,'N/A') as nmttd1,
-						nvl(c.nama,'N/A') as nmttd2,
-						nvl(d.nama,'N/A') as nmttd3
-				from dual a,
-				(
-					select  nama
-					from t_pejabat
-					where kdlevel='04'
-				) b,
-				(
-					select  nama
-					from t_pejabat
-					where kdlevel='02'
-				) c,
-				(
-					select  nama
-					from t_pejabat
-					where kdlevel='01'
-				) d
-			");
-			
-			$nmttd1 = 'N/A';
-			$nmttd2 = 'N/A';
-			if(count($rows_ttd)>0){
-				
-				if($rows['id_alur']==9){
-					$nmttd1 = $rows_ttd[0]->nmttd1;
-					$nmttd2 = '';
-				}
-				elseif($rows['id_alur']==7){
-					$nmttd1 = $rows_ttd[0]->nmttd1;
-					$nmttd2 = $rows_ttd[0]->nmttd2;
-				}
-				elseif($rows['id_alur']==8){
-					$nmttd1 = $rows_ttd[0]->nmttd1;
-					$nmttd2 = $rows_ttd[0]->nmttd3;
-				}
-				
+			$nama_ttd1 = $rows['nama_ttd1'];
+			$nama_ttd2 = $rows['nama_ttd2'];
+			$jabatan = '';
+			if($rows['id_alur']==9){
+				$jabatan = '';
+				$nama_ttd3 = '';
+				$nip_ttd3 = '';
+			}
+			elseif($rows['id_alur']==7){
+				$jabatan = 'DIREKTUR KEUANGAN';
+				$nama_ttd3 = '('.$rows['nama_ttd3'].')';
+				$nip_ttd3 = 'NIP/NRK '.$rows['nip_ttd3'];
+			}
+			elseif($rows['id_alur']==8){
+				$jabatan = 'DIREKTUR UTAMA';
+				$nama_ttd3 = '('.$rows['nama_ttd4'].')';
+				$nip_ttd3 = 'NIP/NRK '.$rows['nip_ttd4'];
 			}
 			
 			$data = array(
 				'nourut' => $rows['nourut'],
 				'thang' => $rows['thang'],
+				'nmunit' => $rows['nmunit'],
 				'nodok' => $rows['nodok'],
 				'tgdok' => $rows['tgdok'],
 				'nmpenerima' => $rows['nmpenerima'],
 				'nilai' => number_format($rows['nilai']),
+				'nilai_bersih' => number_format($rows['nilai_bersih']),
+				'total_pajak' => $total_pajak,
 				'sejumlah' => ucwords(KNV::terbilang($rows['nilai']).' rupiah'),
 				'uraian' => $rows['uraian'],
 				'kdakun' => $rows['debet'],
 				'nmakun' => $rows['nmakun'],
-				'bayar' => $rows['bayar'],
-				'ttd1' => $nmttd1,
-				'ttd2' => $nmttd2,
+				'nocek' => $rows['nocek'],
+				'tgcek' => $rows['tgcek'],
+				'kdakun_pajak1' => $kdakun_pajak1,
+				'kdakun_pajak2' => $kdakun_pajak2,
+				'kdakun_pajak3' => $kdakun_pajak3,
+				'kdakun_pajak4' => $kdakun_pajak4,
+				'nilai_pajak1' => $nilai_pajak1,
+				'nilai_pajak2' => $nilai_pajak2,
+				'nilai_pajak3' => $nilai_pajak3,
+				'nilai_pajak4' => $nilai_pajak4,
+				'nama_ttd1' => $nama_ttd1,
+				'nama_ttd2' => $nama_ttd2,
+				'nama_ttd3' => $nama_ttd3,
+				'nip_ttd3' => $nip_ttd3,
+				'jabatan' => $jabatan,
 			);
 		
 			//~ return view('bukti.uang-keluar', $data);

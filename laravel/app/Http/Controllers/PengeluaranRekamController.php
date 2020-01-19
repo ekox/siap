@@ -202,7 +202,11 @@ class PengeluaranRekamController extends Controller {
 					0 as total,
 					nvl(a.debet,'') as debet,
 					nvl(a.kredit,'') as kredit,
-					a.parent_id
+					a.parent_id,
+					a.ttd1,
+					a.ttd2,
+					a.ttd3,
+					a.ttd4
 			from d_trans a
 			where a.id=?
 		",[
@@ -323,6 +327,47 @@ class PengeluaranRekamController extends Controller {
 				$data['x'] = count($rows);
 			}
 			
+			$rows = DB::select("
+				select  nvl(a.nilai,0) as pagu,
+						nvl(b.nilai,0) as realisasi,
+						nvl(a.nilai,0)-nvl(b.nilai,0) as sisa
+				from(
+					select  sum(nilai) as nilai
+					from d_pagu
+					where kdunit=? and thang=? and kdsdana=? and id_proyek=? and kdakun=?
+				) a,
+				(
+					select  sum(nilai) as nilai
+					from d_trans
+					where kdunit=? and thang=? and kdsdana=? and id_proyek=? and debet=? and id<>?
+				) b
+			",[
+				substr(session('kdunit'),0,4),
+				session('tahun'),
+				$detil->kdsdana,
+				$detil->id_proyek,
+				$detil->debet,
+				substr(session('kdunit'),0,4),
+				session('tahun'),
+				$detil->kdsdana,
+				$detil->id_proyek,
+				$detil->debet,
+				$id
+			]);
+			
+			$pagu = 0;
+			$realisasi = 0;
+			$sisa = 0;
+			if(count($rows)>0){
+				$pagu = $rows[0]->pagu;
+				$realisasi = $rows[0]->realisasi;
+				$sisa = $rows[0]->sisa;
+			}
+			
+			$data['pagu'] = $pagu;
+			$data['realisasi'] = $realisasi;
+			$data['sisa'] = $sisa;
+			
 			$data['error'] = false;
 			$data['message'] = $detil;
 			
@@ -357,7 +402,7 @@ class PengeluaranRekamController extends Controller {
 				
 				$nilai = (int)str_replace(',', '', $request->input('nilai'));
 				
-				if($nilai>=$rows[0]->batas1 && $nilai<=$rows[0]->batas2){
+				if($total>=$rows[0]->batas1 && $total<=$rows[0]->batas2){
 					
 					$rows = DB::select("
 						select	*
@@ -419,6 +464,10 @@ class PengeluaranRekamController extends Controller {
 										'uraian' => $request->input('uraian'),
 										'debet' => $request->input('debet'),
 										'kredit' => $request->input('kredit'),
+										'ttd1' => $request->input('ttd1'),
+										'ttd2' => $request->input('ttd2'),
+										'ttd3' => $request->input('ttd3'),
+										'ttd4' => $request->input('ttd4'),
 										'nilai' => str_replace(',', '', $request->input('total')),
 										'nilai_bersih' => str_replace(',', '', $request->input('nilai')),
 										'parent_id' => $parent_id,
@@ -509,6 +558,10 @@ class PengeluaranRekamController extends Controller {
 										kredit=?,
 										nilai=?,
 										nilai_bersih=?,
+										ttd1=?,
+										ttd2=?,
+										ttd3=?,
+										ttd4=?,
 										id_user=?,
 										updated_at=sysdate
 									where id=?
@@ -525,6 +578,10 @@ class PengeluaranRekamController extends Controller {
 									$request->input('kredit'),
 									str_replace(',', '', $request->input('total')),
 									str_replace(',', '', $request->input('nilai')),
+									$request->input('ttd1'),
+									$request->input('ttd2'),
+									$request->input('ttd3'),
+									$request->input('ttd4'),
 									session('id_user'),
 									$request->input('inp-id')
 								]);

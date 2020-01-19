@@ -709,4 +709,28 @@ class DropdownController extends Controller {
 		}
 		
 	}
+	
+	public function ttd($kdlevel)
+	{
+		$rows = DB::select("
+			select  a.*
+			from t_pejabat a
+			where a.kdlevel=?
+			order by a.id asc
+		",[
+			$kdlevel
+		]);
+		
+		$data = '';
+		foreach($rows as $row){
+			$selected = '';
+			if(substr($row->kdunit,0,4)==substr(session('kdunit'),0,4)){
+				$selected = 'selected';
+			}
+			$data .= '<option value="'.$row->id.'" '.$selected.'> '.$row->nama.'</option>';
+		}
+		
+		return $data;
+		
+	}
 }
