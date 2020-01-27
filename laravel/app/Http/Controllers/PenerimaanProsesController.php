@@ -165,6 +165,8 @@ class PenerimaanProsesController extends Controller {
 	
 	public function monitoring(Request $request)
 	{
+		$panjang = strlen(session('kdunit'));
+		
 		$aColumns = array('id','nourut','nmunit','nama','nmtrans','pks','nilai','status');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
@@ -186,7 +188,7 @@ class PenerimaanProsesController extends Controller {
 					left outer join t_penerima e on(a.id_penerima=e.id)
 					left outer join t_level g on(c.kdlevel=g.kdlevel)
 					left outer join t_trans h on(a.kdtran=h.id)
-					where b.menu=2 and a.thang='".session('tahun')."'
+					where b.menu=2 and a.thang='".session('tahun')."' and substr(a.kdunit,1,".$panjang.")='".session('kdunit')."'
 					order by a.nourut desc
 					";
 		
