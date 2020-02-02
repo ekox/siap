@@ -35,7 +35,7 @@ class PengeluaranRekamController extends Controller {
 						select  a.id_trans,
 								rtrim(xmlagg(xmlelement(e, a.id||'|'||b.uraian, ',')).extract('//text()').getclobval(), ',') as lampiran
 						from d_trans_dok a
-						left outer join t_dok b on(a.id_dok=b.id)
+						left outer join t_dok_dtl b on(a.id_dok_dtl=b.id)
 						group by a.id_trans
 					) i on(a.id=i.id_trans)
 					where b.menu=4 and a.thang='".session('tahun')."' and a.kdunit='".session('kdunit')."'
@@ -193,6 +193,7 @@ class PengeluaranRekamController extends Controller {
 					a.id_alur,
 					a.id_output,
 					a.kdtran,
+					a.kdtran_dtl,
 					nvl(a.id_proyek,'') as id_proyek,
 					a.id_penerima as id_pelanggan,
 					a.nodok as nopks,
@@ -458,6 +459,7 @@ class PengeluaranRekamController extends Controller {
 										'kdsdana' => $request->input('kdsdana'),
 										'id_alur' => $request->input('id_alur'),
 										'kdtran' => $request->input('kdtran'),
+										'kdtran_dtl' => $request->input('kdtran_dtl'),
 										'id_penerima' => $request->input('id_pelanggan'),
 										'nodok' => $request->input('nopks'),
 										'tgdok' => $request->input('tgpks'),
@@ -550,6 +552,7 @@ class PengeluaranRekamController extends Controller {
 									set id_proyek=?,
 										kdsdana=?,
 										kdtran=?,
+										kdtran_dtl=?,
 										id_penerima=?,
 										nodok=?,
 										tgdok=?,
@@ -570,6 +573,7 @@ class PengeluaranRekamController extends Controller {
 									$id_proyek,
 									$request->input('kdsdana'),
 									$request->input('kdtran'),
+									$request->input('kdtran_dtl'),
 									$request->input('id_pelanggan'),
 									$request->input('nopks'),
 									$request->input('tgpks'),
@@ -798,11 +802,13 @@ class PengeluaranRekamController extends Controller {
 	
 	public function upload(Request $request, $id_dok)
 	{
+		dd($id_dok);		
+		
 		$targetFolder = 'data/lampiran/'; // Relative to the root
 		
 		$rows = DB::select("
 			select	*
-			from t_dok
+			from t_dok_dtl
 			where id=?
 		",[
 			$id_dok
@@ -876,14 +882,14 @@ class PengeluaranRekamController extends Controller {
 			
 			$delete = DB::delete("
 				delete from d_trans_dok
-				where id_trans=? and id_dok=?
+				where id_trans=? and id_dok_dtl=?
 			",[
 				$request->input('id_trans'),
 				$request->input('id_dok'),
 			]);
 			
 			$insert = DB::insert("
-				insert into d_trans_dok(id_trans,id_dok,nmfile)
+				insert into d_trans_dok(id_trans,id_dok_dtl,nmfile)
 				values(?,?,?)
 			",[
 				$request->input('id_trans'),

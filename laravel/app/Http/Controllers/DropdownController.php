@@ -57,14 +57,14 @@ class DropdownController extends Controller {
 	{
 		$rows = DB::select("
 			select  b.*
-			from t_alur_dok a
-			left outer join t_dok b on(a.id_dok=b.id)
-			where a.id_alur=(
-				select	id_alur
+			from t_trans_dtl_dok a
+			left join t_dok_dtl b on(a.id_dok_dtl=b.id)
+			where a.id_trans_dtl=(
+				select	kdtran_dtl
 				from d_trans
 				where id=?
 			)
-			order by b.id asc
+			order by a.id asc
 		",[
 			$id_trans
 		]);
@@ -85,7 +85,7 @@ class DropdownController extends Controller {
 					b.uraian,
 					b.ukuran,
 					b.tipe
-			from t_dok b
+			from t_dok_dtl b
 			where b.id=?
 			order by b.id asc
 		",[
@@ -728,6 +728,27 @@ class DropdownController extends Controller {
 				$selected = 'selected';
 			}
 			$data .= '<option value="'.$row->id.'" '.$selected.'> '.$row->nama.'</option>';
+		}
+		
+		return $data;
+		
+	}
+	
+	public function transDtl()
+	{
+		$rows = DB::select("
+			select	a.*
+			from t_trans_dtl a
+			left join t_trans_dtl_unit b on(a.id=b.id_trans_dtl)
+			where kdunit=?
+			order by a.nourut
+		",[
+			substr(session('kdunit'),0,4)
+		]);
+		
+		$data = '<option value="" style="display:none;">Pilih Data</option>';
+		foreach($rows as $row){
+			$data .= '<option value="'.$row->id.'"> '.$row->uraian.'</option>';
 		}
 		
 		return $data;

@@ -442,6 +442,7 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get('/jenis-lap', 'DropdownController@jenisLap');
 		Route::get('/sdana', 'DropdownController@sdana');
 		Route::get('/ttd/{param}', 'DropdownController@ttd');
+		Route::get('/trans-dtl', 'DropdownController@transDtl');
 		
 	});
 	

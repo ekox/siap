@@ -11,21 +11,25 @@
 			<th colspan="3"><h3>{{$nmunit}}</h3></th>
 		</tr>
 	</thead>
+	<br>
 </table>
-
 <!--table content-->
 <table width="100%" border="1" cellspacing="0" cellpadding="3" style="border: 1px solid #000;font-size:11px;">
 	<thead>
 		<tr>
-			<th colspan="2">Uraian</th>
+			<th colspan="2" rowspan="2">Uraian</th>
+			<th rowspan="2">File/ Softcopy</th>
+			<th colspan="2">Lampiran Fisik</th>
+			<th rowspan="2">Keterangan</th>
+		</tr>
+		<tr>
 			<th>Ada</th>
 			<th>Tidak</th>
-			<th>Keterangan</th>
 		</tr>
 	</thead>
 	<tbody>
 		<tr>
-			<td class="wd15 pl3 vt" colspan="5">{{$nmtrans}}</td>
+			<td class="wd15 pl3 vt" colspan="6">{{$nmtrans}}</td>
 		</tr>
 		{!!$detil!!}
 		

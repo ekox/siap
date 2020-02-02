@@ -387,7 +387,7 @@ class PengeluaranProsesController extends Controller {
 						b.uraian,
 						a.nmfile
 				from d_trans_dok a
-				left outer join t_dok b on(a.id_dok=b.id)
+				left outer join t_dok_dtl b on(a.id_dok_dtl=b.id)
 				where a.id_trans=?
 			",[
 				$id

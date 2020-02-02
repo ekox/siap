@@ -738,7 +738,7 @@ class PenerimaanRekamController extends Controller {
 		
 		$rows = DB::select("
 			select	*
-			from t_dok
+			from t_dok_dtl
 			where id=?
 		",[
 			$id_dok
@@ -812,14 +812,14 @@ class PenerimaanRekamController extends Controller {
 			
 			$delete = DB::delete("
 				delete from d_trans_dok
-				where id_trans=? and id_dok=?
+				where id_trans=? and id_dok_dtl=?
 			",[
 				$request->input('id_trans'),
 				$request->input('id_dok'),
 			]);
 			
 			$insert = DB::insert("
-				insert into d_trans_dok(id_trans,id_dok,nmfile)
+				insert into d_trans_dok(id_trans,id_dok_dtl,nmfile)
 				values(?,?,?)
 			",[
 				$request->input('id_trans'),

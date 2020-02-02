@@ -499,13 +499,14 @@ class BuktiTransaksiController extends TableController
 					a.thang,
 					lpad(a.nourut,5,'0') as nourut,
 					a.kdtran,
-					c.nmtrans,
+					a.kdtran_dtl,
+					c.uraian as nmtrans,
 					b.nmunit,
 					d.nama as nmrekam,
 					e.nama as nmverifikasi
 			from d_trans a
 			left join t_unit b on(substr(a.kdunit,1,4)=b.kdunit)
-			left join t_trans c on(a.kdtran=c.id)
+			left join t_trans_dtl c on(a.kdtran_dtl=c.id)
 			left join t_user d on(a.id_user=d.id)
 			left join(
 				select  c.kdunit,
@@ -523,46 +524,40 @@ class BuktiTransaksiController extends TableController
 		$data = (array)$rows[0];
 		
 		$rows_detil = DB::select("
-			select  c.nmtrans,
-					b.id,
+			select  b.id,
 					b.uraian,
 					decode(d.nmfile,null,0,1) as cek
-			from t_trans_dok a
-			left join t_dok b on(a.id_dok=b.id)
-			left join t_trans c on(a.id_trans=c.id)
+			from t_trans_dtl_dok a
+			left join t_dok_dtl b on(a.id_dok_dtl=b.id)
+			left join t_trans_dtl c on(a.id_trans_dtl=c.id)
 			left join(
-				select  id_dok,
+				select  id_dok_dtl,
 						nmfile
 				from d_trans_dok
 				where id_trans=?
-			) d on(a.id_dok=d.id_dok)
-			where a.id_trans=?
+			) d on(a.id_dok_dtl=d.id_dok_dtl)
+			where a.id_trans_dtl=?
 			order by a.id
 		",[
-			$id,
-			$rows[0]->kdtran
+			$rows[0]->id,
+			$rows[0]->kdtran_dtl
 		]);
 		
 		$tabel = '';
 		$i = 1;
 		foreach($rows_detil as $row){
 			
-			$ya = '';
-			$tidak = '';
-			if($row->cek==0){
-				$ya = '';
-				$tidak = 'X';
-			}
-			else{
-				$ya = 'V';
-				$tidak = '';
+			$upload = 'Belum upload';
+			if($row->cek==1){
+				$upload = 'Sudah upload';
 			}
 			
 			$tabel .= '<tr>
 						<td>'.$i++.'</td>
 						<td>'.$row->uraian.'</td>
-						<td style="text-align:center;">'.$ya.'</td>
-						<td style="text-align:center;">'.$tidak.'</td>
+						<td>'.$upload.'</td>
+						<td style="text-align:center;"></td>
+						<td style="text-align:center;"></td>
 						<td></td>
 					   </tr>';
 		}

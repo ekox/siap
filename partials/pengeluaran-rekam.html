@@ -61,12 +61,20 @@
 									<label id="warning-id_alur" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="kdtran">Jenis Transaksi </label>
+	                            	<label class="col-md-2 label-control" for="kdtran">Jenis Pembayaran </label>
 									<div class="col-md-7">
 	                            		<select id="kdtran" name="kdtran" class="form-control chosen">
 										</select>
 	                            	</div>
 									<label id="warning-kdtran" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="kdtran">Jenis Transaksi </label>
+									<div class="col-md-7">
+	                            		<select id="kdtran_dtl" name="kdtran_dtl" class="form-control chosen">
+										</select>
+	                            	</div>
+									<label id="warning-kdtran_dtl" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="id_proyek">Proyek </label>
@@ -424,6 +432,10 @@
 			jQuery('#kdtran').html(result).trigger('chosen:updated');
 		});
 		
+		jQuery.get('dropdown/trans-dtl', function(result){
+			jQuery('#kdtran_dtl').html(result).trigger('chosen:updated');
+		});
+		
 		jQuery.get('dropdown/output', function(result){
 			jQuery('#id_output').html(result).trigger('chosen:updated');
 		});
@@ -653,6 +665,7 @@
 					
 					jQuery('#inp-id').val(id);
 					jQuery('#inp-rekambaru').val('0');
+					jQuery('#kdtran_dtl').val(result.message.kdtran_dtl);
 					jQuery('#kdsdana').val(result.message.kdsdana);
 					jQuery('#kdunit').val(result.message.kdunit);
 					jQuery('#id_alur').val(result.message.id_alur);
