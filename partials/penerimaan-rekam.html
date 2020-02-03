@@ -630,7 +630,7 @@
 		jQuery('#simpan').click(function(){
 			jQuery(this).html('<span class="loading"><i class="fa fa-refresh"></i> Loading.....</span>');
 			jQuery(this).prop('disabled',true);
-			jQuery('#id_pelanggan,#kredit').prop('disabled', false).trigger('chosen:updated');
+			jQuery('#id_pelanggan,#id_proyek,#kredit').prop('disabled', false).trigger('chosen:updated');
 			var next = form_valid('kdsdana,nourut,kdunit,id_alur,id_pelanggan,kdtran,nopks,tgpks,uraian,tgjtempo,nilai,debet,kredit');
 			if(next==true){
 				jQuery.get('token', function(token){

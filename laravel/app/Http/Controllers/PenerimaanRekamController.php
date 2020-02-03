@@ -33,7 +33,7 @@ class PenerimaanRekamController extends Controller {
 						select  a.id_trans,
 								rtrim(xmlagg(xmlelement(e, a.id||'|'||b.uraian, ',')).extract('//text()').getclobval(), ',') as lampiran
 						from d_trans_dok a
-						left outer join t_dok b on(a.id_dok=b.id)
+						left outer join t_dok_dtl b on(a.id_dok_dtl=b.id)
 						group by a.id_trans
 					) i on(a.id=i.id_trans)
 					where b.menu=2 and a.thang='".session('tahun')."' and a.kdunit='".session('kdunit')."'
@@ -137,7 +137,7 @@ class PenerimaanRekamController extends Controller {
 							<div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
 								<a id="'.$row->id.'" class="dropdown-item ubah" href="javascript:;">Ubah Data</a>
 								<a id="'.$row->id.'" class="dropdown-item hapus" href="javascript:;">Hapus Data</a>
-								<a id="'.$row->id.'" class="dropdown-item upload" href="javascript:;">Upload Lampiran</a>
+								<!--<a id="'.$row->id.'" class="dropdown-item upload" href="javascript:;">Upload Lampiran</a>-->
 								<a class="dropdown-item" href="bukti/uang-masuk/'.$row->id.'" target="_blank">Cetak Bukti</a>
 							</div>
 						</center>';

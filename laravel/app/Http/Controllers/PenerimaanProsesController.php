@@ -377,7 +377,7 @@ class PenerimaanProsesController extends Controller {
 			
 			$data['dropdown'] = $status;
 			
-			$rows = DB::select("
+			/*$rows = DB::select("
 				select	a.id,
 						b.uraian,
 						a.nmfile
@@ -392,7 +392,9 @@ class PenerimaanProsesController extends Controller {
 			foreach($rows as $row){
 				$lampiran .= '<li><a href="penerimaan/rekam/download/'.$row->id.'" target="_blank" title="Download Lampiran">'.$row->uraian.'</li>';
 			}
-			$lampiran .= '</ul>';
+			$lampiran .= '</ul>';*/
+			
+			$lampiran = '';
 			
 			$data['lampiran'] = $lampiran;
 			
