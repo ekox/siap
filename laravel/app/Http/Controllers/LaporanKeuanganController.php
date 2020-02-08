@@ -519,18 +519,20 @@ class LaporanKeuanganController extends TableController
 						nvl(sum(d.nilai),0) as nilai1
 				from(
 					
-					select  decode(a.parent_id,null,
-								decode(substr(a.debet,1,3),'111',a.kredit,a.debet),
-								decode(substr(a.debet,1,3),'111',b.kredit,b.debet)
-							) as kdakun,
+					select  b.kdakun,
 							sum(a.nilai) as nilai
-					from d_trans a
-					left join d_trans b on(a.parent_id=b.id)
-					where a.thang='".session('tahun')."' and a.tgdok<=last_day(to_date('01/".$periode."/".$tahun."','DD/MM/YYYY')) and (substr(a.debet,1,3)='111' or substr(a.kredit,1,3)='111')
-					group by decode(a.parent_id,null,
-								decode(substr(a.debet,1,3),'111',a.kredit,a.debet),
-								decode(substr(a.debet,1,3),'111',b.kredit,b.debet)
-							)
+					from(
+						select  decode(b.parent_id,null,a.id_trans,d.id) as id_trans,
+								a.kddk,
+								a.nilai
+						from d_trans_akun a
+						left join d_trans b on(a.id_trans=b.id)
+						left join t_alur c on(b.id_alur=c.id)
+						left join d_trans d on(b.parent_id=d.id)
+						where b.thang='".$tahun."' and c.neraca1=1 and b.tgdok<=last_day(to_date('01/".$periode."/".$tahun."','DD/MM/YYYY')) and substr(a.kdakun,1,3)='111'
+					) a
+					left join d_trans_akun b on(a.id_trans=b.id_trans and a.kddk<>b.kddk and b.grup=1)
+					group by b.kdakun
 							
 					union all
 					
@@ -553,18 +555,20 @@ class LaporanKeuanganController extends TableController
 				) a
 				left join(
 					
-					select  decode(a.parent_id,null,
-								decode(substr(a.debet,1,3),'111',a.kredit,a.debet),
-								decode(substr(a.debet,1,3),'111',b.kredit,b.debet)
-							) as kdakun,
+					select  b.kdakun,
 							sum(a.nilai) as nilai
-					from d_trans a
-					left join d_trans b on(a.parent_id=b.id)
-					where a.thang='".session('tahun')."' and to_char(a.tgdok,'mmyyyy')='".$periode.$tahun."' and (substr(a.debet,1,3)='111' or substr(a.kredit,1,3)='111')
-					group by decode(a.parent_id,null,
-								decode(substr(a.debet,1,3),'111',a.kredit,a.debet),
-								decode(substr(a.debet,1,3),'111',b.kredit,b.debet)
-							)
+					from(
+						select  decode(b.parent_id,null,a.id_trans,d.id) as id_trans,
+								a.kddk,
+								a.nilai
+						from d_trans_akun a
+						left join d_trans b on(a.id_trans=b.id)
+						left join t_alur c on(b.id_alur=c.id)
+						left join d_trans d on(b.parent_id=d.id)
+						where b.thang='".$tahun."' and c.neraca1=1 and to_char(b.tgdok,'mmyyyy')='".$periode.$tahun."' and substr(a.kdakun,1,3)='111'
+					) a
+					left join d_trans_akun b on(a.id_trans=b.id_trans and a.kddk<>b.kddk and b.grup=1)
+					group by b.kdakun
 							
 					union all
 					
@@ -615,18 +619,20 @@ class LaporanKeuanganController extends TableController
 						nvl(sum(d.nilai),0) as nilai1
 				from(
 					
-					select  decode(a.parent_id,null,
-								decode(substr(a.debet,1,3),'111',a.kredit,a.debet),
-								decode(substr(a.debet,1,3),'111',b.kredit,b.debet)
-							) as kdakun,
+					select  b.kdakun,
 							sum(a.nilai) as nilai
-					from d_trans a
-					left join d_trans b on(a.parent_id=b.id)
-					where a.thang='".session('tahun')."' and a.tgdok<=last_day(to_date('01/".$periode."/".$tahun."','DD/MM/YYYY')) and (substr(a.debet,1,3)='111' or substr(a.kredit,1,3)='111')
-					group by decode(a.parent_id,null,
-								decode(substr(a.debet,1,3),'111',a.kredit,a.debet),
-								decode(substr(a.debet,1,3),'111',b.kredit,b.debet)
-							)
+					from(
+						select  decode(b.parent_id,null,a.id_trans,d.id) as id_trans,
+								a.kddk,
+								a.nilai
+						from d_trans_akun a
+						left join d_trans b on(a.id_trans=b.id)
+						left join t_alur c on(b.id_alur=c.id)
+						left join d_trans d on(b.parent_id=d.id)
+						where b.thang='".$tahun."' and c.neraca1=1 and b.tgdok<=last_day(to_date('01/".$periode."/".$tahun."','DD/MM/YYYY')) and substr(a.kdakun,1,3)='111'
+					) a
+					left join d_trans_akun b on(a.id_trans=b.id_trans and a.kddk<>b.kddk and b.grup=1)
+					group by b.kdakun
 							
 					union all
 					
@@ -649,18 +655,20 @@ class LaporanKeuanganController extends TableController
 				) a
 				left join(
 					
-					select  decode(a.parent_id,null,
-								decode(substr(a.debet,1,3),'111',a.kredit,a.debet),
-								decode(substr(a.debet,1,3),'111',b.kredit,b.debet)
-							) as kdakun,
+					select  b.kdakun,
 							sum(a.nilai) as nilai
-					from d_trans a
-					left join d_trans b on(a.parent_id=b.id)
-					where a.thang='".session('tahun')."' and to_char(a.tgdok,'mmyyyy')='".$periode.$tahun."' and (substr(a.debet,1,3)='111' or substr(a.kredit,1,3)='111')
-					group by decode(a.parent_id,null,
-								decode(substr(a.debet,1,3),'111',a.kredit,a.debet),
-								decode(substr(a.debet,1,3),'111',b.kredit,b.debet)
-							)
+					from(
+						select  decode(b.parent_id,null,a.id_trans,d.id) as id_trans,
+								a.kddk,
+								a.nilai
+						from d_trans_akun a
+						left join d_trans b on(a.id_trans=b.id)
+						left join t_alur c on(b.id_alur=c.id)
+						left join d_trans d on(b.parent_id=d.id)
+						where b.thang='".$tahun."' and c.neraca1=1 and to_char(b.tgdok,'mmyyyy')='".$periode.$tahun."' and substr(a.kdakun,1,3)='111'
+					) a
+					left join d_trans_akun b on(a.id_trans=b.id_trans and a.kddk<>b.kddk and b.grup=1)
+					group by b.kdakun
 							
 					union all
 					
@@ -711,18 +719,20 @@ class LaporanKeuanganController extends TableController
 						nvl(sum(d.nilai),0) as nilai1
 				from(
 					
-					select  decode(a.parent_id,null,
-								decode(substr(a.debet,1,3),'111',a.kredit,a.debet),
-								decode(substr(a.debet,1,3),'111',b.kredit,b.debet)
-							) as kdakun,
+					select  b.kdakun,
 							sum(a.nilai) as nilai
-					from d_trans a
-					left join d_trans b on(a.parent_id=b.id)
-					where a.thang='".session('tahun')."' and a.tgdok<=last_day(to_date('01/".$periode."/".$tahun."','DD/MM/YYYY')) and (substr(a.debet,1,3)='111' or substr(a.kredit,1,3)='111')
-					group by decode(a.parent_id,null,
-								decode(substr(a.debet,1,3),'111',a.kredit,a.debet),
-								decode(substr(a.debet,1,3),'111',b.kredit,b.debet)
-							)
+					from(
+						select  decode(b.parent_id,null,a.id_trans,d.id) as id_trans,
+								a.kddk,
+								a.nilai
+						from d_trans_akun a
+						left join d_trans b on(a.id_trans=b.id)
+						left join t_alur c on(b.id_alur=c.id)
+						left join d_trans d on(b.parent_id=d.id)
+						where b.thang='".$tahun."' and c.neraca1=1 and b.tgdok<=last_day(to_date('01/".$periode."/".$tahun."','DD/MM/YYYY')) and substr(a.kdakun,1,3)='111'
+					) a
+					left join d_trans_akun b on(a.id_trans=b.id_trans and a.kddk<>b.kddk and b.grup=1)
+					group by b.kdakun
 							
 					union all
 					
@@ -745,18 +755,20 @@ class LaporanKeuanganController extends TableController
 				) a
 				left join(
 					
-					select  decode(a.parent_id,null,
-								decode(substr(a.debet,1,3),'111',a.kredit,a.debet),
-								decode(substr(a.debet,1,3),'111',b.kredit,b.debet)
-							) as kdakun,
+					select  b.kdakun,
 							sum(a.nilai) as nilai
-					from d_trans a
-					left join d_trans b on(a.parent_id=b.id)
-					where a.thang='".session('tahun')."' and to_char(a.tgdok,'mmyyyy')='".$periode.$tahun."' and (substr(a.debet,1,3)='111' or substr(a.kredit,1,3)='111')
-					group by decode(a.parent_id,null,
-								decode(substr(a.debet,1,3),'111',a.kredit,a.debet),
-								decode(substr(a.debet,1,3),'111',b.kredit,b.debet)
-							)
+					from(
+						select  decode(b.parent_id,null,a.id_trans,d.id) as id_trans,
+								a.kddk,
+								a.nilai
+						from d_trans_akun a
+						left join d_trans b on(a.id_trans=b.id)
+						left join t_alur c on(b.id_alur=c.id)
+						left join d_trans d on(b.parent_id=d.id)
+						where b.thang='".$tahun."' and c.neraca1=1 and to_char(b.tgdok,'mmyyyy')='".$periode.$tahun."' and substr(a.kdakun,1,3)='111'
+					) a
+					left join d_trans_akun b on(a.id_trans=b.id_trans and a.kddk<>b.kddk and b.grup=1)
+					group by b.kdakun
 							
 					union all
 					

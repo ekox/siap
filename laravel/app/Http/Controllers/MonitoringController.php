@@ -358,21 +358,13 @@ class MonitoringController extends Controller {
 						sum(decode(a.kddk,'K',a.nilai,0)) as kredit
 				from(
 				
-					select  debet as kdakun,
-							'D' as kddk,
-							sum(nilai) as nilai
-					from d_trans a
-					where a.thang=?
-					group by debet
-					
-					union all
-					
-					select  kredit as kdakun,
-							'K' as kddk,
-							sum(nilai) as nilai
-					from d_trans a
-					where a.thang=?
-					group by kredit
+					select	a.kdakun,
+							a.kddk,
+							sum(a.nilai) as nilai
+					from d_trans_akun a
+					left join d_trans b on(a.id_trans=b.id)
+					where b.thang=?
+					group by a.kdakun,a.kddk
 					
 				) a
 				group by a.kdakun
@@ -388,7 +380,6 @@ class MonitoringController extends Controller {
 			where substr(a.kdakun,1,3)='111' and substr(a.kdakun,1,4)<>'1112' and a.lvl=6
 			order by a.kdakun
 		",[
-			session('tahun'),
 			session('tahun'),
 			session('tahun'),
 		]);

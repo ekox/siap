@@ -65,7 +65,7 @@ class LaporanRealisasiController extends Controller
 				/* cari RKAP tahunan */
 				select  substr(kdakun,1,2) as kdakun,
 						sum(nilai) as nilai
-				from d_pagu_proyek
+				from d_pagu
 				where thang='".session('tahun')."'
 				group by substr(kdakun,1,2)
 				
@@ -201,6 +201,8 @@ class LaporanRealisasiController extends Controller
 			
 		}
 		
+		$tahun = session('tahun');
+		
 		$query = "
 			select  f.nmtriwulan1 as triwulan,
 					a.nmakun||' - '||a.nmproyek as uraian,
@@ -213,26 +215,21 @@ class LaporanRealisasiController extends Controller
 					decode(nvl(d.nilai,0),0,0,round(nvl(c.nilai,0)/d.nilai*100)) as psn1,
 					decode(nvl(e.nilai,0),0,0,round(nvl(a.nilai,0)/e.nilai*100)) as psn3
 			from(
-				select  nvl(a.id_proyek,0) as id_proyek,
-						c.nmproyek,
+				select  b.id_proyek,
+						d.nmproyek,
 						substr(a.kdakun,1,3) as kdakun,
-						b.nmakun,
+						e.nmakun,
 						sum(a.nilai) as nilai
-				from(
-					select  decode(a.parent_id,null,a.id_proyek,b.id_proyek) as id_proyek,
-							decode(a.parent_id,null,a.kredit,b.kredit) as kdakun,
-							sum(a.nilai) as nilai
-					from d_trans a
-					left join d_trans b on(a.parent_id=b.id)
-					left join t_alur c on(a.id_alur=c.id)
-					where a.thang='".session('tahun')."' and to_char(a.tgdok,'mm')<='".$periode."' and c.menu in(1,2)
-					group by decode(a.parent_id,null,a.id_proyek,b.id_proyek),
-							 decode(a.parent_id,null,a.kredit,b.kredit)
-				) a
-				left join t_akun b on(substr(a.kdakun,1,3)||'000'=b.kdakun)
-				left join t_proyek c on(a.id_proyek=c.id)
-				where substr(a.kdakun,1,2)='41'
-				group by a.id_proyek,c.nmproyek,substr(a.kdakun,1,3),b.nmakun
+				from d_trans_akun a
+				left join d_trans b on(a.id_trans=b.id)
+				left join t_alur c on(b.id_alur=c.id)
+				left join t_proyek d on(b.id_proyek=d.id)
+				left join t_akun e on(substr(a.kdakun,1,3)||'000'=e.kdakun)
+				where b.thang='".$tahun."' and to_char(b.tgdok,'mm')<='".$periode."' and c.menu in(1,2) and a.grup=1 and substr(a.kdakun,1,2)='41'
+				group by b.id_proyek,
+						d.nmproyek,
+						substr(a.kdakun,1,3),
+						e.nmakun
 			) a
 			left join(
 				select  id_proyek,
@@ -243,26 +240,21 @@ class LaporanRealisasiController extends Controller
 				group by id_proyek,substr(kdakun,1,3)
 			) b on(a.id_proyek=b.id_proyek and a.kdakun=b.kdakun)
 			left join(
-				select  nvl(a.id_proyek,0) as id_proyek,
-						c.nmproyek,
+				select  b.id_proyek,
+						d.nmproyek,
 						substr(a.kdakun,1,3) as kdakun,
-						b.nmakun,
+						e.nmakun,
 						sum(a.nilai) as nilai
-				from(
-					select  decode(a.parent_id,null,a.id_proyek,b.id_proyek) as id_proyek,
-							decode(a.parent_id,null,a.kredit,b.kredit) as kdakun,
-							sum(a.nilai) as nilai
-					from d_trans a
-					left join d_trans b on(a.parent_id=b.id)
-					left join t_alur c on(a.id_alur=c.id)
-					where a.thang='".session('tahun')."' and to_char(a.tgdok,'mm') in(".$periode1.") and c.menu in(1,2)
-					group by decode(a.parent_id,null,a.id_proyek,b.id_proyek),
-							 decode(a.parent_id,null,a.kredit,b.kredit)
-				) a
-				left join t_akun b on(substr(a.kdakun,1,3)||'000'=b.kdakun)
-				left join t_proyek c on(a.id_proyek=c.id)
-				where substr(a.kdakun,1,2)='41'
-				group by a.id_proyek,c.nmproyek,substr(a.kdakun,1,3),b.nmakun
+				from d_trans_akun a
+				left join d_trans b on(a.id_trans=b.id)
+				left join t_alur c on(b.id_alur=c.id)
+				left join t_proyek d on(b.id_proyek=d.id)
+				left join t_akun e on(substr(a.kdakun,1,3)||'000'=e.kdakun)
+				where b.thang='".$tahun."' and to_char(b.tgdok,'mm') in(".$periode1.") and c.menu in(1,2) and a.grup=1 and substr(a.kdakun,1,2)='41'
+				group by b.id_proyek,
+						d.nmproyek,
+						substr(a.kdakun,1,3),
+						e.nmakun
 			) c on(a.id_proyek=c.id_proyek and a.kdakun=c.kdakun)
 			left join(
 				select  id_proyek,
@@ -276,7 +268,7 @@ class LaporanRealisasiController extends Controller
 				select  id_proyek,
 						substr(kdakun,1,3) as kdakun,
 						sum(nilai) as nilai
-				from d_pagu_proyek
+				from d_pagu
 				where thang='".session('tahun')."'
 				group by id_proyek,substr(kdakun,1,3)
 			) e on(a.id_proyek=e.id_proyek and a.kdakun=e.kdakun),
@@ -378,6 +370,8 @@ class LaporanRealisasiController extends Controller
 			
 		}
 		
+		$tahun = session('tahun');
+		
 		$query = "
 			select  f.nmtriwulan1 as triwulan,
 					a.nmakun||' - '||a.nmproyek as uraian,
@@ -390,26 +384,21 @@ class LaporanRealisasiController extends Controller
 					decode(nvl(d.nilai,0),0,0,round(nvl(c.nilai,0)/d.nilai*100)) as psn1,
 					decode(nvl(e.nilai,0),0,0,round(nvl(a.nilai,0)/e.nilai*100)) as psn3
 			from(
-				select  nvl(a.id_proyek,0) as id_proyek,
-						c.nmproyek,
+				select  b.id_proyek,
+						d.nmproyek,
 						substr(a.kdakun,1,3) as kdakun,
-						b.nmakun,
+						e.nmakun,
 						sum(a.nilai) as nilai
-				from(
-					select  decode(a.parent_id,null,a.id_proyek,b.id_proyek) as id_proyek,
-							decode(a.parent_id,null,a.kredit,b.kredit) as kdakun,
-							sum(a.nilai) as nilai
-					from d_trans a
-					left join d_trans b on(a.parent_id=b.id)
-					left join t_alur c on(a.id_alur=c.id)
-					where a.thang='".session('tahun')."' and to_char(a.tgdok,'mm')<='".$periode."' and c.menu in(1,2)
-					group by decode(a.parent_id,null,a.id_proyek,b.id_proyek),
-							 decode(a.parent_id,null,a.kredit,b.kredit)
-				) a
-				left join t_akun b on(substr(a.kdakun,1,3)||'000'=b.kdakun)
-				left join t_proyek c on(a.id_proyek=c.id)
-				where substr(a.kdakun,1,2)<>'41' and b.kdlap='LR'
-				group by a.id_proyek,c.nmproyek,substr(a.kdakun,1,3),b.nmakun
+				from d_trans_akun a
+				left join d_trans b on(a.id_trans=b.id)
+				left join t_alur c on(b.id_alur=c.id)
+				left join t_proyek d on(b.id_proyek=d.id)
+				left join t_akun e on(substr(a.kdakun,1,3)||'000'=e.kdakun)
+				where b.thang='".$tahun."' and to_char(b.tgdok,'mm')<='".$periode."' and c.menu in(1,2) and a.grup=1 and substr(a.kdakun,1,2)<>'41' and e.kdlap='LR'
+				group by b.id_proyek,
+						d.nmproyek,
+						substr(a.kdakun,1,3),
+						e.nmakun
 			) a
 			left join(
 				select  id_proyek,
@@ -420,26 +409,21 @@ class LaporanRealisasiController extends Controller
 				group by id_proyek,substr(kdakun,1,3)
 			) b on(a.id_proyek=b.id_proyek and a.kdakun=b.kdakun)
 			left join(
-				select  nvl(a.id_proyek,0) as id_proyek,
-						c.nmproyek,
+				select  b.id_proyek,
+						d.nmproyek,
 						substr(a.kdakun,1,3) as kdakun,
-						b.nmakun,
+						e.nmakun,
 						sum(a.nilai) as nilai
-				from(
-					select  decode(a.parent_id,null,a.id_proyek,b.id_proyek) as id_proyek,
-							decode(a.parent_id,null,a.kredit,b.kredit) as kdakun,
-							sum(a.nilai) as nilai
-					from d_trans a
-					left join d_trans b on(a.parent_id=b.id)
-					left join t_alur c on(a.id_alur=c.id)
-					where a.thang='".session('tahun')."' and to_char(a.tgdok,'mm') in(".$periode1.") and c.menu in(1,2)
-					group by decode(a.parent_id,null,a.id_proyek,b.id_proyek),
-							 decode(a.parent_id,null,a.kredit,b.kredit)
-				) a
-				left join t_akun b on(substr(a.kdakun,1,3)||'000'=b.kdakun)
-				left join t_proyek c on(a.id_proyek=c.id)
-				where substr(a.kdakun,1,2)<>'41' and b.kdlap='LR'
-				group by a.id_proyek,c.nmproyek,substr(a.kdakun,1,3),b.nmakun
+				from d_trans_akun a
+				left join d_trans b on(a.id_trans=b.id)
+				left join t_alur c on(b.id_alur=c.id)
+				left join t_proyek d on(b.id_proyek=d.id)
+				left join t_akun e on(substr(a.kdakun,1,3)||'000'=e.kdakun)
+				where b.thang='".$tahun."' and to_char(b.tgdok,'mm') in(".$periode1.") and c.menu in(1,2) and a.grup=1 and substr(a.kdakun,1,2)<>'41' and e.kdlap='LR'
+				group by b.id_proyek,
+						d.nmproyek,
+						substr(a.kdakun,1,3),
+						e.nmakun
 			) c on(a.id_proyek=c.id_proyek and a.kdakun=c.kdakun)
 			left join(
 				select  id_proyek,
@@ -453,7 +437,7 @@ class LaporanRealisasiController extends Controller
 				select  id_proyek,
 						substr(kdakun,1,3) as kdakun,
 						sum(nilai) as nilai
-				from d_pagu_proyek
+				from d_pagu
 				where thang='".session('tahun')."'
 				group by id_proyek,substr(kdakun,1,3)
 			) e on(a.id_proyek=e.id_proyek and a.kdakun=e.kdakun),
@@ -573,7 +557,7 @@ class LaporanRealisasiController extends Controller
 				/* cari RKAP tahunan */
 				select  substr(kdakun,1,2) as kdakun,
 						sum(nilai) as nilai
-				from d_pagu_proyek
+				from d_pagu
 				where thang='".session('tahun')."'
 				group by substr(kdakun,1,2)
 				
@@ -709,6 +693,8 @@ class LaporanRealisasiController extends Controller
 			
 		}
 		
+		$tahun = session('tahun');
+		
 		$query = "
 			select  f.nmtriwulan1 as triwulan,
 					a.nmakun||' - '||a.nmproyek as uraian,
@@ -721,26 +707,21 @@ class LaporanRealisasiController extends Controller
 					decode(nvl(d.nilai,0),0,0,round(nvl(c.nilai,0)/d.nilai*100)) as psn1,
 					decode(nvl(e.nilai,0),0,0,round(nvl(a.nilai,0)/e.nilai*100)) as psn3
 			from(
-				select  nvl(a.id_proyek,0) as id_proyek,
-						c.nmproyek,
+				select  b.id_proyek,
+						d.nmproyek,
 						substr(a.kdakun,1,3) as kdakun,
-						b.nmakun,
+						e.nmakun,
 						sum(a.nilai) as nilai
-				from(
-					select  a.id_proyek,
-							a.debet as kdakun,
-							sum(a.nilai_bersih) as nilai
-					from d_trans a
-					left join d_trans b on(a.parent_id=b.id)
-					left join t_alur c on(a.id_alur=c.id)
-					where a.thang='".session('tahun')."' and to_char(a.tgdok,'mm')<='".$periode."' and c.menu in(4)
-					group by a.id_proyek,
-							 a.debet
-				) a
-				left join t_akun b on(substr(a.kdakun,1,3)||'000'=b.kdakun)
-				left join t_proyek c on(a.id_proyek=c.id)
-				where substr(a.kdakun,1,2)='51'
-				group by a.id_proyek,c.nmproyek,substr(a.kdakun,1,3),b.nmakun
+				from d_trans_akun a
+				left join d_trans b on(a.id_trans=b.id)
+				left join t_alur c on(b.id_alur=c.id)
+				left join t_proyek d on(b.id_proyek=d.id)
+				left join t_akun e on(substr(a.kdakun,1,3)||'000'=e.kdakun)
+				where b.thang='".$tahun."' and to_char(b.tgdok,'mm')<='".$periode."' and c.menu in(4) and a.grup=1 and substr(a.kdakun,1,2)='51'
+				group by b.id_proyek,
+						d.nmproyek,
+						substr(a.kdakun,1,3),
+						e.nmakun
 			) a
 			left join(
 				select  id_proyek,
@@ -751,26 +732,21 @@ class LaporanRealisasiController extends Controller
 				group by id_proyek,substr(kdakun,1,3)
 			) b on(a.id_proyek=b.id_proyek and a.kdakun=b.kdakun)
 			left join(
-				select  nvl(a.id_proyek,0) as id_proyek,
-						c.nmproyek,
+				select  b.id_proyek,
+						d.nmproyek,
 						substr(a.kdakun,1,3) as kdakun,
-						b.nmakun,
+						e.nmakun,
 						sum(a.nilai) as nilai
-				from(
-					select  a.id_proyek,
-							a.debet as kdakun,
-							sum(a.nilai_bersih) as nilai
-					from d_trans a
-					left join d_trans b on(a.parent_id=b.id)
-					left join t_alur c on(a.id_alur=c.id)
-					where a.thang='".session('tahun')."' and to_char(a.tgdok,'mm') in(".$periode1.") and c.menu in(4)
-					group by a.id_proyek,
-							 a.debet
-				) a
-				left join t_akun b on(substr(a.kdakun,1,3)||'000'=b.kdakun)
-				left join t_proyek c on(a.id_proyek=c.id)
-				where substr(a.kdakun,1,2)='51'
-				group by a.id_proyek,c.nmproyek,substr(a.kdakun,1,3),b.nmakun
+				from d_trans_akun a
+				left join d_trans b on(a.id_trans=b.id)
+				left join t_alur c on(b.id_alur=c.id)
+				left join t_proyek d on(b.id_proyek=d.id)
+				left join t_akun e on(substr(a.kdakun,1,3)||'000'=e.kdakun)
+				where b.thang='".$tahun."' and to_char(b.tgdok,'mm') in(".$periode1.") and c.menu in(4) and a.grup=1 and substr(a.kdakun,1,2)='51'
+				group by b.id_proyek,
+						d.nmproyek,
+						substr(a.kdakun,1,3),
+						e.nmakun
 			) c on(a.id_proyek=c.id_proyek and a.kdakun=c.kdakun)
 			left join(
 				select  id_proyek,
@@ -784,7 +760,7 @@ class LaporanRealisasiController extends Controller
 				select  id_proyek,
 						substr(kdakun,1,3) as kdakun,
 						sum(nilai) as nilai
-				from d_pagu_proyek
+				from d_pagu
 				where thang='".session('tahun')."'
 				group by id_proyek,substr(kdakun,1,3)
 			) e on(a.id_proyek=e.id_proyek and a.kdakun=e.kdakun),
@@ -886,6 +862,8 @@ class LaporanRealisasiController extends Controller
 			
 		}
 		
+		$tahun = session('tahun');
+		
 		$query = "
 			select  f.nmtriwulan1 as triwulan,
 					a.nmakun||' - '||a.nmproyek as uraian,
@@ -898,26 +876,21 @@ class LaporanRealisasiController extends Controller
 					decode(nvl(d.nilai,0),0,0,round(nvl(c.nilai,0)/d.nilai*100)) as psn1,
 					decode(nvl(e.nilai,0),0,0,round(nvl(a.nilai,0)/e.nilai*100)) as psn3
 			from(
-				select  nvl(a.id_proyek,0) as id_proyek,
-						c.nmproyek,
+				select  b.id_proyek,
+						d.nmproyek,
 						substr(a.kdakun,1,3) as kdakun,
-						b.nmakun,
+						e.nmakun,
 						sum(a.nilai) as nilai
-				from(
-					select  a.id_proyek,
-							a.debet as kdakun,
-							sum(a.nilai_bersih) as nilai
-					from d_trans a
-					left join d_trans b on(a.parent_id=b.id)
-					left join t_alur c on(a.id_alur=c.id)
-					where a.thang='".session('tahun')."' and to_char(a.tgdok,'mm')<='".$periode."' and c.menu in(4)
-					group by a.id_proyek,
-							 a.debet
-				) a
-				left join t_akun b on(substr(a.kdakun,1,3)||'000'=b.kdakun)
-				left join t_proyek c on(a.id_proyek=c.id)
-				where substr(a.kdakun,1,2)='52'
-				group by a.id_proyek,c.nmproyek,substr(a.kdakun,1,3),b.nmakun
+				from d_trans_akun a
+				left join d_trans b on(a.id_trans=b.id)
+				left join t_alur c on(b.id_alur=c.id)
+				left join t_proyek d on(b.id_proyek=d.id)
+				left join t_akun e on(substr(a.kdakun,1,3)||'000'=e.kdakun)
+				where b.thang='".$tahun."' and to_char(b.tgdok,'mm')<='".$periode."' and c.menu in(4) and a.grup=1 and substr(a.kdakun,1,2)='52'
+				group by b.id_proyek,
+						d.nmproyek,
+						substr(a.kdakun,1,3),
+						e.nmakun
 			) a
 			left join(
 				select  id_proyek,
@@ -928,26 +901,21 @@ class LaporanRealisasiController extends Controller
 				group by id_proyek,substr(kdakun,1,3)
 			) b on(a.id_proyek=b.id_proyek and a.kdakun=b.kdakun)
 			left join(
-				select  nvl(a.id_proyek,0) as id_proyek,
-						c.nmproyek,
+				select  b.id_proyek,
+						d.nmproyek,
 						substr(a.kdakun,1,3) as kdakun,
-						b.nmakun,
+						e.nmakun,
 						sum(a.nilai) as nilai
-				from(
-					select  a.id_proyek,
-							a.debet as kdakun,
-							sum(a.nilai_bersih) as nilai
-					from d_trans a
-					left join d_trans b on(a.parent_id=b.id)
-					left join t_alur c on(a.id_alur=c.id)
-					where a.thang='".session('tahun')."' and to_char(a.tgdok,'mm') in(".$periode1.") and c.menu in(4)
-					group by a.id_proyek,
-							 a.debet
-				) a
-				left join t_akun b on(substr(a.kdakun,1,3)||'000'=b.kdakun)
-				left join t_proyek c on(a.id_proyek=c.id)
-				where substr(a.kdakun,1,2)='52'
-				group by a.id_proyek,c.nmproyek,substr(a.kdakun,1,3),b.nmakun
+				from d_trans_akun a
+				left join d_trans b on(a.id_trans=b.id)
+				left join t_alur c on(b.id_alur=c.id)
+				left join t_proyek d on(b.id_proyek=d.id)
+				left join t_akun e on(substr(a.kdakun,1,3)||'000'=e.kdakun)
+				where b.thang='".$tahun."' and to_char(b.tgdok,'mm') in(".$periode1.") and c.menu in(4) and a.grup=1 and substr(a.kdakun,1,2)='52'
+				group by b.id_proyek,
+						d.nmproyek,
+						substr(a.kdakun,1,3),
+						e.nmakun
 			) c on(a.id_proyek=c.id_proyek and a.kdakun=c.kdakun)
 			left join(
 				select  id_proyek,
@@ -961,7 +929,7 @@ class LaporanRealisasiController extends Controller
 				select  id_proyek,
 						substr(kdakun,1,3) as kdakun,
 						sum(nilai) as nilai
-				from d_pagu_proyek
+				from d_pagu
 				where thang='".session('tahun')."'
 				group by id_proyek,substr(kdakun,1,3)
 			) e on(a.id_proyek=e.id_proyek and a.kdakun=e.kdakun),
