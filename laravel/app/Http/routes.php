@@ -375,6 +375,13 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get('/keuangan/{param}', 'LaporanController@keuangan');
 		
 	});
+	
+	//route for Buku Besar
+	Route::group(['prefix' => 'gl'], function () {
+		
+		Route::get('/excel', 'BukuBesarController@excel');
+		
+	});
 
 	//route for Bukti
 	Route::group(['prefix' => 'bukti'], function() {
