@@ -17,9 +17,9 @@ class Bukubesar extends Model
 					 d.nmakun,
 					 to_char(last_day(b.tgdok),'dd')||' '||e.nmbulan as bulan,
 					 TO_CHAR (b.tgdok, 'dd-mm-yyyy') AS tanggal,
-					 b.nodok || ' ' || c.nmunit AS no_voucher,
-					 'Z' AS kd_pc,
-					 b.uraian AS remark,
+					 b.nodok||' | '||c.nmunit AS no_voucher,
+					 substr(b.kdunit,1,4) as kd_pc,
+					 f.nama||' | '||b.uraian AS remark,
 					 DECODE (a.kddk, 'D', a.nilai, 0) AS debet,
 					 DECODE (a.kddk, 'K', a.nilai, 0) AS kredit,
 					 SUM (a.nilai) OVER (ORDER BY b.tgdok) AS saldo
@@ -29,7 +29,9 @@ class Bukubesar extends Model
 					 LEFT JOIN t_unit c
 						ON (SUBSTR (b.kdunit, 1, 4) = c.kdunit)
 					 LEFT JOIN t_akun d
-						ON (a.kdakun = d.kdakun),
+						ON (a.kdakun = d.kdakun)
+					 LEFT JOIN t_penerima f
+						ON (b.id_penerima=f.id),
 					 (
 						select	nmbulan
 						from t_bulan
