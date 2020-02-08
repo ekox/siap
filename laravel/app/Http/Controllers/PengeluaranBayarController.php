@@ -159,21 +159,22 @@ class PengeluaranBayarController extends Controller {
 					c.nmunit,
 					d.nama as nmpelanggan,
 					e.nmtrans,
+					j.uraian as nmtrans_dtl,
 					a.nodok as nopks,
 					to_char(a.tgdok,'yyyy-mm-dd') as tgpks,
 					to_char(a.tgdok1,'yyyy-mm-dd') as tgjtempo,
 					a.uraian,
-					nvl(a.nilai,0) as nilai,
-					nvl(a.ppn,0)+nvl(a.pph21,0)+nvl(a.pph22,0)+nvl(a.pph23,0)+nvl(a.pph25,0) as pajak,
-					nvl(a.nilai,0)-nvl(a.ppn,0)-nvl(a.pph21,0)-nvl(a.pph22,0)-nvl(a.pph23,0)-nvl(a.pph25,0) as total,
-					nvl(f.nmakun,0) as debet,
+					a.nilai_bersih as nilai,
+					l.nilai as pajak,
+					a.nilai as total,
+					nvl(k.nmakun,0) as debet,
 					nvl(i.nmakun,0) as kredit,
-					nvl(a.debet,'') as kdakun,
+					k.kdakun,
 					a.id_alur,
 					a.status,
 					a.nocek,
 					to_char(a.tgcek,'yyyy-mm-dd') as tgcek,
-					a.kredit as bayar
+					m.kdakun as bayar
 			from d_trans a
 			left outer join t_alur b on(a.id_alur=b.id)
 			left outer join t_unit c on(a.kdunit=c.kdunit)
@@ -181,6 +182,31 @@ class PengeluaranBayarController extends Controller {
 			left outer join t_trans e on(a.kdtran=e.id)
 			left outer join t_akun f on(a.debet=f.kdakun)
 			left outer join t_akun i on(a.kredit=i.kdakun)
+			left outer join t_trans_dtl j on(a.kdtran_dtl=j.id)
+			left outer join(
+				select  a.id_trans,
+						a.kdakun,
+						b.nmakun
+				from d_trans_akun a
+				left join t_akun b on(a.kdakun=b.kdakun)
+				where a.grup=1 and a.kddk='D'
+			) k on(a.id=k.id_trans)
+			left outer join(
+				select	a.id_trans,
+						sum(decode(b.kddk,'D',a.nilai,-a.nilai)) as nilai
+				from d_trans_akun a
+				left join t_akun_pajak b on(a.kdakun=b.kdakun)
+				where a.grup=0
+				group by a.id_trans
+			) l on(a.id=l.id_trans)
+			left outer join(
+				select  a.id_trans,
+						a.kdakun,
+						b.nmakun
+				from d_trans_akun a
+				left join t_akun b on(a.kdakun=b.kdakun)
+				where a.grup=1 and a.kddk='K'
+			) m on(a.id=m.id_trans)
 			where a.id=?
 		",[
 			$id
@@ -198,7 +224,7 @@ class PengeluaranBayarController extends Controller {
 						b.uraian,
 						a.nmfile
 				from d_trans_dok a
-				left outer join t_dok b on(a.id_dok=b.id)
+				left outer join t_dok_dtl b on(a.id_dok_dtl=b.id)
 				where a.id_trans=?
 			",[
 				$id
@@ -244,15 +270,23 @@ class PengeluaranBayarController extends Controller {
 		
 		$update = DB::update("
 			update d_trans
-			set kredit=?,
-				nocek=?,
-				tgcek=to_date(?,'yyyy-mm-dd')
+			set nocek=?,
+				tgcek=to_date(?,'yyyy-mm-dd'),
+				updated_at=sysdate
 			where id=?
 		",[
-			$request->input('bayar'),
 			$request->input('nocek'),
 			$request->input('tgcek'),
 			$request->input('inp-id'),
+		]);
+		
+		$update = DB::update("
+			update d_trans_akun
+			set kdakun=?
+			where id_trans=? and kddk='K' and grup=1
+		",[
+			$request->input('bayar'),
+			$request->input('inp-id')
 		]);
 		
 		if($update){
@@ -260,7 +294,7 @@ class PengeluaranBayarController extends Controller {
 			return 'success';
 		}
 		else{
-			return 'Nomor dokumen gagal disimpan!';
+			return 'Proses gagal disimpan!';
 		}		
 	}
 	

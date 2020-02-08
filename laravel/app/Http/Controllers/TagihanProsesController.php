@@ -327,10 +327,24 @@ class TagihanProsesController extends Controller {
 			left outer join t_unit c on(a.kdunit=c.kdunit)
 			left outer join t_penerima d on(a.id_penerima=d.id)
 			left outer join t_trans e on(a.kdtran=e.id)
-			left outer join t_akun f on(a.debet=f.kdakun)
-			left outer join t_akun i on(a.kredit=i.kdakun)
 			left outer join t_proyek j on(a.id_proyek=j.id)
 			left outer join t_sdana k on(a.kdsdana=k.kdsdana)
+			left outer join(
+				select  a.id_trans,
+						a.kdakun,
+						b.nmakun
+				from d_trans_akun a
+				left join t_akun b on(a.kdakun=b.kdakun)
+				where a.grup=1 and a.kddk='D'
+			) f on(a.id=f.id_trans)
+			left outer join(
+				select  a.id_trans,
+						a.kdakun,
+						b.nmakun
+				from d_trans_akun a
+				left join t_akun b on(a.kdakun=b.kdakun)
+				where a.grup=1 and a.kddk='K'
+			) i on(a.id=i.id_trans)
 			where a.id=?
 		",[
 			$id

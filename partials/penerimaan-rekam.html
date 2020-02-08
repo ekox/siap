@@ -28,6 +28,7 @@
 							<input type="hidden" id="x" name="x">
 							<input type="hidden" id="inp-akun">
 							<div class="form-body">
+								<legend>Transaksi</legend>
 								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="nourut">No.Transaksi </label>
 									<div class="col-md-7">
@@ -173,6 +174,7 @@
 										<a href="javascript:;" id="hitung-total" class="btn btn-sm btn-success" title="Hitung total"><i class="fa fa-refresh"></i></a>
 									</div>
 		                        </div>
+								<legend>Dokumen/ Bukti Transaksi</legend>
 								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="nobukti">No.Bukti </label>
 									<div class="col-md-7">
@@ -200,6 +202,39 @@
 	                            		<textarea id="uraian" name="uraian" class="form-control" maxlength="4000"></textarea>
 	                            	</div>
 									<label id="warning-uraian" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<legend>Pejabat Penandatangan</legend>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="id_pelanggan">Direktur Utama </label>
+									<div class="col-md-7">
+	                            		<select id="ttd4" name="ttd4" class="form-control chosen">
+										</select>
+	                            	</div>
+									<label id="warning-ttd4" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="id_pelanggan">Direktur Keuangan </label>
+									<div class="col-md-7">
+	                            		<select id="ttd3" name="ttd3" class="form-control chosen">
+										</select>
+	                            	</div>
+									<label id="warning-ttd3" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="id_pelanggan">Senior Manajer Keu </label>
+									<div class="col-md-7">
+	                            		<select id="ttd2" name="ttd2" class="form-control chosen">
+										</select>
+	                            	</div>
+									<label id="warning-ttd2" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="id_pelanggan">Penanggung Jawab </label>
+									<div class="col-md-7">
+	                            		<select id="ttd1" name="ttd1" class="form-control chosen">
+										</select>
+	                            	</div>
+									<label id="warning-ttd1" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								
 							</div>
@@ -434,6 +469,21 @@
 				});
 				jQuery('#inp-akun').val(akun);
 			});
+			jQuery.get('dropdown/ttd/05', function(result){
+				jQuery('#ttd1').html(result).trigger('chosen:updated');
+			});
+			
+			jQuery.get('dropdown/ttd/04', function(result){
+				jQuery('#ttd2').html(result).trigger('chosen:updated');
+			});
+			
+			jQuery.get('dropdown/ttd/02', function(result){
+				jQuery('#ttd3').html(result).trigger('chosen:updated');
+			});
+			
+			jQuery.get('dropdown/ttd/01', function(result){
+				jQuery('#ttd4').html(result).trigger('chosen:updated');
+			});
 		}
 		
 		//aktivasi tampilan default
@@ -584,7 +634,7 @@
 					jQuery('#x').val(result.x);
 					jQuery('#kdunit').val(result.message.kdunit);
 					jQuery('#kdsdana').val(result.message.kdsdana);
-					jQuery('#id_alur').val(result.message.id_alur).prop('disabled',true);
+					jQuery('#id_alur').val(result.message.id_alur);
 					jQuery('#id_proyek').val(result.message.id_proyek);
 					jQuery('#id_pelanggan').val(result.message.id_pelanggan);
 					jQuery('#nopks').val(result.message.nopks);
@@ -592,6 +642,10 @@
 					jQuery('#tgjtempo').val(result.message.tgjtempo);
 					jQuery('#uraian').val(result.message.uraian);
 					jQuery('#nourut').val(result.message.nourut);
+					jQuery('#ttd1').val(result.message.ttd1);
+					jQuery('#ttd2').val(result.message.ttd2);
+					jQuery('#ttd3').val(result.message.ttd3);
+					jQuery('#ttd4').val(result.message.ttd4);
 					jQuery('#nilai').val(digit_grouping(result.message.nilai));
 					jQuery('#total').val(digit_grouping(result.message.total));
 					jQuery('#ppn').val(digit_grouping(result.message.ppn));

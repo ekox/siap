@@ -322,8 +322,8 @@ class PenerimaanProsesController extends Controller {
 					to_char(a.tgdok1,'yyyy-mm-dd') as tgjtempo,
 					a.uraian,
 					nvl(a.nilai_bersih,0) as nilai,
-					nvl(f.nmakun,0) as debet,
-					nvl(i.nmakun,0) as kredit,
+					nvl(h.nmakun,0) as debet,
+					nvl(j.nmakun,0) as kredit,
 					a.id_alur,
 					a.status,
 					nvl(g.nilai,0) as pajak,
@@ -337,12 +337,30 @@ class PenerimaanProsesController extends Controller {
 			left outer join t_akun i on(a.kredit=i.kdakun)
 			left join t_proyek k on(a.id_proyek=k.id)
 			left join t_sdana l on(a.kdsdana=l.kdsdana)
-			left join(
-				select	id_trans,
-						sum(nilai) as nilai
-				from d_trans_pajak
-				group by id_trans
+			left outer join(
+				select	a.id_trans,
+						sum(decode(b.kddk,'D',a.nilai,-a.nilai)) as nilai
+				from d_trans_akun a
+				left join t_akun_pajak b on(a.kdakun=b.kdakun)
+				where a.grup=0
+				group by a.id_trans
 			) g on(a.id=g.id_trans)
+			left outer join(
+				select  a.id_trans,
+						a.kdakun,
+						b.nmakun
+				from d_trans_akun a
+				left join t_akun b on(a.kdakun=b.kdakun)
+				where a.grup=1 and a.kddk='D'
+			) h on(a.id=h.id_trans)
+			left outer join(
+				select  a.id_trans,
+						a.kdakun,
+						b.nmakun
+				from d_trans_akun a
+				left join t_akun b on(a.kdakun=b.kdakun)
+				where a.grup=1 and a.kddk='K'
+			) j on(a.id=j.id_trans)
 			where a.id=?
 		",[
 			$id

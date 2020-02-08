@@ -29,6 +29,8 @@
 							<input type="hidden" id="status" name="status">
 							<input type="hidden" id="x" name="x">
 							<input type="hidden" id="inp-akun">
+							<input type="hidden" id="kdakun_d" name="kdakun_d">
+							<input type="hidden" id="kdakun_k" name="kdakun_k">
 							<div class="form-body">
 								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="nourut">No.Transaksi </label>
@@ -388,6 +390,8 @@
 					jQuery('#nmalur').val(result.message.nmalur);
 					jQuery('#debet').val(result.message.debet);
 					jQuery('#kredit').val(result.message.kredit);
+					jQuery('#kdakun_d').val(result.message.kdakun_d);
+					jQuery('#kdakun_k').val(result.message.kdakun_k);
 					jQuery('#nmtrans').val(result.message.nmtrans);
 					jQuery('#nmpelanggan').val(result.message.nmpelanggan);
 					jQuery('#nopks').val(result.message.nopks);

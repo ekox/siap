@@ -9,7 +9,7 @@ class UMKRekamController extends Controller {
 
 	public function index(Request $request)
 	{
-		$aColumns = array('id','nourut','nmunit','nama','nmtrans','pks','nilai','status');
+		$aColumns = array('id','nourut','nmunit','nmtrans','pks','nilai','status');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
 		/* DB table to use */
@@ -140,7 +140,6 @@ class UMKRekamController extends Controller {
 				$row->no,
 				$row->nourut,
 				$row->nmunit,
-				$row->nama,
 				$row->nmtrans,
 				$row->pks,
 				'<div style="text-align:right;">'.number_format($row->nilai).'</div>',
@@ -285,8 +284,6 @@ class UMKRekamController extends Controller {
 							'tgdok' => $request->input('tgpks'),
 							'tgdok1' => $request->input('tgjtempo'),
 							'uraian' => $request->input('uraian'),
-							'debet' => '910000',
-							'kredit' => '920000',
 							'nilai' => str_replace(',', '', $request->input('nilai')),
 							'nilai_bersih' => str_replace(',', '', $request->input('nilai')),
 							'status' => 1,
@@ -294,8 +291,42 @@ class UMKRekamController extends Controller {
 						]);
 						
 						if($id_trans){
-							DB::commit();
-							return 'success';
+							
+							$arr_insert[] = "select	".$id_trans." as id_trans,
+													'910000' as kdakun,
+													'D' as kddk,
+													".str_replace(',', '', $request->input('nilai'))." as nilai,
+													1 as grup
+											 from dual";
+											 
+							$arr_insert[] = "select	".$id_trans." as id_trans,
+													'920000' as kdakun,
+													'K' as kddk,
+													".str_replace(',', '', $request->input('nilai'))." as nilai,
+													1 as grup
+											 from dual
+											 ";
+							
+							$delete = DB::delete("
+								delete from d_trans_akun
+								where id_trans=?
+							",[
+								$id_trans
+							]);
+								
+							$insert = DB::insert("
+								insert into d_trans_akun(id_trans,kdakun,kddk,nilai,grup)
+								".implode(" union all ", $arr_insert)."
+							");
+							
+							if($insert){
+								DB::commit();
+								return 'success';
+							}
+							else{
+								return 'Simpan pajak gagal!';
+							}
+							
 						}
 						else{
 							return 'Data gagal disimpan!';
@@ -335,8 +366,44 @@ class UMKRekamController extends Controller {
 					]);
 					
 					if($update){
-						DB::commit();
-						return 'success';
+						
+						$id_trans = $request->input('inp-id');
+						
+						$arr_insert[] = "select	".$id_trans." as id_trans,
+												'910000' as kdakun,
+												'D' as kddk,
+												".str_replace(',', '', $request->input('nilai'))." as nilai,
+												1 as grup
+										 from dual";
+										 
+						$arr_insert[] = "select	".$id_trans." as id_trans,
+												'920000' as kdakun,
+												'K' as kddk,
+												".str_replace(',', '', $request->input('nilai'))." as nilai,
+												1 as grup
+										 from dual
+										 ";
+						
+						$delete = DB::delete("
+							delete from d_trans_akun
+							where id_trans=?
+						",[
+							$id_trans
+						]);
+							
+						$insert = DB::insert("
+							insert into d_trans_akun(id_trans,kdakun,kddk,nilai,grup)
+							".implode(" union all ", $arr_insert)."
+						");
+						
+						if($insert){
+							DB::commit();
+							return 'success';
+						}
+						else{
+							return 'Simpan pajak gagal!';
+						}
+						
 					}
 					else{
 						return 'Data gagal diubah!';
@@ -368,6 +435,13 @@ class UMKRekamController extends Controller {
 		]);
 		
 		if($rows[0]->jml==1){
+			
+			$delete = DB::delete("
+				delete from d_trans_akun
+				where id_trans=?
+			",[
+				$request->input('id')
+			]);
 			
 			$delete = DB::delete("
 				delete from d_trans

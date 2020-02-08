@@ -143,6 +143,7 @@ class PengeluaranProsesController extends Controller {
 						<div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
 							<a id="'.$row->id.'" class="dropdown-item proses" href="javascript:;">Proses Data</a>
 							<a class="dropdown-item" href="bukti/uang-keluar/'.$row->id.'" target="_blank">Cetak Bukti</a>
+							<a class="dropdown-item" href="bukti/tanda-terima/'.$row->id.'" target="_blank">Cetak Tanda Terima</a>
 						</div>
 					</center>';
 			}
@@ -287,6 +288,7 @@ class PengeluaranProsesController extends Controller {
 						<div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
 							<a id="'.$row->id.'" class="dropdown-item proses" href="javascript:;">Lihat Data</a>
 							<a class="dropdown-item" href="bukti/uang-keluar/'.$row->id.'" target="_blank">Cetak Bukti</a>
+							<a class="dropdown-item" href="bukti/tanda-terima/'.$row->id.'" target="_blank">Cetak Tanda Terima</a>
 						</div>
 					</center>';
 			
@@ -327,11 +329,11 @@ class PengeluaranProsesController extends Controller {
 					nvl(a.nilai_bersih,0) as nilai,
 					nvl(j.nilai,0) as pajak,
 					nvl(a.nilai,0) as total,
-					nvl(f.nmakun,0) as debet,
-					nvl(i.nmakun,0) as kredit,
+					nvl(n.nmakun,0) as debet,
 					a.id_alur,
 					a.status,
-					a.debet as kdakun
+					n.kdakun,
+					o.uraian as nmtrans_dtl
 			from d_trans a
 			left outer join t_alur b on(a.id_alur=b.id)
 			left outer join t_unit c on(a.kdunit=c.kdunit)
@@ -344,10 +346,20 @@ class PengeluaranProsesController extends Controller {
 			left outer join(
 				select	a.id_trans,
 						sum(decode(b.kddk,'D',a.nilai,-a.nilai)) as nilai
-				from d_trans_pajak a
+				from d_trans_akun a
 				left join t_akun_pajak b on(a.kdakun=b.kdakun)
+				where a.grup=0
 				group by a.id_trans
 			) j on(a.id=j.id_trans)
+			left outer join(
+				select  a.id_trans,
+						a.kdakun,
+						b.nmakun
+				from d_trans_akun a
+				left join t_akun b on(a.kdakun=b.kdakun)
+				where a.grup=1 and a.kddk='D'
+			) n on(a.id=n.id_trans)
+			left join t_trans_dtl o on(a.kdtran_dtl=o.id) 
 			where a.id=?
 		",[
 			$id
