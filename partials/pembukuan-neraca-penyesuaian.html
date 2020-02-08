@@ -101,7 +101,7 @@
 			jQuery('#div-tabel').show();
 			jQuery('#tabel-ruh').html('<td colspan="8">Sedang proses......</td>');
 	
-			jQuery.getJSON('pembukuan/neraca-penyesuaian', function(result){
+			jQuery.getJSON('pembukuan/neraca-penyesuaian?periode='+periode, function(result){
 				jQuery('#tabel-ruh').html(result.data);
 				jQuery('#total-debet').html(result.total_debet);
 				jQuery('#total-kredit').html(result.total_kredit);

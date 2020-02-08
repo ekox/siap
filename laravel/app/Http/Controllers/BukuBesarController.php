@@ -33,10 +33,13 @@ class BukuBesarController extends Controller
 		$kdakun = $_GET['kdakun'];
 		
 		$rows = Bukubesar::getAllData($tahun, $periode, $kdakun);
-		$sum = Bukubesar::getSumData($tahun, $periode, $kdakun);
+		//$sum = Bukubesar::getSumData($tahun, $periode, $kdakun);
 
 		if(count($rows) > 0) {		
-
+		
+			$tot_debet = 0;
+			$tot_kredit = 0;
+			$saldo = 0;
 			foreach($rows as $row) {
 				$val = (object) array(
 					'tahun' => $tahun,
@@ -51,16 +54,21 @@ class BukuBesarController extends Controller
 					'saldo' => $row->saldo,
 				);
 
-				$values[] = $val; 
+				$values[] = $val;
+
+				$tot_debet += $row->debet;
+				$tot_kredit += $row->kredit;
+				$saldo = $row->saldo;
 			}
 
 			$param[] = array(
 				'tahun' => $tahun,
 				'kdakun' => $kdakun,
+				'bulan'=> $rows[0]->bulan,
 				'nmakun'=> $rows[0]->nmakun,
-				'debet' => $sum->debet,
-				'kredit' => $sum->kredit,
-				'saldo' => $sum->saldo
+				'debet' => $tot_debet,
+				'kredit' => $tot_kredit,
+				'saldo' => $saldo
 			);
 
 			$TBS = new clsTinyButStrong();

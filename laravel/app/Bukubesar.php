@@ -15,6 +15,7 @@ class Bukubesar extends Model
 		$rows = \DB::select("
 			  SELECT a.kdakun,
 					 d.nmakun,
+					 to_char(last_day(b.tgdok),'dd')||' '||e.nmbulan as bulan,
 					 TO_CHAR (b.tgdok, 'dd-mm-yyyy') AS tanggal,
 					 b.nodok || ' ' || c.nmunit AS no_voucher,
 					 'Z' AS kd_pc,
@@ -28,12 +29,17 @@ class Bukubesar extends Model
 					 LEFT JOIN t_unit c
 						ON (SUBSTR (b.kdunit, 1, 4) = c.kdunit)
 					 LEFT JOIN t_akun d
-						ON (a.kdakun = d.kdakun)
+						ON (a.kdakun = d.kdakun),
+					 (
+						select	nmbulan
+						from t_bulan
+						where bulan=?
+					 ) e
 			   WHERE     b.thang = ?
 					 AND TO_CHAR (b.tgdok, 'mm') <= ?
 					 AND a.kdakun = ?
 			ORDER BY b.tgdok
-		", [$tahun, $periode, $kdakun]);
+		", [$periode, $tahun, $periode, $kdakun]);
 
 		return $rows;
 	}

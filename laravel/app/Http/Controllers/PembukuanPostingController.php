@@ -145,77 +145,6 @@ class PembukuanPostingController extends Controller {
 		if($periode!==''){
 			
 			$where = '';
-			//if($periode=='12'){
-				/*$where = "
-					union all
-					
-					select  to_char(b.tgdok,'YYYY') as thang,
-							to_char(b.tgdok,'MM') as periode,
-							a.kdakun,
-							'D' as kddk,
-							sum(a.nilai) as nilai
-					from d_trans_akun a
-					left outer join d_trans b on(a.id_trans=b.id)
-					where   b.thang='".session('tahun')."' and
-							b.tgdok<=last_day(to_date('01/".$periode."/".session('tahun')."','DD/MM/YYYY')) and
-							substr(a.kdakun,1,1) in('4','6','8')
-					group by to_char(b.tgdok,'YYYY'),
-							to_char(b.tgdok,'MM'),
-							a.kdakun,
-							a.kddk
-
-					union all
-
-					select  to_char(b.tgdok,'YYYY') as thang,
-							to_char(b.tgdok,'MM') as periode,
-							'322000' as kdakun,
-							'K' as kddk,
-							sum(a.nilai) as nilai
-					from d_trans_akun a
-					left outer join d_trans b on(a.id_trans=b.id)
-					where   b.thang='".session('tahun')."' and
-							b.tgdok<=last_day(to_date('01/".$periode."/".session('tahun')."','DD/MM/YYYY')) and
-							substr(a.kdakun,1,1) in('4','6','8')
-					group by to_char(b.tgdok,'YYYY'),
-							to_char(b.tgdok,'MM'),
-							a.kdakun,
-							a.kddk
-							
-					union all
-							
-					select  to_char(b.tgdok,'YYYY') as thang,
-							to_char(b.tgdok,'MM') as periode,
-							a.kdakun,
-							'K' as kddk,
-							sum(a.nilai) as nilai
-					from d_trans_akun a
-					left outer join d_trans b on(a.id_trans=b.id)
-					where   b.thang='".session('tahun')."' and
-							b.tgdok<=last_day(to_date('01/".$periode."/".session('tahun')."','DD/MM/YYYY')) and
-							substr(a.kdakun,1,1) in('5','7')
-					group by to_char(b.tgdok,'YYYY'),
-							to_char(b.tgdok,'MM'),
-							a.kdakun,
-							a.kddk
-
-					union all
-
-					select  to_char(b.tgdok,'YYYY') as thang,
-							to_char(b.tgdok,'MM') as periode,
-							'322000' as kdakun,
-							'D' as kddk,
-							sum(a.nilai) as nilai
-					from d_trans_akun a
-					left outer join d_trans b on(a.id_trans=b.id)
-					where   b.thang='".session('tahun')."' and
-							b.tgdok<=last_day(to_date('01/".$periode."/".session('tahun')."','DD/MM/YYYY')) and
-							substr(a.kdakun,1,1) in('5','7')
-					group by to_char(b.tgdok,'YYYY'),
-							to_char(b.tgdok,'MM'),
-							a.kdakun,
-							a.kddk
-				";*/
-			//}
 			
 			$query = "
 				select  a.thang,
@@ -232,7 +161,7 @@ class PembukuanPostingController extends Controller {
 							a.kdakun,
 							sum(a.nilai) as nilai
 					from d_sawal a
-					where a.thang='".session('tahun')."' and a.tgsawal<=last_day(to_date('01/".$periode."/".session('tahun')."','DD/MM/YYYY'))
+					where a.thang=?
 					group by to_char(a.tgsawal,'YYYY'),
 							to_char(a.tgsawal,'MM'),
 							a.kdakun,
@@ -240,84 +169,23 @@ class PembukuanPostingController extends Controller {
 					
 					union all
 					
-					/* transaksi berjalan debet */
-					select  to_char(tgdok,'yyyy') as thang,
-							to_char(tgdok,'mm') as periode,
-							'D' as kddk,
-							debet as kdakun,
-							sum(decode(b.menu,1,a.nilai,2,a.nilai,a.nilai_bersih)) as nilai
-					from d_trans a
-					left join t_alur b on(a.id_alur=b.id)
-					where thang='".session('tahun')."' and debet is not null and b.neraca1=1 and tgdok<=last_day(to_date('01/".$periode."/".session('tahun')."','DD/MM/YYYY'))
-					group by to_char(tgdok,'yyyy'),
-							 to_char(tgdok,'mm'),
-							 debet
-							 
-					union all
-					
-					/* transaksi berjalan kredit */
-					select  to_char(tgdok,'yyyy') as thang,
-							to_char(tgdok,'mm') as periode,
-							'K' as kddk,
-							kredit as kdakun,
-							sum(decode(b.menu,1,a.nilai_bersih,2,a.nilai_bersih,a.nilai)) as nilai
-					from d_trans a
-					left join t_alur b on(a.id_alur=b.id)
-					where thang='".session('tahun')."' and kredit is not null and b.neraca1=1 and tgdok<=last_day(to_date('01/".$periode."/".session('tahun')."','DD/MM/YYYY'))
-					group by to_char(tgdok,'yyyy'),
-							 to_char(tgdok,'mm'),
-							 kredit
-							 
-					union all
-					
-					/* hitung pajak keluaran */
+					/* transaksi berjalan termasuk pajak dan penyesuaian */
 					select  to_char(b.tgdok,'yyyy') as thang,
 							to_char(b.tgdok,'mm') as periode,
-							'K' as kddk,
+							a.kddk,
 							a.kdakun,
 							sum(a.nilai) as nilai
-					from d_trans_pajak a
+					from d_trans_akun a
 					left join d_trans b on(a.id_trans=b.id)
 					left join t_alur c on(b.id_alur=c.id)
-					where b.thang='".session('tahun')."' and c.menu in(1,2) and b.tgdok<=last_day(to_date('01/".$periode."/".session('tahun')."','DD/MM/YYYY'))
+					where b.thang=?
 					group by to_char(b.tgdok,'yyyy'),
-							to_char(b.tgdok,'mm'),
-							a.kdakun
-							
-					union all
-							
-					/* hitung pajak masukan */
-					select  to_char(b.tgdok,'yyyy') as thang,
-							to_char(b.tgdok,'mm') as periode,
-							'D' as kddk,
-							a.kdakun,
-							sum(a.nilai) as nilai
-					from d_trans_pajak a
-					left join d_trans b on(a.id_trans=b.id)
-					left join t_alur c on(b.id_alur=c.id)
-					where b.thang='".session('tahun')."' and c.menu in(4) and b.tgdok<=last_day(to_date('01/".$periode."/".session('tahun')."','DD/MM/YYYY'))
-					group by to_char(b.tgdok,'yyyy'),
-							to_char(b.tgdok,'mm'),
-							a.kdakun
-							 
-					union all
-					
-					/* jurnal penyesuaian */
-					select  to_char(tgdok,'yyyy') as thang,
-							to_char(tgdok,'mm') as periode,
-							c.kddk,
-							c.kdakun,
-							sum(c.nilai) as nilai
-					from d_trans a
-					left join t_alur b on(a.id_alur=b.id)
-					left join d_trans_akun c on(a.id=c.id_trans)
-					where thang='".session('tahun')."' and b.neraca1=0 and a.tgdok<=last_day(to_date('01/".$periode."/".session('tahun')."','DD/MM/YYYY'))
-					group by to_char(tgdok,'yyyy'),
-							 to_char(tgdok,'mm'),
-							 c.kddk,
-							 c.kdakun
+							 to_char(b.tgdok,'mm'),
+							 a.kddk,
+							 a.kdakun
 					
 				) a
+				where a.periode<=?
 				group by a.thang,a.periode,a.kdakun
 			";
 			
@@ -326,7 +194,11 @@ class PembukuanPostingController extends Controller {
 			$rows = DB::select("
 				select	count(*) as jml
 				from(".$query.") a
-			");
+			",[
+				session('tahun'),
+				session('tahun'),
+				$periode
+			]);
 			
 			if($rows[0]->jml>0){
 				
@@ -350,7 +222,11 @@ class PembukuanPostingController extends Controller {
 					$insert = DB::insert("
 						insert into d_buku_besar(thang,periode,kdakun,debet,kredit,id_user)
 						".$query."
-					");
+					",[
+						session('tahun'),
+						session('tahun'),
+						$periode
+					]);
 					
 					if($insert){
 						DB::commit();
