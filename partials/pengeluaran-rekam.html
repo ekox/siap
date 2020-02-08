@@ -100,7 +100,7 @@
 	                            	</div>
 									<label id="warning-id_pelanggan" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
-								<div class="form-group row">
+								<!--<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="kdtran">Jenis Pengeluaran </label>
 									<div class="col-md-7">
 	                            		<select id="kredit" name="kredit" class="form-control chosen">
@@ -108,9 +108,9 @@
 										</select>
 	                            	</div>
 									<label id="warning-kredit" class="col-md-2 label-control label-warning warning">required!</label>
-		                        </div>
+		                        </div>-->
 								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="kdtran">Pengeluaran Atas </label>
+	                            	<label class="col-md-2 label-control" for="kdtran">Jenis Pengeluaran</label>
 									<div class="col-md-7">
 	                            		<select id="debet" name="debet" class="form-control chosen">
 											<option value="" style="display:none;">Pilih Data</option>
@@ -440,22 +440,6 @@
 			jQuery('#id_output').html(result).trigger('chosen:updated');
 		});
 		
-		jQuery.get('dropdown/ttd/05', function(result){
-			jQuery('#ttd1').html(result).trigger('chosen:updated');
-		});
-		
-		jQuery.get('dropdown/ttd/04', function(result){
-			jQuery('#ttd2').html(result).trigger('chosen:updated');
-		});
-		
-		jQuery.get('dropdown/ttd/02', function(result){
-			jQuery('#ttd3').html(result).trigger('chosen:updated');
-		});
-		
-		jQuery.get('dropdown/ttd/01', function(result){
-			jQuery('#ttd4').html(result).trigger('chosen:updated');
-		});
-		
 		jQuery.get('cek/level', function(result){
 			if(result=='11'){ //admin
 				jQuery('#tambah').show();
@@ -522,6 +506,21 @@
 					akun+='<option value="'+field.kdakun+'|'+field.kddk+'|'+field.nilai+'">'+field.kdakun+' - '+field.nmakun+'</option>';
 				});
 				jQuery('#inp-akun').val(akun);
+			});
+			jQuery.get('dropdown/ttd/05', function(result){
+				jQuery('#ttd1').html(result).trigger('chosen:updated');
+			});
+			
+			jQuery.get('dropdown/ttd/04', function(result){
+				jQuery('#ttd2').html(result).trigger('chosen:updated');
+			});
+			
+			jQuery.get('dropdown/ttd/02', function(result){
+				jQuery('#ttd3').html(result).trigger('chosen:updated');
+			});
+			
+			jQuery.get('dropdown/ttd/01', function(result){
+				jQuery('#ttd4').html(result).trigger('chosen:updated');
 			});
 		}
 		
@@ -635,7 +634,7 @@
 						jQuery('#kdtran').val(result.message.kdtran).trigger('chosen:updated');
 					});
 					
-					if(result.message.parent_id!==''){
+					if(result.message.parent_id!=='' && result.message.parent_id!==null){
 						jQuery('#parent_id').html(result.tagihan).trigger('chosen:updated');
 						jQuery('#div-tagihan').show();
 					}

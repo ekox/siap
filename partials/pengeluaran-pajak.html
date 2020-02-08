@@ -29,6 +29,8 @@
 							<input type="hidden" id="status" name="status">
 							<input type="hidden" id="x" name="x">
 							<input type="hidden" id="inp-akun">
+							<input type="hidden" id="kdakun_d" name="kdakun_d">
+							<input type="hidden" id="kdakun_k" name="kdakun_k">
 							<div class="form-body">
 								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="nourut">No.Transaksi </label>
@@ -51,49 +53,49 @@
 									<label id="warning-nmpelanggan" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="nmalur">Kode Proses </label>
+	                            	<label class="col-md-2 label-control" for="nmalur">Jenis Kegiatan </label>
 									<div class="col-md-7">
 	                            		<input id="nmalur" name="nmalur" class="form-control" readonly>
 	                            	</div>
 									<label id="warning-nmalur" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="nmtrans">Kode Transaksi </label>
+	                            	<label class="col-md-2 label-control" for="nmtrans">Jenis Pembayaran </label>
 									<div class="col-md-7">
 	                            		<input id="nmtrans" name="nmtrans" class="form-control" readonly>
 	                            	</div>
 									<label id="warning-nmtrans" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="nilai">Debet </label>
+	                            	<label class="col-md-2 label-control" for="nmtrans">Jenis Transaksi </label>
+									<div class="col-md-7">
+	                            		<input id="nmtrans_dtl" name="nmtrans_dtl" class="form-control" readonly>
+	                            	</div>
+									<label id="warning-nmtrans_dtl" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="nilai">Jenis Pengeluaran </label>
 									<div class="col-md-7">
 	                            		<input id="debet" name="debet" class="form-control" readonly>
 	                            	</div>
 									<label id="warning-debet" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="nilai">Kredit </label>
-									<div class="col-md-7">
-	                            		<input id="kredit" name="kredit" class="form-control" readonly>
-	                            	</div>
-									<label id="warning-kredit" class="col-md-2 label-control label-warning warning">required!</label>
-		                        </div>
-								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="nopks">No.PKS </label>
+	                            	<label class="col-md-2 label-control" for="nopks">No.Bukti </label>
 									<div class="col-md-7">
 	                            		<input type="text" id="nopks" name="nopks" class="form-control" maxlength="255" readonly>
 	                            	</div>
 									<label id="warning-nopks" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="tgpks">Tgl.PKS </label>
+	                            	<label class="col-md-2 label-control" for="tgpks">Tgl.Bukti </label>
 									<div class="col-md-7">
 	                            		<input type="date" id="tgpks" name="tgpks" class="form-control" maxlength="10" readonly>
 	                            	</div>
 									<label id="warning-tgpks" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="tgpks">Jatuh Tempo </label>
+	                            	<label class="col-md-2 label-control" for="tgpks">Tgl.Bayar </label>
 									<div class="col-md-7">
 	                            		<input type="date" id="tgjtempo" name="tgjtempo" class="form-control" maxlength="10" readonly>
 	                            	</div>
@@ -386,9 +388,12 @@
 					jQuery('#status').val(result.message.status);
 					jQuery('#nmunit').val(result.message.nmunit);
 					jQuery('#nmalur').val(result.message.nmalur);
+					jQuery('#kdakun_d').val(result.message.kdakun_d);
+					jQuery('#kdakun_k').val(result.message.kdakun_k);
 					jQuery('#debet').val(result.message.debet);
 					jQuery('#kredit').val(result.message.kredit);
 					jQuery('#nmtrans').val(result.message.nmtrans);
+					jQuery('#nmtrans_dtl').val(result.message.nmtrans_dtl);
 					jQuery('#nmpelanggan').val(result.message.nmpelanggan);
 					jQuery('#nopks').val(result.message.nopks);
 					jQuery('#tgpks').val(result.message.tgpks);

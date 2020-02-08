@@ -70,26 +70,33 @@
 									<label id="warning-nmalur" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="nmtrans">Jenis Transaksi </label>
+	                            	<label class="col-md-2 label-control" for="nmtrans">Jenis Pembayaran </label>
 									<div class="col-md-7">
 	                            		<input id="nmtrans" name="nmtrans" class="form-control" readonly>
 	                            	</div>
 									<label id="warning-nmtrans" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="nilai">Jenis Pengeluaran </label>
+	                            	<label class="col-md-2 label-control" for="nmtrans">Jenis Transaksi </label>
 									<div class="col-md-7">
-	                            		<input id="kredit" name="kredit" class="form-control" readonly>
+	                            		<input id="nmtrans_dtl" name="nmtrans_dtl" class="form-control" readonly>
 	                            	</div>
-									<label id="warning-kredit" class="col-md-2 label-control label-warning warning">required!</label>
+									<label id="warning-nmtrans_dtl" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="nilai">Pengeluaran Atas </label>
+	                            	<label class="col-md-2 label-control" for="nilai">Jenis Pengeluaran </label>
 									<div class="col-md-7">
 	                            		<input id="debet" name="debet" class="form-control" readonly>
 	                            	</div>
 									<label id="warning-debet" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
+								<!--<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="nilai">Pengeluaran Atas </label>
+									<div class="col-md-7">
+	                            		<input id="debet" name="debet" class="form-control" readonly>
+	                            	</div>
+									<label id="warning-debet" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>-->
 								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="pagu">Total Pagu </label>
 									<div class="col-md-7">
@@ -352,6 +359,7 @@
 					jQuery('#debet').val(result.message.debet);
 					jQuery('#kredit').val(result.message.kredit);
 					jQuery('#nmtrans').val(result.message.nmtrans);
+					jQuery('#nmtrans_dtl').val(result.message.nmtrans_dtl);
 					jQuery('#nmproyek').val(result.message.nmproyek);
 					jQuery('#nmpelanggan').val(result.message.nmpelanggan);
 					jQuery('#nopks').val(result.message.nopks);

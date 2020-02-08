@@ -21,7 +21,7 @@ class PenerimaanPajakController extends Controller {
 							a.nodok as pks,
 							to_char(a.tgdok1,'dd-mm-yyyy') as tgjtempo,
 							a.uraian,
-							nvl(a.nilai,0) as nilai,
+							nvl(a.nilai_bersih,0) as nilai,
 							b.nmalur||'<br>'||g.nmlevel||'<br>'||c.nmstatus as status,
 							nvl(a.nilai,0)-nvl(a.nilai_bersih,0) as pajak,
 							nvl(a.nilai,0)+nvl(a.ppn,0)+nvl(a.pph21,0)+nvl(a.pph22,0)+nvl(a.pph23,0)+nvl(a.pph25,0) as total
@@ -169,8 +169,10 @@ class PenerimaanPajakController extends Controller {
 					nvl(a.pph23,0) as pph23,
 					nvl(a.pph25,0) as pph25,
 					0 as total,
-					nvl(f.nmakun,0) as debet,
-					nvl(i.nmakun,0) as kredit,
+					h.kdakun as kdakun_d,
+					nvl(h.nmakun,0) as debet,
+					j.kdakun as kdakun_k,
+					nvl(j.nmakun,0) as kredit,
 					a.kredit as kdakun,
 					a.id_alur,
 					a.status
@@ -181,6 +183,22 @@ class PenerimaanPajakController extends Controller {
 			left outer join t_trans e on(a.kdtran=e.id)
 			left outer join t_akun f on(a.debet=f.kdakun)
 			left outer join t_akun i on(a.kredit=i.kdakun)
+			left outer join(
+				select  a.id_trans,
+						a.kdakun,
+						b.nmakun
+				from d_trans_akun a
+				left join t_akun b on(a.kdakun=b.kdakun)
+				where a.grup=1 and a.kddk='D'
+			) h on(a.id=h.id_trans)
+			left outer join(
+				select  a.id_trans,
+						a.kdakun,
+						b.nmakun
+				from d_trans_akun a
+				left join t_akun b on(a.kdakun=b.kdakun)
+				where a.grup=1 and a.kddk='K'
+			) j on(a.id=j.id_trans)
 			where a.id=?
 		",[
 			$id
@@ -199,7 +217,7 @@ class PenerimaanPajakController extends Controller {
 						b.uraian,
 						a.nmfile
 				from d_trans_dok a
-				left outer join t_dok b on(a.id_dok=b.id)
+				left outer join t_dok_dtl b on(a.id_dok_dtl=b.id)
 				where a.id_trans=?
 			",[
 				$id
@@ -237,9 +255,9 @@ class PenerimaanPajakController extends Controller {
 						a.nilai,
 						b.kddk,
 						b.nilai as nilai1
-				from d_trans_pajak a
+				from d_trans_akun a
 				left join t_akun_pajak b on(a.kdakun=b.kdakun)
-				where a.id_trans=?
+				where a.id_trans=? and a.grup=0
 			",[
 				$id
 			]);
@@ -282,6 +300,23 @@ class PenerimaanPajakController extends Controller {
 			
 			if($update){
 				
+				$id_trans = $request->input('inp-id');
+				
+				$arr_insert[] = "select	".$id_trans." as id_trans,
+										'".$request->input('kdakun_d')."' as kdakun,
+										'D' as kddk,
+										".str_replace(',', '', $request->input('total'))." as nilai,
+										1 as grup
+								 from dual";
+								 
+				$arr_insert[] = "select	".$id_trans." as id_trans,
+										'".$request->input('kdakun_k')."' as kdakun,
+										'K' as kddk,
+										".str_replace(',', '', $request->input('nilai'))." as nilai,
+										1 as grup
+								 from dual
+								 ";
+				
 				$lanjut = true;
 				$arr_pajak = $request->input('rincian');
 				$id_trans = $request->input('inp-id');
@@ -289,7 +324,6 @@ class PenerimaanPajakController extends Controller {
 					if(count($arr_pajak)>0){
 						
 						$arr_keys = array_keys($arr_pajak);
-						$arr_insert = array();
 						
 						for($i=0;$i<count($arr_keys);$i++){
 							
@@ -297,32 +331,22 @@ class PenerimaanPajakController extends Controller {
 							
 								$arr_akun = explode("|", $arr_pajak[$arr_keys[$i]]["'kdakun'"]);
 								$kdakun = $arr_akun[0];
+								$kddk = $arr_akun[1];
+								
+								if($kddk=='D'){
+									$kddk='K';
+								}
+								else{
+									$kddk='D';
+								}
 							
 								$arr_insert[] = "select	".$id_trans." as id_trans,
 														'".$kdakun."' as kdakun,
-														".str_replace(',', '', $arr_pajak[$arr_keys[$i]]["'nilai'"])." as nilai
+														'".$kddk."' as kddk,
+														".str_replace(',', '', $arr_pajak[$arr_keys[$i]]["'nilai'"])." as nilai,
+														0 as grup
 												 from dual";
 												 
-							}
-							
-						}
-						
-						if(count($arr_insert)>0){
-								
-							$delete = DB::delete("
-								delete from d_trans_pajak
-								where id_trans=?
-							",[
-								$id_trans
-							]);
-								
-							$insert = DB::insert("
-								insert into d_trans_pajak(id_trans,kdakun,nilai)
-								".implode(" union all ", $arr_insert)."
-							");
-							
-							if(!$insert){
-								$lanjut = false;
 							}
 							
 						}
@@ -330,7 +354,19 @@ class PenerimaanPajakController extends Controller {
 					}
 				}
 				
-				if($lanjut){
+				$delete = DB::delete("
+					delete from d_trans_akun
+					where id_trans=?
+				",[
+					$id_trans
+				]);
+					
+				$insert = DB::insert("
+					insert into d_trans_akun(id_trans,kdakun,kddk,nilai,grup)
+					".implode(" union all ", $arr_insert)."
+				");
+				
+				if($insert){
 					DB::commit();
 					return 'success';
 				}
