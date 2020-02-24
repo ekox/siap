@@ -9,7 +9,7 @@ class UMKRekamController extends Controller {
 
 	public function index(Request $request)
 	{
-		$aColumns = array('id','nourut','nmunit','nmtrans','pks','nilai','status');
+		$aColumns = array('id','nourut','nmunit','nmtrans','pks','nilai','status','is_ubah');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
 		/* DB table to use */
@@ -22,7 +22,8 @@ class UMKRekamController extends Controller {
 							to_char(a.tgdok1,'dd-mm-yyyy') as tgjtempo,
 							a.uraian,
 							nvl(a.nilai,0) as nilai,
-							c.nmstatus as status
+							c.nmstatus as status,
+							c.is_ubah
 					from d_trans a
 					left outer join t_alur b on(a.id_alur=b.id)
 					left outer join t_alur_status c on(a.id_alur=c.id_alur and a.status=c.status)
@@ -126,11 +127,17 @@ class UMKRekamController extends Controller {
 		{
 			$aksi='';
 			if(session('kdlevel')=='04' || session('kdlevel')=='11'){
+				
+				$ruh = '';
+				if($row->is_ubah==1){
+					$ruh = '<a id="'.$row->id.'" class="dropdown-item ubah" href="javascript:;">Ubah Data</a>
+							<a id="'.$row->id.'" class="dropdown-item hapus" href="javascript:;">Hapus Data</a>';
+				}
+				
 				$aksi='<center>
 							<button type="button" class="btn btn-raised btn-sm btn-icon btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-check"></i></button>
 							<div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
-								<a id="'.$row->id.'" class="dropdown-item ubah" href="javascript:;">Ubah Data</a>
-								<a id="'.$row->id.'" class="dropdown-item hapus" href="javascript:;">Hapus Data</a>
+								'.$ruh.'
 								<a class="dropdown-item" href="bukti/uang-muka/'.$row->id.'" target="_blank">Cetak Bukti</a>
 							</div>
 						</center>';

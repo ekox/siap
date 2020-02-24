@@ -8,9 +8,9 @@
 		<tr>
 			<th>LAPORAN REALISASI INVESTASI</th>
 		</tr>
-		<tr>
+		<!--<tr>
 			<th class="ac fs10">(Disajikan dalam jutaan rupiah)</th>
-		</tr>
+		</tr>-->
 	</thead>
 </table>
 <br>

@@ -49,7 +49,7 @@ class TableController extends Controller
 	</style>';
 
 	public static $entitas = "PERUMDA PEMBANGUNAN SARANA JAYA";
-    public static $infoLaporan = "(Disajikan dalam jutaan Rupiah)";
+    public static $infoLaporan = "";
     public static $table_open = '<br/><table border="1" cellspacing="0" cellpadding="0" style="border: 1px solid; width:100%">';
     public static $table_open_nb = '<br/><table border="0" cellspacing="0" cellpadding="0" style="border: 0px solid; width:100%">';
     public static $table_open_nb1 = '<br/><table border="0" cellspacing="0" cellpadding="0" style="border: 1px solid; width:100%">';

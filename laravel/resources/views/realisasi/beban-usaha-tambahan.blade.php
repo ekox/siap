@@ -3,10 +3,10 @@
 <table width="100%" border="0" cellspacing="0" cellpadding="0" style="border:0px solid #000;">
 	<thead>
 		<tr>
-			<th colspan="9" class=""><!--
+			<th colspan="9" class="">
 				RINCIAN REALISASI BEBAN TAHUN {{$tahun}}
-				<br>-->
-				<span class="fs10">(Disajikan dalam jutaan Rupiah)</span>
+				<br>
+				<!--<span class="fs10">(Disajikan dalam jutaan Rupiah)</span>-->
 			</th>
 		</tr>
 		<tr>

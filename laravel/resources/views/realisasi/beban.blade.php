@@ -8,7 +8,7 @@
 				<br>
 				RINCIAN REALISASI BEBAN TAHUN {{$tahun}}
 				<br>
-				<span class="fs10">(Disajikan dalam jutaan Rupiah)</span>
+				<!--<span class="fs10">(Disajikan dalam jutaan Rupiah)</span>-->
 			</th>
 		</tr>
 		<tr>

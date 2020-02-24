@@ -98,7 +98,7 @@
               <ul class="navbar-nav">
                 <li class="dropdown nav-item">
 					<a id="dropdownBasic3" href="#" data-toggle="dropdown" class="nav-link position-relative dropdown-toggle">
-						<i class="ft-user font-medium-3 blue-grey darken-4"></i> {{$info_username}}
+						<i class="ft-calendar font-medium-3 blue-grey darken-4"></i>{{$info_tahun}} <i class="ft-user font-medium-3 blue-grey darken-4"></i> {{$info_username}}
 						<p class="d-none">User Settings</p>
 					</a>
                   <div ngbdropdownmenu="" aria-labelledby="dropdownBasic3" class="dropdown-menu text-left dropdown-menu-right">
