@@ -42,7 +42,7 @@ class UMKProsesController extends Controller {
 						left outer join t_penerima e on(a.id_penerima=e.id)
 						left outer join t_level g on(c.kdlevel=g.kdlevel)
 						left outer join t_trans h on(a.kdtran=h.id)
-						where b.menu=3 and a.thang='".session('tahun')."' and c.kdlevel='".session('kdlevel')."' and substr(a.kdunit,1,".$panjang.")='".session('kdunit')."'
+						where b.menu=3 and a.thang='".session('tahun')."' and c.kdlevel='".session('kdlevel')."'
 					) a
 					where a.akses=1
 					order by a.id desc
