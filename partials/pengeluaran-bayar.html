@@ -106,14 +106,14 @@
 									<label id="warning-total" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="nopks">No.PKS </label>
+	                            	<label class="col-md-2 label-control" for="nopks">No.Dokumen </label>
 									<div class="col-md-7">
 	                            		<input type="text" id="nopks" name="nopks" class="form-control" maxlength="255" readonly>
 	                            	</div>
 									<label id="warning-nopks" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="tgpks">Tgl.PKS </label>
+	                            	<label class="col-md-2 label-control" for="tgpks">Tgl.Dokumen </label>
 									<div class="col-md-7">
 	                            		<input type="date" id="tgpks" name="tgpks" class="form-control" maxlength="10" readonly>
 	                            	</div>
@@ -146,6 +146,13 @@
 										</select>
 	                            	</div>
 									<label id="warning-bayar" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="nocek">No.Buku </label>
+									<div class="col-md-7">
+	                            		<input type="text" id="nobuku" name="nobuku" class="form-control" maxlength="255">
+	                            	</div>
+									<label id="warning-nobuku" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="nocek">No.Cek/Buku </label>
@@ -344,6 +351,7 @@
 					jQuery('#tgjtempo').val(result.message.tgjtempo);
 					jQuery('#uraian').val(result.message.uraian);
 					jQuery('#nocek').val(result.message.nocek);
+					jQuery('#nobuku').val(result.message.nobuku);
 					jQuery('#tgcek').val(result.message.tgcek);
 					jQuery('#grup').val(result.message.grup);
 					jQuery('#nilai').val(digit_grouping(result.message.nilai));
@@ -375,7 +383,7 @@
 		jQuery('#simpan').click(function(){
 			jQuery(this).html('<span class="loading"><i class="fa fa-refresh"></i> Loading.....</span>');
 			jQuery(this).prop('disabled',true);
-			var next = form_valid('inp-id,bayar,nocek,tgcek');
+			var next = form_valid('inp-id,bayar,nobuku,nocek,tgcek');
 			if(next==true){
 				jQuery.get('token', function(token){
 					if(token){

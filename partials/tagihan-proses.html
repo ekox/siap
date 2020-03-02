@@ -140,6 +140,23 @@
 									<label id="warning-uraian" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="uraian">Rincian Akun </label>
+									<div class="col-md-10">
+										<table class="table table-bordered">
+											<thead>
+												<tr>
+													<th>Kode Akun</th>
+													<th>Nama Akun</th>
+													<th>Debet</th>
+													<th>Kredit</th>
+												</tr>
+											</thead>
+											<tbody id="div-rincian-akun">
+											</tbody>
+										</table>
+	                            	</div>
+		                        </div>
+								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="status1">Status </label>
 									<div class="col-md-7">
 	                            		<select id="status1" name="status1" class="form-control chosen">
@@ -334,7 +351,8 @@
 					jQuery('#nilai').val(digit_grouping(result.message.nilai));
 					jQuery('#pajak').val(digit_grouping(result.message.pajak));
 					jQuery('#total').val(digit_grouping(result.message.total));
-					jQuery('#status1').html(result.dropdown).trigger('chosen:updated');					
+					jQuery('#status1').html(result.dropdown).trigger('chosen:updated');
+					jQuery('#div-rincian-akun').html(result.akun);					
 				}
 				else{
 					alertify.log(result.message);

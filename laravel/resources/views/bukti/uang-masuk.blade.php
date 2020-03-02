@@ -225,7 +225,7 @@
 		</tr>
 		<tr>
 			<td colspan="3" style="padding:2em; bt" style="border-right: 1px solid #000;"></td>
-			<td rowspan="2" colspan="3" class="bl vm">Telah diperiksa dan dibukukan dalam Buku Kas/Bank dengan nomor: <br>{{$nodok}}</td>
+			<td rowspan="2" colspan="3" class="bl vm">Telah diperiksa dan dibukukan dalam Buku Kas/Bank dengan nomor: <br>{{$nobuku}}</td>
 			<td class="pl3">&nbsp;</td>
 		</tr>
 		<tr>

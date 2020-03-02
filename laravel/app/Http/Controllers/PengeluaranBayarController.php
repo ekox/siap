@@ -156,6 +156,7 @@ class PengeluaranBayarController extends Controller {
 			select  a.id,
 					lpad(a.nourut,5,'0') as nourut,
 					b.nmalur,
+					a.nobuku,
 					c.nmunit,
 					d.nama as nmpelanggan,
 					e.nmtrans,
@@ -270,11 +271,13 @@ class PengeluaranBayarController extends Controller {
 		
 		$update = DB::update("
 			update d_trans
-			set nocek=?,
+			set nobuku=?,
+				nocek=?,
 				tgcek=to_date(?,'yyyy-mm-dd'),
 				updated_at=sysdate
 			where id=?
 		",[
+			$request->input('nobuku'),
 			$request->input('nocek'),
 			$request->input('tgcek'),
 			$request->input('inp-id'),

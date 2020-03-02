@@ -20,7 +20,7 @@
 			<td class="pl3 vt">{{$thang}}</td>
 		</tr>
 		<tr>
-			<td class="pl3 vt">No. Bukti Keluar</td>
+			<td class="pl3 vt">No. Bukti Tagihan</td>
 			<td class="vt">:</td>
 			<td class="pl3 vt">{{$nodok}}</td>
 		</tr>
@@ -225,7 +225,7 @@
 		</tr>
 		<tr>
 			<td colspan="3" style="padding:2em; bt" style="border-right: 1px solid #000;"></td>
-			<td rowspan="2" colspan="3" class="bl vm">Telah diperiksa dan dibukukan dalam Buku Kas/Bank dengan nomor: <br>{{$nodok}}</td>
+			<td rowspan="2" colspan="3" class="bl vm">Telah diperiksa dan dibukukan dalam Buku Kas/Bank dengan nomor: <br>{{$nobuku}}</td>
 			<td class="pl3">&nbsp;</td>
 		</tr>
 		<tr>

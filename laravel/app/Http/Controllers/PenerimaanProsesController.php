@@ -9,6 +9,8 @@ class PenerimaanProsesController extends Controller {
 
 	public function index(Request $request)
 	{
+		$panjang = strlen(session('kdunit'));
+		
 		$aColumns = array('id','nourut','nmunit','nama','nmtrans','pks','nilai','status','is_final');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
@@ -27,7 +29,7 @@ class PenerimaanProsesController extends Controller {
 								c.nmstatus as status,
 								decode(c.is_unit,null,
 									1,
-									decode(substr(a.kdunit,1,4),'".substr(session('kdunit'),0,4)."',
+									decode(substr(a.kdunit,1,".$panjang."),'".session('kdunit')."',
 										1,
 										0
 									)
@@ -167,6 +169,13 @@ class PenerimaanProsesController extends Controller {
 	{
 		$panjang = strlen(session('kdunit'));
 		
+		$arrLevel = ['03','05','08','11'];
+		
+		$and = "";
+		if(in_array(session('kdlevel'), $arrLevel)){
+			$and = " and substr(a.kdunit,1,".$panjang.")='".session('kdunit')."'";
+		}
+		
 		$aColumns = array('id','nourut','nmunit','nama','nmtrans','pks','nilai','status');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
@@ -188,7 +197,7 @@ class PenerimaanProsesController extends Controller {
 					left outer join t_penerima e on(a.id_penerima=e.id)
 					left outer join t_level g on(c.kdlevel=g.kdlevel)
 					left outer join t_trans h on(a.kdtran=h.id)
-					where b.menu=2 and a.thang='".session('tahun')."' and substr(a.kdunit,1,".$panjang.")='".session('kdunit')."'
+					where b.menu=2 and a.thang='".session('tahun')."' ".$and."
 					order by a.nourut desc
 					";
 		
@@ -415,6 +424,41 @@ class PenerimaanProsesController extends Controller {
 			$lampiran = '';
 			
 			$data['lampiran'] = $lampiran;
+			
+			$rows = DB::select("
+				select	a.kdakun,
+						b.nmakun,
+						a.nilai,
+						a.kddk
+				from d_trans_akun a
+				left join t_akun b on(a.kdakun=b.kdakun)
+				where a.id_trans=?
+				order by a.kddk,a.kdakun
+			",[
+				$id
+			]);
+			
+			$akun = '';
+			foreach($rows as $row){
+				
+				if($row->kddk=='D'){
+					$debet = number_format($row->nilai);
+					$kredit = '';
+				}
+				else{
+					$kredit = number_format($row->nilai);
+					$debet = '';
+				}
+				
+				$akun .= '<tr>
+							<td>'.$row->kdakun.'</td>
+							<td>'.$row->nmakun.'</td>
+							<td style="text-align:right;">'.$debet.'</td>
+							<td style="text-align:right;">'.$kredit.'</td>
+						  </tr>';
+			}
+			
+			$data['akun'] = $akun;
 			
 		}
 		else{

@@ -47,6 +47,7 @@ class BuktiTransaksiController extends TableController
 					lpad(a.nourut,5,'0') as nourut,
 					a.thang,
 					a.nodok,
+					a.nobuku,
 					to_char(a.tgdok,'dd-mm-yyyy') as tgdok,
 					b.nama as nmpenerima,
 					a.nilai,
@@ -188,6 +189,7 @@ class BuktiTransaksiController extends TableController
 				'nourut' => $rows['nourut'],
 				'thang' => $rows['thang'],
 				'nmunit' => $rows['nmunit'],
+				'nobuku' => $rows['nobuku'],
 				'nodok' => $rows['nodok'],
 				'tgdok' => $rows['tgdok'],
 				'nmpenerima' => $rows['nmpenerima'],
@@ -251,6 +253,7 @@ class BuktiTransaksiController extends TableController
 					lpad(a.nourut,5,'0') as nourut,
 					a.thang,
 					a.nodok,
+					a.nobuku,
 					to_char(a.tgdok,'dd-mm-yyyy') as tgdok,
 					b.nama as nmpenerima,
 					a.nilai,
@@ -392,6 +395,7 @@ class BuktiTransaksiController extends TableController
 				'nourut' => $rows['nourut'],
 				'thang' => $rows['thang'],
 				'nmunit' => $rows['nmunit'],
+				'nobuku' => $rows['nobuku'],
 				'nodok' => $rows['nodok'],
 				'tgdok' => $rows['tgdok'],
 				'nmpenerima' => $rows['nmpenerima'],
@@ -611,20 +615,11 @@ class BuktiTransaksiController extends TableController
 					a.kdtran_dtl,
 					c.uraian as nmtrans,
 					b.nmunit,
-					d.nama as nmrekam,
-					e.nama as nmverifikasi
+					d.nama as nmrekam
 			from d_trans a
 			left join t_unit b on(substr(a.kdunit,1,4)=b.kdunit)
 			left join t_trans_dtl c on(a.kdtran_dtl=c.id)
 			left join t_user d on(a.id_user=d.id)
-			left join(
-				select  c.kdunit,
-						a.nama
-				from t_user a
-				left join t_user_level b on(a.id=b.id_user)
-				left join t_user_unit c on(a.id=c.id_user)
-				where b.kdlevel='08' and a.aktif='1' 
-			) e on(a.kdunit=e.kdunit)
 			where a.id=?
 		",[
 			$id
@@ -672,6 +667,17 @@ class BuktiTransaksiController extends TableController
 		}
 		
 		$data['detil'] = $tabel;
+		
+		$rows = DB::select("
+			select	*
+			from t_pejabat
+			where kdlevel='09'
+		");
+		
+		$data['nmverifikasi'] = '';
+		if(count($rows)>0){
+			$data['nmverifikasi'] = $rows[0]->nama;
+		}
 		
 		$html_out = view('bukti.tanda-terima', $data);
 		

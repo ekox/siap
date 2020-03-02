@@ -114,11 +114,11 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::group(['prefix' => 'rekam'], function () {
 			
 			Route::get('', 'TagihanRekamController@index');
-			Route::get('/pilih/{param}', 'TagihanRekamController@pilih')->middleware('role:04.12');
-			Route::get('/nomor', 'TagihanRekamController@nomor')->middleware('role:04.12');
+			Route::get('/pilih/{param}', 'TagihanRekamController@pilih')->middleware('role:04.07.12');
+			Route::get('/nomor', 'TagihanRekamController@nomor')->middleware('role:04.07.12');
 			Route::get('/detil/{param}', 'TagihanRekamController@detil');
-			Route::get('/download/{param}', 'TagihanRekamController@download')->middleware('role:04.12');
-			Route::post('', 'TagihanRekamController@simpan')->middleware('role:04.12');
+			Route::get('/download/{param}', 'TagihanRekamController@download')->middleware('role:04.07.12');
+			Route::post('', 'TagihanRekamController@simpan')->middleware('role:04.07.12');
 			Route::post('/hapus', 'TagihanRekamController@hapus')->middleware('role:12');
 			Route::post('/upload', 'TagihanRekamController@upload')->middleware('role:12');
 			
@@ -155,17 +155,17 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::group(['prefix' => 'rekam'], function () {
 			
 			Route::get('', 'PenerimaanRekamController@index');
-			Route::get('/pilih/{param}', 'PenerimaanRekamController@pilih')->middleware('role:04.11');
-			Route::get('/nomor', 'PenerimaanRekamController@nomor')->middleware('role:04.11');
+			Route::get('/pilih/{param}', 'PenerimaanRekamController@pilih')->middleware('role:04.07.11');
+			Route::get('/nomor', 'PenerimaanRekamController@nomor')->middleware('role:04.07.11');
 			Route::get('/tagihan/{param}', 'PenerimaanRekamController@tagihan');
 			Route::get('/detil/{param}', 'PenerimaanRekamController@detil');
-			Route::get('/download/{param}', 'PenerimaanRekamController@download')->middleware('role:04.11');
-			Route::get('/upload/{param}', 'PenerimaanRekamController@dok')->middleware('role:04.11');
-			Route::post('', 'PenerimaanRekamController@simpan')->middleware('role:04.11');
+			Route::get('/download/{param}', 'PenerimaanRekamController@download')->middleware('role:04.07.11');
+			Route::get('/upload/{param}', 'PenerimaanRekamController@dok')->middleware('role:04.07.11');
+			Route::post('', 'PenerimaanRekamController@simpan')->middleware('role:04.07.11');
 			Route::post('/hitung-total', 'PenerimaanRekamController@hitungTotal');
 			Route::post('/hapus', 'PenerimaanRekamController@hapus')->middleware('role:11');
-			Route::post('/upload/{param}', 'PenerimaanRekamController@upload')->middleware('role:04.11');
-			Route::post('/upload-simpan', 'PenerimaanRekamController@uploadSimpan')->middleware('role:04.11');
+			Route::post('/upload/{param}', 'PenerimaanRekamController@upload')->middleware('role:04.07.11');
+			Route::post('/upload-simpan', 'PenerimaanRekamController@uploadSimpan')->middleware('role:04.07.11');
 			Route::post('/hapus-dok', 'PenerimaanRekamController@hapusDok')->middleware('role:11');
 			
 		});
@@ -192,13 +192,13 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::group(['prefix' => 'rekam'], function () {
 			
 			Route::get('', 'UMKRekamController@index');
-			Route::get('/pilih/{param}', 'UMKRekamController@pilih')->middleware('role:04.11');
-			Route::get('/nomor', 'UMKRekamController@nomor')->middleware('role:04.11');
+			Route::get('/pilih/{param}', 'UMKRekamController@pilih')->middleware('role:04.07.11');
+			Route::get('/nomor', 'UMKRekamController@nomor')->middleware('role:04.07.11');
 			Route::get('/detil/{param}', 'UMKRekamController@detil');
-			Route::get('/download/{param}', 'UMKRekamController@download')->middleware('role:04.11');
-			Route::post('', 'UMKRekamController@simpan')->middleware('role:04.11');
+			Route::get('/download/{param}', 'UMKRekamController@download')->middleware('role:04.07.11');
+			Route::post('', 'UMKRekamController@simpan')->middleware('role:04.07.11');
 			Route::post('/hapus', 'UMKRekamController@hapus')->middleware('role:11');
-			Route::post('/upload', 'UMKRekamController@upload')->middleware('role:04.11');
+			Route::post('/upload', 'UMKRekamController@upload')->middleware('role:04.07.11');
 			
 		});
 		
@@ -242,16 +242,16 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::group(['prefix' => 'rekam'], function () {
 			
 			Route::get('', 'PengeluaranRekamController@index');
-			Route::get('/pilih/{param}', 'PengeluaranRekamController@pilih')->middleware('role:04.11');
-			Route::get('/nomor', 'PengeluaranRekamController@nomor')->middleware('role:04.11');
+			Route::get('/pilih/{param}', 'PengeluaranRekamController@pilih')->middleware('role:04.07.11');
+			Route::get('/nomor', 'PengeluaranRekamController@nomor')->middleware('role:04.07.11');
 			Route::get('/tagihan/{param}', 'PengeluaranRekamController@tagihan');
 			Route::get('/detil/{param}', 'PengeluaranRekamController@detil');
-			Route::get('/download/{param}', 'PengeluaranRekamController@download')->middleware('role:04.11');
-			Route::get('/upload/{param}', 'PengeluaranRekamController@dok')->middleware('role:04.11');
-			Route::post('', 'PengeluaranRekamController@simpan')->middleware('role:04.11');
+			Route::get('/download/{param}', 'PengeluaranRekamController@download')->middleware('role:04.07.11');
+			Route::get('/upload/{param}', 'PengeluaranRekamController@dok')->middleware('role:04.07.11');
+			Route::post('', 'PengeluaranRekamController@simpan')->middleware('role:04.07.11');
 			Route::post('/hapus', 'PengeluaranRekamController@hapus')->middleware('role:11');
-			Route::post('/upload/{param}', 'PengeluaranRekamController@upload')->middleware('role:04.11');
-			Route::post('/upload-simpan', 'PengeluaranRekamController@uploadSimpan')->middleware('role:04.11');
+			Route::post('/upload/{param}', 'PengeluaranRekamController@upload')->middleware('role:04.07.11');
+			Route::post('/upload-simpan', 'PengeluaranRekamController@uploadSimpan')->middleware('role:04.07.11');
 			Route::post('/hapus-dok', 'PengeluaranRekamController@hapusDok')->middleware('role:11');
 			
 		});

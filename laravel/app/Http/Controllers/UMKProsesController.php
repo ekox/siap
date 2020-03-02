@@ -29,7 +29,7 @@ class UMKProsesController extends Controller {
 								c.nmstatus as status,
 								decode(c.is_unit,null,
 									1,
-									decode(substr(a.kdunit,1,4),'".substr(session('kdunit'),0,4)."',
+									decode(substr(a.kdunit,1,".$panjang."),'".session('kdunit')."',
 										1,
 										0
 									)
@@ -167,6 +167,15 @@ class UMKProsesController extends Controller {
 	
 	public function monitoring(Request $request)
 	{
+		$panjang = strlen(session('kdunit'));
+		
+		$arrLevel = ['03','05','08','11'];
+		
+		$and = "";
+		if(in_array(session('kdlevel'), $arrLevel)){
+			$and = " and substr(a.kdunit,1,".$panjang.")='".session('kdunit')."'";
+		}
+		
 		$aColumns = array('id','nourut','nmunit','nama','nmtrans','pks','nilai','status');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
@@ -188,7 +197,7 @@ class UMKProsesController extends Controller {
 					left outer join t_penerima e on(a.id_penerima=e.id)
 					left outer join t_level g on(c.kdlevel=g.kdlevel)
 					left outer join t_trans h on(a.kdtran=h.id)
-					where b.menu=3 and a.thang='".session('tahun')."'
+					where b.menu=3 and a.thang='".session('tahun')."' ".$and."
 					order by a.nourut desc
 					";
 		
