@@ -9,6 +9,15 @@ class PengeluaranRekamController extends Controller {
 
 	public function index(Request $request)
 	{
+		$panjang = strlen(session('kdunit'));
+		
+		$arrLevel = ['03','05','08','11'];
+		
+		$and = "";
+		if(in_array(session('kdlevel'), $arrLevel)){
+			$and = " and substr(a.kdunit,1,".$panjang.")='".session('kdunit')."'";
+		}
+		
 		$aColumns = array('id','nourut','nmunit','nama','nmtrans','pks','nilai','status','lampiran','is_ubah');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
@@ -39,7 +48,7 @@ class PengeluaranRekamController extends Controller {
 						left outer join t_dok_dtl b on(a.id_dok_dtl=b.id)
 						group by a.id_trans
 					) i on(a.id=i.id_trans)
-					where b.menu=4 and a.thang='".session('tahun')."' and a.kdunit='".session('kdunit')."'
+					where b.menu=4 and a.thang='".session('tahun')."' ".$and."
 					order by a.id desc
 					";
 		
@@ -133,25 +142,30 @@ class PengeluaranRekamController extends Controller {
 		
 		foreach( $rows as $row )
 		{
-			$aksi='';
-			if(session('kdlevel')=='04' || session('kdlevel')=='11'){
+			$ruh = '';
+			if(session('kdlevel')=='11'){
 				
-				$ruh = '';
 				if($row->is_ubah==1){
 					$ruh = '<a id="'.$row->id.'" class="dropdown-item ubah" href="javascript:;">Ubah Data</a>
 							<a id="'.$row->id.'" class="dropdown-item hapus" href="javascript:;">Hapus Data</a>
 							<a id="'.$row->id.'" class="dropdown-item upload" href="javascript:;">Upload Lampiran</a>';
 				}
 				
-				$aksi='<center>
-							<button type="button" class="btn btn-raised btn-sm btn-icon btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-check"></i></button>
-							<div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
-								'.$ruh.'
-								<a class="dropdown-item" href="bukti/uang-keluar/'.$row->id.'" target="_blank">Cetak Bukti</a>
-								<a class="dropdown-item" href="bukti/tanda-terima/'.$row->id.'" target="_blank">Cetak Tanda Terima</a>
-							</div>
-						</center>';
 			}
+			elseif(session('kdlevel')=='04' || session('kdlevel')=='07'){
+				
+				$ruh = '<a id="'.$row->id.'" class="dropdown-item ubah" href="javascript:;">Ubah Data</a>';
+				
+			}
+			
+			$aksi='<center>
+						<button type="button" class="btn btn-raised btn-sm btn-icon btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-check"></i></button>
+						<div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+							'.$ruh.'
+							<a class="dropdown-item" href="bukti/uang-keluar/'.$row->id.'" target="_blank">Cetak Bukti</a>
+							<a class="dropdown-item" href="bukti/tanda-terima/'.$row->id.'" target="_blank">Cetak Tanda Terima</a>
+						</div>
+					</center>';
 			
 			$lampiran = '<ul>';
 			if($row->lampiran!==''){
@@ -783,31 +797,27 @@ class PengeluaranRekamController extends Controller {
 			$is_parent = $rows[0]->is_parent;
 			$parent_id = $rows[0]->parent_id;
 			
-			if($is_parent==1){
-				
-				$rows = DB::select("
-					select	a.id,
-							a.nodok as nopks,
-							to_char(a.tgdok,'dd-mm-yyyy') as tgpks,
-							a.id_penerima as id_pelanggan,
-							a.uraian,
-							nvl(a.nilai,0) as nilai,
-							a.debet as kdakun
-					from d_trans a
-					where a.kdtran=?
-				",[
-					$parent_id
-				]);
-				
-				$dropdown = '<option value="" style="display:none;">Pilih Data</option>';
-				foreach($rows as $row){
-					$dropdown .= '<option value="'.$row->id.'|'.$row->id_pelanggan.'|'.$row->uraian.'|'.$row->nilai.'|'.$row->kdakun.'"> PKS : '.$row->nopks.', '.$row->tgpks.', Rp. '.number_format($row->nilai).',-</option>';
-				}
-				
-				$data['dropdown'] = $dropdown;
-				$data['error'] = false;
-				
+			$rows = DB::select("
+				select	a.id,
+						a.nodok as nopks,
+						to_char(a.tgdok,'dd-mm-yyyy') as tgpks,
+						a.id_penerima as id_pelanggan,
+						a.uraian,
+						nvl(a.nilai,0) as nilai,
+						a.debet as kdakun
+				from d_trans a
+				where a.kdtran=?
+			",[
+				$parent_id
+			]);
+			
+			$dropdown = '<option value="" style="display:none;">Pilih Data</option>';
+			foreach($rows as $row){
+				$dropdown .= '<option value="'.$row->id.'|'.$row->id_pelanggan.'|'.$row->uraian.'|'.$row->nilai.'|'.$row->kdakun.'"> PKS : '.$row->nopks.', '.$row->tgpks.', Rp. '.number_format($row->nilai).',-</option>';
 			}
+			
+			$data['dropdown'] = $dropdown;
+			$data['error'] = false;
 			
 		}
 		
@@ -816,7 +826,6 @@ class PengeluaranRekamController extends Controller {
 	
 	public function upload(Request $request, $id_dok)
 	{
-		dd($id_dok);		
 		
 		$targetFolder = 'data/lampiran/'; // Relative to the root
 		

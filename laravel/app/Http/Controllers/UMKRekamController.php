@@ -9,6 +9,15 @@ class UMKRekamController extends Controller {
 
 	public function index(Request $request)
 	{
+		$panjang = strlen(session('kdunit'));
+		
+		$arrLevel = ['03','05','08','11'];
+		
+		$and = "";
+		if(in_array(session('kdlevel'), $arrLevel)){
+			$and = " and substr(a.kdunit,1,".$panjang.")='".session('kdunit')."'";
+		}
+		
 		$aColumns = array('id','nourut','nmunit','nmtrans','pks','nilai','status','is_ubah');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
@@ -31,7 +40,7 @@ class UMKRekamController extends Controller {
 					left outer join t_penerima e on(a.id_penerima=e.id)
 					left outer join t_level g on(c.kdlevel=g.kdlevel)
 					left outer join t_trans h on(a.kdtran=h.id)
-					where b.menu=3 and a.thang='".session('tahun')."' and a.kdunit='".session('kdunit')."'
+					where b.menu=3 and a.thang='".session('tahun')."' ".$and."
 					order by a.id desc
 					";
 		
@@ -125,23 +134,28 @@ class UMKRekamController extends Controller {
 		
 		foreach( $rows as $row )
 		{
-			$aksi='';
-			if(session('kdlevel')=='04' || session('kdlevel')=='11'){
+			$ruh = '';
+			if(session('kdlevel')=='11'){
 				
-				$ruh = '';
 				if($row->is_ubah==1){
 					$ruh = '<a id="'.$row->id.'" class="dropdown-item ubah" href="javascript:;">Ubah Data</a>
 							<a id="'.$row->id.'" class="dropdown-item hapus" href="javascript:;">Hapus Data</a>';
 				}
 				
-				$aksi='<center>
-							<button type="button" class="btn btn-raised btn-sm btn-icon btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-check"></i></button>
-							<div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
-								'.$ruh.'
-								<a class="dropdown-item" href="bukti/uang-muka/'.$row->id.'" target="_blank">Cetak Bukti</a>
-							</div>
-						</center>';
 			}
+			elseif(session('kdlevel')=='04' || session('kdlevel')=='07'){
+				
+				$ruh = '<a id="'.$row->id.'" class="dropdown-item ubah" href="javascript:;">Ubah Data</a>';
+				
+			}
+			
+			$aksi='<center>
+						<button type="button" class="btn btn-raised btn-sm btn-icon btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-check"></i></button>
+						<div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+							'.$ruh.'
+							<a class="dropdown-item" href="bukti/uang-muka/'.$row->id.'" target="_blank">Cetak Bukti</a>
+						</div>
+					</center>';
 			
 			$output['aaData'][] = array(
 				$row->no,
@@ -173,7 +187,11 @@ class UMKRekamController extends Controller {
 					a.uraian,
 					nvl(a.nilai,0) as nilai,
 					nvl(a.debet,'') as debet,
-					nvl(a.kredit,'') as kredit
+					nvl(a.kredit,'') as kredit,
+					ttd1,
+					ttd2,
+					ttd3,
+					ttd4
 			from d_trans a
 			where a.id=?
 		",[
@@ -291,6 +309,10 @@ class UMKRekamController extends Controller {
 							'tgdok' => $request->input('tgpks'),
 							'tgdok1' => $request->input('tgjtempo'),
 							'uraian' => $request->input('uraian'),
+							'ttd1' => $request->input('ttd1'),
+							'ttd2' => $request->input('ttd2'),
+							'ttd3' => $request->input('ttd3'),
+							'ttd4' => $request->input('ttd4'),
 							'nilai' => str_replace(',', '', $request->input('nilai')),
 							'nilai_bersih' => str_replace(',', '', $request->input('nilai')),
 							'status' => 1,
@@ -354,6 +376,10 @@ class UMKRekamController extends Controller {
 							tgdok=?,
 							tgdok1=?,
 							uraian=?,
+							ttd1=?,
+							ttd2=?,
+							ttd3=?,
+							ttd4=?,
 							nilai=?,
 							nilai_bersih=?,
 							id_user=?,
@@ -366,6 +392,10 @@ class UMKRekamController extends Controller {
 						$request->input('tgpks'),
 						$request->input('tgjtempo'),
 						$request->input('uraian'),
+						$request->input('ttd1'),
+						$request->input('ttd2'),
+						$request->input('ttd3'),
+						$request->input('ttd4'),
 						str_replace(',', '', $request->input('nilai')),
 						str_replace(',', '', $request->input('nilai')),
 						session('id_user'),

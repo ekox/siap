@@ -454,154 +454,95 @@ class BuktiTransaksiController extends TableController
 	 */
 	public function uangMukaKerja($id)
     {
-		$tahun = session('tahun');
-		
-		$namaBerkas = 'Pengeluaran Kas/Bank untuk Uang Muka Kerja';
-		$noDokumen = 'No.:    PSJ/FM/DKA/MRI/01';
-		$tglBerlaku = '';
-
-		$data = Bukti::queryUangMukaKerja($tahun, $id);
-
-		$html_out = self::$style;
-		$html_out.= '<table border="0" cellspacing="0" cellpadding="1" width="100%" style="font-size:10px;">';
-		$html_out.= self::$tbody_open;
-
-		$html_out.= '<tr>
-			<td colspan="7" class="">Sudah diterima dari P.D. Pembangunan Sarana Jaya :</td>
-		</tr>';
-
-		$html_out.= '<tr>
-			<td colspan="7">&nbsp;</td>
-		</tr>';
-
-		$html_out.= '<tr>
-			<td width="20%" class="">Sebesar</td>
-			<td width="2%" class="">:</td>
-			<td colspan="5" class="">'.self::cFmt($data->nilai).'</td>
-		</tr>';
-
-		$html_out.= '<tr>
-			<td>Terbilang</td>
-			<td>:</td>
-			<td colspan="5">'.ucwords(KNV::terbilang($data->nilai).' rupiah').'</td>
-		</tr>';
-
-		$html_out.= '<tr>
-			<td>Untuk Keperluan</td>
-			<td>:</td>
-			<td colspan="5">'.$data->uraian.'</td>
-		</tr>';
-
-		$html_out.= '<tr>
-			<td>Nomor Mata Anggaran</td>
-			<td>:</td>
-			<td colspan="5">'.$data->kdakun.' ('.$data->nmakun.')</td>
-		</tr>';
-
-		$html_out.= '<tr>
-			<td>&nbsp;</td>
-			<td></td>
-			<td width="10%">RKAP</td>
-			<td width="2%">:</td>
-			<td colspan="3"></td>
-		</tr>';
-
-		$html_out.= '<tr>
-			<td>&nbsp;</td>
-			<td></td>
-			<td width="10%">Realisasi</td>
-			<td width="2%">:</td>
-			<td colspan="3"></td>
-		</tr>';
-
-		$html_out.= '<tr>
-			<td>&nbsp;</td>
-			<td></td>
-			<td width="10%">Sisa</td>
-			<td width="2%">:</td>
-			<td colspan="3"></td>
-		</tr>';
-
-		$html_out.= '<tr>
-			<td colspan="7">&nbsp;</td>
-		</tr>';
-
-		$html_out.= '<tr>
-			<td colspan="5">Uang tersebut kami pertanggungjawabkan pada tanggal :</td>
-			<td colspan="2"></td>
-		</tr>';
-
-		$html_out.= self::$tbody_close;	
-		$html_out.= '</table>';
-
-		$html_out.= '<br><br>';
-		
-		$html_out.= '<table border="0" cellspacing="0" cellpadding="3" width="100%" style="font-size:10px;">';
-		$html_out.= self::$tbody_open;
-		$html_out.= '<tr>
-			<td colspan="2" width="70%">&nbsp;</td>
-			<td width="30%" style="padding-right:1em;" class="ac">Jakarta, ..................... '.$data->thang.'</td>
-		</tr>';
-
-		$html_out.= '<tr>
-			<td colspan="3">&nbsp;</td>
-		</tr>';
-
-		$html_out.= '<tr>
-			<td class="ac">Menyetujui,</td>
-			<td class="ac">Pemohon</td>
-			<td class="ac">Penerima,</td>
-		</tr>';
-		
-		$html_out.= '<tr>
-			<td class="ac">SM. Divisi Keuangan & Akt.</td>
-			<td class="ac">SM. Divisi Umum & SDM</td>
-			<td class="ac">&nbsp;</td>
-		</tr>';
-		
-		$html_out.= '<tr>
-			<td colspan="3">&nbsp;</td>
-		</tr>';
-
-		$html_out.= '<tr>
-			<td colspan="3">&nbsp;</td>
-		</tr>';
-
-		$html_out.= '<tr>
-			<td colspan="3">&nbsp;</td>
-		</tr>';
-		
-		$seniorMgrKeu = Bukti::getSeniorManagerKeuangan()->nama;
-		$seniorDivUmum = Bukti::getDivisiUmumSDM()->nama;
-		$penerimaUMK = Bukti::getPenerimaUangMuka($id)->nama;
-		
-		$html_out.= '<tr>
-			<td class="ac">'.$seniorMgrKeu.'</td>
-			<td class="ac">'.$seniorDivUmum.'</td>
-			<td class="ac">'.$penerimaUMK.'</td>
-		</tr>';
-		
-		$html_out.= self::$tbody_close;
-		$html_out.= '</table>';
-
-		//~ return $html_out;
-		//~ require_once 'laravel/vendor/autoload.php';
-		$mpdf = new Mpdf([
-			'mode' => 'utf-8',
-			'format' => 'A4-P',
-			'margin_left' => 15,
-			'margin_right' => 15,
-			'margin_top' => 18,
-			'margin_bottom' => 18,
+		$rows = DB::select("
+			select  a.id,
+					lpad(a.nourut,5,'0') as nourut,
+					a.thang,
+					a.nodok,
+					a.nobuku,
+					to_char(a.tgdok,'dd-mm-yyyy') as tgdok,
+					to_char(a.tgdok1,'dd-mm-yyyy') as tgdok1,
+					b.nama as nmpenerima,
+					a.nilai,
+					a.nilai_bersih,
+					a.uraian,
+					i.kdakun as debet,
+					c.nmakun,
+					nvl(a.nocek,'....................') as nocek,
+					to_char(a.tgdok,'dd-mm-yyyy') as tgcek,
+					a.id_alur,
+					d.nmunit,
+					e.nip as nip_ttd1,
+					e.nama as nama_ttd1,
+					f.nip as nip_ttd2,
+					f.nama as nama_ttd2,
+					g.nip as nip_ttd3,
+					g.nama as nama_ttd3,
+					h.nip as nip_ttd4,
+					h.nama as nama_ttd4
+			from d_trans a
+			left join t_penerima b on(a.id_penerima=b.id)
+			left join t_akun c on(a.debet=c.kdakun)
+			left join t_unit d on(substr(a.kdunit,1,4)=d.kdunit)
+			left join t_pejabat e on(a.ttd1=e.id)
+			left join t_pejabat f on(a.ttd2=f.id)
+			left join t_pejabat g on(a.ttd3=g.id)
+			left join t_pejabat h on(a.ttd4=h.id)
+			left join d_trans_akun i on(a.id=i.id_trans)
+			where a.id=? and i.grup=1 and i.kddk='D'
+		",[
+			$id
 		]);
+		
+		if(count($rows)>0){
+			
+			$rows = (array)$rows[0];
+			
+			$data = array(
+				'nourut' => $rows['nourut'],
+				'thang' => $rows['thang'],
+				'nmunit' => $rows['nmunit'],
+				'nobuku' => $rows['nobuku'],
+				'nodok' => $rows['nodok'],
+				'tgdok' => $rows['tgdok'],
+				'tgdok1' => $rows['tgdok1'],
+				'nmpenerima' => $rows['nmpenerima'],
+				'nilai' => number_format($rows['nilai']),
+				'nilai_bersih' => number_format($rows['nilai_bersih']),
+				'sejumlah' => ucwords(KNV::terbilang($rows['nilai']).' rupiah'),
+				'uraian' => $rows['uraian'],
+				'kdakun' => $rows['debet'],
+				'nmakun' => $rows['nmakun'],
+				'nocek' => $rows['nocek'],
+				'tgcek' => $rows['tgcek'],
+				'nama_ttd1' => $rows['nama_ttd3'],
+				'nama_ttd2' => $rows['nama_ttd4']
+			);
+		
+			//~ return view('bukti.uang-keluar', $data);
+			$html_out = view('bukti.uang-muka-baru', $data);
 
-		//mode portrait or landscape
-		$mpdf->AddPage('P');
+			$mpdf = new Mpdf([
+				'mode' => 'utf-8',
+				'format' => 'A4-P',
+				'margin_left' => 8,
+				'margin_right' => 8,
+				'margin_top' => 18,
+				'margin_bottom' => 18,
+			]);
 
-		//write content to PDF
-		$mpdf->writeHTML($html_out);
-		$mpdf->Output('Bukti Uang Muka Kerja.pdf', 'I');
-		exit;
+			//mode portrait or landscape
+			$mpdf->AddPage('P');
+
+			//write content to PDF
+			$mpdf->writeHTML($html_out);
+			$mpdf->Output('Bukti Uang Muka.pdf', 'I');
+			exit;
+			
+		}
+		else{
+			return 'Data tidak ditemukan!';
+		}
 		
     }
 	

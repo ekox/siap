@@ -9,6 +9,15 @@ class PenerimaanRekamController extends Controller {
 
 	public function index(Request $request)
 	{
+		$panjang = strlen(session('kdunit'));
+		
+		$arrLevel = ['03','05','08','11'];
+		
+		$and = "";
+		if(in_array(session('kdlevel'), $arrLevel)){
+			$and = " and substr(a.kdunit,1,".$panjang.")='".session('kdunit')."'";
+		}
+		
 		$aColumns = array('id','nourut','nama','nmtrans','pks','tgjtempo','nilai','status','lampiran','is_ubah');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
@@ -37,7 +46,7 @@ class PenerimaanRekamController extends Controller {
 						left outer join t_dok_dtl b on(a.id_dok_dtl=b.id)
 						group by a.id_trans
 					) i on(a.id=i.id_trans)
-					where b.menu=2 and a.thang='".session('tahun')."' and a.kdunit='".session('kdunit')."'
+					where b.menu=2 and a.thang='".session('tahun')."' ".$and."
 					order by a.id desc
 					";
 		
@@ -131,24 +140,29 @@ class PenerimaanRekamController extends Controller {
 		
 		foreach( $rows as $row )
 		{
-			$aksi='';
-			if(session('kdlevel')=='04' || session('kdlevel')=='11'){
+			$ruh = '';
+			if(session('kdlevel')=='11'){
 				
-				$ruh = '';
 				if($row->is_ubah==1){
 					$ruh = '<a id="'.$row->id.'" class="dropdown-item ubah" href="javascript:;">Ubah Data</a>
 							<a id="'.$row->id.'" class="dropdown-item hapus" href="javascript:;">Hapus Data</a>';
 				}
 				
-				$aksi='<center>
-							<button type="button" class="btn btn-raised btn-sm btn-icon btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-check"></i></button>
-							<div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
-								'.$ruh.'
-								<!--<a id="'.$row->id.'" class="dropdown-item upload" href="javascript:;">Upload Lampiran</a>-->
-								<a class="dropdown-item" href="bukti/uang-masuk/'.$row->id.'" target="_blank">Cetak Bukti</a>
-							</div>
-						</center>';
 			}
+			elseif(session('kdlevel')=='04' || session('kdlevel')=='07'){
+				
+				$ruh = '<a id="'.$row->id.'" class="dropdown-item ubah" href="javascript:;">Ubah Data</a>';
+				
+			}
+			
+			$aksi='<center>
+						<button type="button" class="btn btn-raised btn-sm btn-icon btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-check"></i></button>
+						<div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+							'.$ruh.'
+							<!--<a id="'.$row->id.'" class="dropdown-item upload" href="javascript:;">Upload Lampiran</a>-->
+							<a class="dropdown-item" href="bukti/uang-masuk/'.$row->id.'" target="_blank">Cetak Bukti</a>
+						</div>
+					</center>';
 			
 			$lampiran = '<ul>';
 			if($row->lampiran!==''){

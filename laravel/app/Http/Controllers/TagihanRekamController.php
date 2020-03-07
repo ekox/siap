@@ -9,6 +9,15 @@ class TagihanRekamController extends Controller {
 
 	public function index(Request $request)
 	{
+		$panjang = strlen(session('kdunit'));
+		
+		$arrLevel = ['03','05','08','11'];
+		
+		$and = "";
+		if(in_array(session('kdlevel'), $arrLevel)){
+			$and = " and substr(a.kdunit,1,".$panjang.")='".session('kdunit')."'";
+		}
+		
 		$aColumns = array('id','nourut','unit','nama','nmtrans','pks','nilai','status','is_ubah');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
@@ -30,7 +39,7 @@ class TagihanRekamController extends Controller {
 					left outer join t_unit d on(a.kdunit=d.kdunit)
 					left outer join t_penerima e on(a.id_penerima=e.id)
 					left outer join t_trans h on(a.kdtran=h.id)
-					where b.menu=1 and a.thang='".session('tahun')."'
+					where b.menu=1 and a.thang='".session('tahun')."' ".$and."
 					order by a.id desc
 					";
 		
@@ -124,12 +133,12 @@ class TagihanRekamController extends Controller {
 		
 		foreach( $rows as $row )
 		{
-			$aksi='';
-			if(session('kdlevel')=='04' || session('kdlevel')=='12'){
+			$aksi = '';
+			if(session('kdlevel')=='12'){
 				
 				if($row->is_ubah==1){
 				
-					$aksi='<center>
+					$aksi = '<center>
 								<button type="button" class="btn btn-raised btn-sm btn-icon btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-check"></i></button>
 								<div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
 									<a id="'.$row->id.'" class="dropdown-item ubah" href="javascript:;">Ubah Data</a>
@@ -138,6 +147,16 @@ class TagihanRekamController extends Controller {
 							</center>';
 							
 				}
+				
+			}
+			elseif(session('kdlevel')=='07' || session('kdlevel')=='04'){
+				
+				$aksi = '<center>
+							<button type="button" class="btn btn-raised btn-sm btn-icon btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-check"></i></button>
+							<div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+								<a id="'.$row->id.'" class="dropdown-item ubah" href="javascript:;">Ubah Data</a>
+							</div>
+						</center>';
 				
 			}
 			

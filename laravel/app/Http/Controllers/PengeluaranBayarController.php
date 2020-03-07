@@ -173,6 +173,7 @@ class PengeluaranBayarController extends Controller {
 					k.kdakun,
 					a.id_alur,
 					a.status,
+					a.nobuku,
 					a.nocek,
 					to_char(a.tgcek,'yyyy-mm-dd') as tgcek,
 					m.kdakun as bayar
