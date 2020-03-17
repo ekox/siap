@@ -178,6 +178,8 @@ class UMKRekamController extends Controller {
 			select  a.id,
 					lpad(a.nourut,5,'0') as nourut,
 					a.kdunit,
+					a.kdsdana,
+					a.id_proyek,
 					a.id_alur,
 					a.kdtran,
 					a.id_penerima as id_pelanggan,
@@ -302,6 +304,8 @@ class UMKRekamController extends Controller {
 							'kdunit' => session('kdunit'),
 							'thang' => session('tahun'),
 							'id_alur' => $request->input('id_alur'),
+							'kdsdana' => $request->input('kdsdana'),
+							'id_proyek' => $request->input('id_proyek'),
 							'nourut' => str_replace('0', '', $request->input('nourut')),
 							'kdtran' => $request->input('kdtran'),
 							'id_penerima' => $request->input('id_pelanggan'),
@@ -313,6 +317,7 @@ class UMKRekamController extends Controller {
 							'ttd2' => $request->input('ttd2'),
 							'ttd3' => $request->input('ttd3'),
 							'ttd4' => $request->input('ttd4'),
+							'debet' => $request->input('debet'),
 							'nilai' => str_replace(',', '', $request->input('nilai')),
 							'nilai_bersih' => str_replace(',', '', $request->input('nilai')),
 							'status' => 1,
@@ -383,7 +388,10 @@ class UMKRekamController extends Controller {
 							nilai=?,
 							nilai_bersih=?,
 							id_user=?,
-							updated_at=sysdate
+							updated_at=sysdate,
+							kdsdana=?,
+							id_proyek=?,
+							debet=?
 						where id=?
 					",[
 						$request->input('kdtran'),
@@ -399,6 +407,9 @@ class UMKRekamController extends Controller {
 						str_replace(',', '', $request->input('nilai')),
 						str_replace(',', '', $request->input('nilai')),
 						session('id_user'),
+						$request->input('kdsdana'),
+						$request->input('id_proyek'),
+						$request->input('debet'),
 						$request->input('inp-id')
 					]);
 					

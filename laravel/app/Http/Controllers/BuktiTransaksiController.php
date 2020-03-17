@@ -456,6 +456,9 @@ class BuktiTransaksiController extends TableController
     {
 		$rows = DB::select("
 			select  a.id,
+					a.kdunit,
+					a.kdsdana,
+					a.id_proyek,
 					lpad(a.nourut,5,'0') as nourut,
 					a.thang,
 					a.nodok,
@@ -466,7 +469,7 @@ class BuktiTransaksiController extends TableController
 					a.nilai,
 					a.nilai_bersih,
 					a.uraian,
-					i.kdakun as debet,
+					a.debet,
 					c.nmakun,
 					nvl(a.nocek,'....................') as nocek,
 					to_char(a.tgdok,'dd-mm-yyyy') as tgcek,
@@ -498,6 +501,42 @@ class BuktiTransaksiController extends TableController
 			
 			$rows = (array)$rows[0];
 			
+			$rows_pagu = DB::select("
+				select  a.nilai as pagu,
+						b.nilai as realisasi
+				from(
+					select  1 as kode,
+							nvl(sum(nilai),0) as nilai
+					from d_pagu
+					where kdunit=? and thang=? and kdsdana=? and id_proyek=? and kdakun=?
+				) a,
+				(
+					select  1 as kode,
+							nvl(sum(b.nilai),0) as nilai
+					from d_trans a
+					left join d_trans_akun b on(a.id=b.id_trans)
+					where a.kdunit=? and a.thang=? and a.kdsdana=? and a.id_proyek=? and b.kdakun=?
+				) b
+			",[
+				$rows['kdunit'],
+				$rows['thang'],
+				$rows['kdsdana'],
+				$rows['id_proyek'],
+				$rows['debet'],
+				$rows['kdunit'],
+				$rows['thang'],
+				$rows['kdsdana'],
+				$rows['id_proyek'],
+				$rows['debet'],
+			]);
+			
+			$pagu = 0;
+			$realisasi = 0;
+			if(count($rows_pagu)>0){
+				$pagu = $rows_pagu[0]->pagu;
+				$realisasi = $rows_pagu[0]->realisasi;
+			}
+			
 			$data = array(
 				'nourut' => $rows['nourut'],
 				'thang' => $rows['thang'],
@@ -515,8 +554,11 @@ class BuktiTransaksiController extends TableController
 				'nmakun' => $rows['nmakun'],
 				'nocek' => $rows['nocek'],
 				'tgcek' => $rows['tgcek'],
-				'nama_ttd1' => $rows['nama_ttd3'],
-				'nama_ttd2' => $rows['nama_ttd4']
+				'nama_ttd1' => $rows['nama_ttd1'],
+				'nama_ttd2' => $rows['nama_ttd2'],
+				'pagu' => $pagu,
+				'realisasi' => $realisasi,
+				'sisa' => $pagu-$realisasi
 			);
 		
 			//~ return view('bukti.uang-keluar', $data);

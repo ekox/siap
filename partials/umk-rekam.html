@@ -36,6 +36,15 @@
 	                            	</div>
 									<button id="cari-nourut" class="btn btn-xs btn-raised btn-warning mr-1"><i class="fa fa-refresh"></i></button>
 		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="id_alur">Sumber Dana </label>
+									<div class="col-md-7">
+	                            		<select id="kdsdana" name="kdsdana" class="form-control chosen">
+										</select>
+	                            	</div>
+									<label id="warning-kdsdana" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								
 								<!--<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="id_pelanggan">Penerima </label>
 									<div class="col-md-7">
@@ -61,6 +70,44 @@
 									<label id="warning-kdtran" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="id_proyek">Proyek </label>
+									<div class="col-md-7">
+	                            		<select id="id_proyek" name="id_proyek" class="form-control chosen">
+										</select>
+	                            	</div>
+									<label id="warning-id_proyek" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="kdtran">Jenis Pengeluaran</label>
+									<div class="col-md-7">
+	                            		<select id="debet" name="debet" class="form-control chosen">
+											<option value="" style="display:none;">Pilih Data</option>
+										</select>
+	                            	</div>
+									<label id="warning-debet" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="pagu">Total Pagu </label>
+									<div class="col-md-7">
+	                            		<input type="text" id="pagu" name="pagu" class="form-control val_num" style="text-align:right;" readonly>
+	                            	</div>
+									<label id="warning-pagu" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="realisasi">Total Realisasi </label>
+									<div class="col-md-7">
+	                            		<input type="text" id="realisasi" name="realisasi" class="form-control val_num" style="text-align:right;" readonly>
+	                            	</div>
+									<label id="warning-realisasi" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="sisa">Sisa Pagu </label>
+									<div class="col-md-7">
+	                            		<input type="text" id="sisa" name="sisa" class="form-control val_num" style="text-align:right;" readonly>
+	                            	</div>
+									<label id="warning-sisa" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="nobukti">Nilai </label>
 									<div class="col-md-7">
 	                            		<input type="text" id="nilai" name="nilai" class="form-control val_num" style="text-align:right;" maxlength="19">
@@ -68,13 +115,13 @@
 									<label id="warning-nilai" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<legend>Dokumen/ Bukti Transaksi</legend>
-								<div class="form-group row">
+								<!--<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="nobukti">No.Dokumen </label>
 									<div class="col-md-7">
 	                            		<input type="text" id="nopks" name="nopks" class="form-control" maxlength="255">
 	                            	</div>
 									<label id="warning-nopks" class="col-md-2 label-control label-warning warning">required!</label>
-		                        </div>
+		                        </div>-->
 								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="tgbukti">Tgl.Dokumen </label>
 									<div class="col-md-7">
@@ -219,6 +266,14 @@
 		//aktivasi chosen
 		jQuery('.chosen').chosen();
 		
+		jQuery.get('dropdown/sdana', function(result){
+			jQuery('#kdsdana').html(result).trigger('chosen:updated');
+		});
+		
+		jQuery.get('dropdown/proyek', function(result){
+			jQuery('#id_proyek').html(result).trigger('chosen:updated');
+		});
+		
 		jQuery.get('dropdown/alur-umk', function(result){
 			jQuery('#id_alur').html(result).trigger('chosen:updated');
 		});
@@ -244,14 +299,32 @@
 			});
 		});
 		
-		jQuery('#kdtran').change(function(){
-			var kdtran = jQuery(this).val();
-			jQuery.get('dropdown/akun/debet/'+kdtran, function(result){
-				jQuery('#debet').html(result).trigger('chosen:updated');
-			});
-			jQuery.get('dropdown/akun/kredit/'+kdtran, function(result){
-				jQuery('#kredit').html(result).trigger('chosen:updated');
-			});
+		jQuery.get('dropdown/akun/debet/8', function(result){
+			jQuery('#debet').html(result).trigger('chosen:updated');
+		});
+		
+		jQuery('#kdsdana,#id_proyek,#debet').change(function(){
+			
+			var kdsdana = jQuery('#kdsdana').val();
+			var id_proyek = jQuery('#id_proyek').val();
+			var kdakun = jQuery('#debet').val();
+			
+			if(kdsdana!=='' && id_proyek!=='' && kdakun!==''){
+				
+				jQuery.getJSON('anggaran/pagu/unit/sisa?kdsdana='+kdsdana+'&id_proyek='+id_proyek+'&kdakun='+kdakun, function(result){
+					if(result){
+						jQuery('#pagu').val(digit_grouping(result.pagu));
+						jQuery('#realisasi').val(digit_grouping(result.realisasi));
+						jQuery('#sisa').val(digit_grouping(result.sisa));
+					}
+					else{
+						alertify.log('Pagu dan realisasi tidak ditemukan!');
+						jQuery('#pagu,#realisasi,#sisa').val(0);
+					}
+				});
+				
+			}
+			
 		});
 		
 		//tampilan default
@@ -347,7 +420,9 @@
 						jQuery('#kdtran').val(result.message.kdtran).trigger('chosen:updated');
 					});
 					
-					jQuery('#debet').html(result.dropdown_d).trigger('chosen:updated');
+					jQuery('#debet').val(result.message.debet).trigger('chosen:updated');
+					jQuery('#kdsdana').val(result.message.kdsdana).trigger('chosen:updated');
+					jQuery('#id_proyek').val(result.message.id_proyek).trigger('chosen:updated');
 					jQuery('#kredit').html(result.dropdown_k).trigger('chosen:updated');
 					jQuery('#ttd1').val(result.message.ttd1);
 					jQuery('#ttd2').val(result.message.ttd2);

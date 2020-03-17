@@ -2,9 +2,9 @@
 <table width="100%" border="1" cellspacing="0" cellpadding="10" style="border: 1px solid #000;font-size:12px;">
 	<thead>
 		<tr>
-			<th rowspan="2">PD PEMBANGUNAN SARANA JAYA</th>
+			<th rowspan="2">PERUMDA SARANA JAYA</th>
 			<th rowspan="2">Pengeluaran Kas/ Bank untuk Uang Muka Kerja</th>
-			<th>Dokumen No. : {{$nodok}}</th>
+			<th>Dokumen No. : {{$nourut}}</th>
 		</tr>
 		<tr>
 			<th>Tanggal Berlaku : {{$tgdok}}</th>
@@ -20,7 +20,7 @@
 	</thead>
 </table>
 <hr>
-&nbsp;Sudah terima uang dari PD. Pembangunan Sarana Jaya :
+&nbsp;Sudah terima uang dari Perumda Sarana Jaya :
 <br>
 <br>
 <table width="100%" border="0" cellspacing="0" cellpadding="4" style="border: 0px solid #000;font-size:15px;">
@@ -52,22 +52,22 @@
 		<tr>
 			<td style="width:30%">Nomor Mata Anggaran</td>
 			<td style="width:5%">:</td>
-			<td style="width:65%; border: 1px solid #000;"></td>
+			<td style="width:65%; border: 1px solid #000;">{{$kdakun}} - {{$nmakun}}</td>
 		</tr>
 		<tr>
 			<td style="width:30%"></td>
 			<td style="width:5%"></td>
-			<td style="width:65%; border: 1px solid #000;">RKAP &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: </td>
+			<td style="width:65%; border: 1px solid #000;">RKAP &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {{$pagu}}</td>
 		</tr>
 		<tr>
 			<td style="width:30%"></td>
 			<td style="width:5%"></td>
-			<td style="width:65%; border: 1px solid #000;">Realisasi : </td>
+			<td style="width:65%; border: 1px solid #000;">Realisasi : {{$realisasi}}</td>
 		</tr>
 		<tr>
 			<td style="width:30%"></td>
 			<td style="width:5%"></td>
-			<td style="width:65%; border: 1px solid #000;">Sisa &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: </td>
+			<td style="width:65%; border: 1px solid #000;">Sisa &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {{$sisa}}</td>
 		</tr>
 	</tbody>
 </table>
@@ -97,7 +97,7 @@
 			<td style="width:30%">Penerima</td>
 		</tr>
 		<tr>
-			<td style="width:35%">SM. Divisi Keuangan & Akt</td>
+			<td style="width:35%">SM. Divisi Keuangan dan Akuntansi</td>
 			<td style="width:35%">SM. {{$nmunit}}</td>
 			<td style="width:30%"></td>
 		</tr>
