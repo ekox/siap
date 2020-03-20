@@ -9,12 +9,13 @@ class AnggaranPaguUnitController extends Controller {
 
 	public function index(Request $request)
 	{
-		$where = "";
-		if(session('kdlevel')=='04'||session('kdlevel')=='05'){
-			$where = " and a.kdunit='".session('kdunit')."' ";
-		}
-		elseif(session('kdlevel')=='06'||session('kdlevel')=='07'||session('kdlevel')=='08'||session('kdlevel')=='11'){
-			$where = " and a.kdunit='".substr(session('kdunit'),0,4)."' ";
+		$panjang = strlen(session('kdunit'));
+		
+		$arrLevel = ['03','05','08','11'];
+		
+		$and = "";
+		if(in_array(session('kdlevel'), $arrLevel)){
+			$and = " and substr(a.kdunit,1,".$panjang.")='".session('kdunit')."'";
 		}
 		
 		$aColumns = array('id','nmproyek','nmunit','kdakun','nmakun','pagu','realisasi','sisa');
@@ -35,15 +36,18 @@ class AnggaranPaguUnitController extends Controller {
 					left outer join(
 						select  a.thang,
 								a.kdunit,
-								a.debet as kdakun,
-								sum(a.nilai) as nilai
+								a.kdsdana,
+								a.id_proyek,
+								c.kdakun,
+								sum(c.nilai) as nilai
 						from d_trans a
 						left join t_alur b on(a.id_alur=b.id)
-						where b.menu=4
-						group by a.thang,a.kdunit,a.debet
-					) d on(a.thang=d.thang and a.kdunit=d.kdunit and a.kdakun=d.kdakun)
+						left join d_trans_akun c on(a.id=c.id_trans)
+						where b.menu=4 and c.kddk='D'
+						group by a.thang,a.kdunit,a.kdsdana,a.id_proyek,c.kdakun
+					) d on(a.thang=d.thang and a.kdunit=d.kdunit and a.kdsdana=d.kdsdana and a.id_proyek=d.id_proyek and a.kdakun=d.kdakun)
 					left outer join t_proyek e on(a.id_proyek=e.id)
-					where a.thang='".session('tahun')."' ".$where."
+					where a.thang='".session('tahun')."' ".$and."
 					order by a.id desc";
 		
 		/*

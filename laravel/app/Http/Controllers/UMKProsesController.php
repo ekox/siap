@@ -329,7 +329,7 @@ class UMKProsesController extends Controller {
 					to_char(a.tgdok1,'yyyy-mm-dd') as tgjtempo,
 					a.uraian,
 					nvl(a.nilai,0) as nilai,
-					nvl(f.nmakun,0) as debet,
+					a.debet||' : '||nvl(f.nmakun,0) as debet,
 					nvl(i.nmakun,0) as kredit,
 					a.id_alur,
 					a.status
