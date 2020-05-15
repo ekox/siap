@@ -55,6 +55,8 @@ class HomeController extends Controller {
 	
 	public function data(Request $request)
 	{
+		$panjang = strlen(session('kdunit'));
+		
 		$aColumns = array('id','nourut','nmunit','nama','nmtrans','nilai','status','waktu','url');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
@@ -72,7 +74,7 @@ class HomeController extends Controller {
 								c.nmstatus as status,
 								decode(c.is_unit,null,
 									1,
-									decode(substr(a.kdunit,1,c.is_unit),'".session('kdlevel')."',
+									decode(substr(a.kdunit,1,".$panjang."),'".session('kdunit')."',
 										1,
 										0
 									)
@@ -87,7 +89,7 @@ class HomeController extends Controller {
 						left outer join t_level g on(c.kdlevel=g.kdlevel)
 						left outer join t_trans h on(a.kdtran=h.id)
 						left outer join t_alur_menu i on(b.menu=i.menu)
-						where a.thang='".session('tahun')."' and c.kdlevel='".session('kdlevel')."' and nvl(c.is_final,'0')<>'1'
+						where a.thang='".session('tahun')."' and c.kdlevel='".session('kdlevel')."' 
 					) a
 					where a.akses=1
 					order by a.id desc
