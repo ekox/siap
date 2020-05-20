@@ -117,8 +117,8 @@
 			<td style="width:30%">&nbsp;</td>
 		</tr>
 		<tr>
-			<td style="width:35%">{{$nama_ttd1}}</td>
 			<td style="width:35%">{{$nama_ttd2}}</td>
+			<td style="width:35%">{{$nama_ttd1}}</td>
 			<td style="width:30%">&nbsp;</td>
 		</tr>
 	</tbody>
