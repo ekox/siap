@@ -550,6 +550,15 @@ Route::group(['middleware' => 'auth'], function(){
 			
 		});
 		
+		Route::group(['prefix' => 'rekening'], function(){
+			
+			Route::get('', 'RefRekeningController@index');
+			Route::get('/pilih/{param}', 'RefRekeningController@pilih')->middleware('role:00.01');
+			Route::post('', 'RefRekeningController@simpan')->middleware('role:00.01');
+			Route::post('/hapus', 'RefRekeningController@hapus')->middleware('role:00.01');
+			
+		});
+		
 	});
 
 });
