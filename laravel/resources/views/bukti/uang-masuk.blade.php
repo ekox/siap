@@ -5,13 +5,16 @@
 			<th colspan="3">&nbsp;</th>
 		</tr>
 		<tr>
-			<th colspan="3"><h3>PERUSAHAAN DAERAH PEMBANGUNAN SARANA JAYA<br/>PEMERINTAH KHUSUS DKI JAKARTA</h3></th>
+			<th colspan="3"><h3>PERUSAHAAN UMUM DAERAH PEMBANGUNAN SARANA JAYA<br/>PEMERINTAH DAERAH KHUSUS IBUKOTA JAKARTA</h3></th>
+		</tr>
+		<tr>
+			<th colspan="3">&nbsp;</th>
 		</tr>
 	</thead>
 	<tbody>
 		<tr>
-			<td class="wd10 pl3 vt">Nomor</td>
-			<td class="wd2 vt">:</td>
+			<td class="wd10 pl3 vt" style="width:20%;">Nomor</td>
+			<td class="wd2 vt" style="width:2%;">:</td>
 			<td class="pl3 vt">{{$nourut}}</td>
 		</tr>
 		<tr>
@@ -45,14 +48,14 @@
 			<td colspan="4" class="bl pl3">&nbsp;</td>
 		</tr>
 		<tr>
-			<td class="pl3 vt">Otorisasi Pengeluaran</td>
+			<td class="pl3 vt">Otorisasi Penerimaan</td>
 			<td class="ar vt">:</td>
 			<td class="pl3 vt" style="border-right: 1px solid #000;">...........</td>
 			<td colspan="4" class="bl pl3">&nbsp;</td>
 		</tr>
 		<tr>
 			<td colspan="3" style="border-right: 1px solid #000;">&nbsp;</td>
-			<td rowspan="2" class="wd15 bl pl3 vt">Kepada</td>
+			<td rowspan="2" class="wd15 bl pl3 vt">Dari</td>
 			<td rowspan="2" class="ar vt">:</td>
 			<td rowspan="2" colspan="2" class="pl3 vt">{{$nmpenerima}}</td>
 		</tr>
@@ -102,7 +105,7 @@
 			<td class="pl3">....................</td>
 			<td class="vt">Rp</td>
 			<td class="pl3 ar" style="border-right: 1px solid #000;">....................</td>
-			<td rowspan="4" class="bl pl3 vt">Dasar Pembayaran</td>
+			<td rowspan="4" class="bl pl3 vt">Dasar Penerimaan</td>
 			<td rowspan="4" class="pl3 ar vt">:</td>
 			<td rowspan="4" colspan="2" class="pl3 vt">Terlampir</td>
 		</tr>
@@ -174,7 +177,7 @@
 			<td rowspan="4" class="pl3 ac vt" style="text-align:center;">{{$jabatan}}</td>
 		</tr>
 		<tr>
-			<td rowspan="2" class="pl3 vt">Jumlah yang harus dibayar</td>
+			<td rowspan="2" class="pl3 vt">Jumlah yang harus diterima</td>
 			<td rowspan="2" class="pl3 vt">Rp</td>
 			<td rowspan="2" class="pl3 ar vt" style="border-right: 1px solid #000;text-align:right;">{{$nilai}}</td>
 			<td class="bl pl3 vt">KTP/SIM No.</td>
@@ -225,7 +228,7 @@
 		</tr>
 		<tr>
 			<td colspan="3" style="padding:2em; bt" style="border-right: 1px solid #000;"></td>
-			<td rowspan="2" colspan="3" class="bl vm">Telah diperiksa dan dibukukan dalam Buku Kas/Bank dengan nomor: <br>{{$nobuku}}</td>
+			<td rowspan="2" colspan="3" class="bl vm">Telah diperiksa dan dibukukan dalam Buku Kas Masuk dengan nomor: <br>{{$nobuku}}</td>
 			<td class="pl3">&nbsp;</td>
 		</tr>
 		<tr>

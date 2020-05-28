@@ -328,10 +328,15 @@ class DropdownController extends Controller {
 	
 	public function alurPenerimaan()
 	{
+		$and = "";
+		if(session('kdlevel')!=='04'){
+			$and= " and kdlevel='".session('kdlevel')."' ";
+		}
+		
 		$rows = DB::select("
 			select	*
 			from t_alur
-			where menu=2
+			where menu=2 ".$and."
 			order by id asc
 		");
 		

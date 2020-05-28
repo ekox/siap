@@ -18,6 +18,10 @@ class PenerimaanRekamController extends Controller {
 			$and = " and substr(a.kdunit,1,".$panjang.")='".session('kdunit')."'";
 		}
 		
+		if(session('kdlevel')!=='04'){
+			$and .= " and b.kdlevel='".session('kdlevel')."' ";
+		}
+		
 		$aColumns = array('id','nourut','nama','nmtrans','pks','tgjtempo','nilai','status','lampiran','is_ubah');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
@@ -141,7 +145,7 @@ class PenerimaanRekamController extends Controller {
 		foreach( $rows as $row )
 		{
 			$ruh = '';
-			if(session('kdlevel')=='11'){
+			if(session('kdlevel')=='10' || session('kdlevel')=='12'){
 				
 				if($row->is_ubah==1){
 					$ruh = '<a id="'.$row->id.'" class="dropdown-item ubah" href="javascript:;">Ubah Data</a>
@@ -161,6 +165,7 @@ class PenerimaanRekamController extends Controller {
 							'.$ruh.'
 							<!--<a id="'.$row->id.'" class="dropdown-item upload" href="javascript:;">Upload Lampiran</a>-->
 							<a class="dropdown-item" href="bukti/uang-masuk/'.$row->id.'" target="_blank">Cetak Bukti</a>
+							<a class="dropdown-item" href="bukti/kuitansi/'.$row->id.'" target="_blank">Cetak Kuitansi</a>
 						</div>
 					</center>';
 			
@@ -213,6 +218,8 @@ class PenerimaanRekamController extends Controller {
 					a.id_penerima as id_pelanggan,
 					a.nodok as nopks,
 					to_char(a.tgdok,'yyyy-mm-dd') as tgpks,
+					a.nocek,
+					to_char(a.tgcek,'yyyy-mm-dd') as tgcek,
 					to_char(a.tgdok1,'yyyy-mm-dd') as tgjtempo,
 					a.uraian,
 					b.kdakun as debet,
@@ -409,6 +416,8 @@ class PenerimaanRekamController extends Controller {
 	{
 		$total = str_replace(',', '', $request->input('total'));
 		
+		$nourut = (int)$request->input('nourut');
+		
 		if($total>0){
 			
 			DB::beginTransaction();
@@ -428,7 +437,7 @@ class PenerimaanRekamController extends Controller {
 					where a.thang=? and b.menu=2 and a.nourut=?
 				",[
 					session('tahun'),
-					str_replace('0', '', $request->input('nourut'))
+					$nourut
 				]);
 				
 				if($rows[0]->jml==0){
@@ -447,6 +456,8 @@ class PenerimaanRekamController extends Controller {
 						'id_penerima' => $request->input('id_pelanggan'),
 						'nodok' => $request->input('nopks'),
 						'tgdok' => $request->input('tgpks'),
+						'nocek' => $request->input('nocek'),
+						'tgcek' => $request->input('tgcek'),
 						'tgdok1' => $request->input('tgjtempo'),
 						'uraian' => $request->input('uraian'),
 						'ttd1' => $request->input('ttd1'),
@@ -546,6 +557,8 @@ class PenerimaanRekamController extends Controller {
 						id_penerima=?,
 						nodok=?,
 						tgdok=?,
+						nocek=?,
+						tgcek=?,
 						tgdok1=?,
 						uraian=?,
 						nilai=?,
@@ -564,6 +577,8 @@ class PenerimaanRekamController extends Controller {
 					$request->input('id_pelanggan'),
 					$request->input('nopks'),
 					$request->input('tgpks'),
+					$request->input('nocek'),
+					$request->input('tgcek'),
 					$request->input('tgjtempo'),
 					$request->input('uraian'),
 					str_replace(',', '', $request->input('total')),

@@ -460,6 +460,53 @@ class PenerimaanProsesController extends Controller {
 			
 			$data['akun'] = $akun;
 			
+			$rows = DB::select("
+				select  to_char(a.updated_at,'dd-mm-yyyy hh24:mi:ss') as tanggal,
+						b.nmstatus,
+						c.nmlevel,
+						d.nama,
+						a.ket
+				from(
+					select  a.id_alur,
+							a.status,
+							a.id_user,
+							a.ket,
+							a.updated_at
+					from d_trans a
+					where a.id=?
+
+					union all
+
+					select  a.id_alur,
+							a.status,
+							a.id_user,
+							a.ket,
+							a.updated_at
+					from d_trans_histori a
+					where a.id_trans=?
+				) a
+				left join t_alur_status b on(a.id_alur=b.id_alur and a.status=b.status)
+				left join t_level c on(b.kdlevel=c.kdlevel)
+				left join t_user d on(a.id_user=d.id)
+				order by a.updated_at
+			",[
+				$id,
+				$id
+			]);
+			
+			$catatan = '';
+			foreach($rows as $row){
+				$catatan .= '<tr>
+								<td>'.$row->tanggal.'</td>
+								<td>'.$row->nmstatus.'</td>
+								<td>'.$row->nmlevel.'</td>
+								<td>'.$row->nama.'</td>
+								<td>'.$row->ket.'</td>
+							</tr>';
+			}
+			
+			$data['catatan'] = $catatan;
+			
 		}
 		else{
 			$data['error'] = true;

@@ -5,13 +5,16 @@
 			<th colspan="3">&nbsp;</th>
 		</tr>
 		<tr>
-			<th colspan="3"><h3>PERUSAHAAN DAERAH PEMBANGUNAN SARANA JAYA<br/>PEMERINTAH KHUSUS DKI JAKARTA</h3></th>
+			<th colspan="3"><h3>PERUSAHAAN UMUM DAERAH PEMBANGUNAN SARANA JAYA<br/>PEMERINTAH DAERAH KHUSUS IBUKOTA JAKARTA</h3></th>
+		</tr>
+		<tr>
+			<th colspan="3">&nbsp;</th>
 		</tr>
 	</thead>
 	<tbody>
 		<tr>
-			<td class="wd10 pl3 vt">Nomor</td>
-			<td class="wd2 vt">:</td>
+			<td class="wd10 pl3 vt" style="width:20%;">Nomor</td>
+			<td class="wd2 vt" style="width:2%;">:</td>
 			<td class="pl3 vt">{{$nourut}}</td>
 		</tr>
 		<tr>

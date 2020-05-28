@@ -203,6 +203,20 @@
 	                            	</div>
 									<label id="warning-uraian" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="nocek">No.Cek </label>
+									<div class="col-md-7">
+	                            		<input type="text" id="nocek" name="nocek" class="form-control" maxlength="255">
+	                            	</div>
+									<label id="warning-nocek" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="tgcek">Tgl.Cek </label>
+									<div class="col-md-7">
+	                            		<input type="date" id="tgcek" name="tgcek" class="form-control" maxlength="10">
+	                            	</div>
+									<label id="warning-tgcek" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
 								<legend>Pejabat Penandatangan</legend>
 								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="id_pelanggan">Direktur Utama </label>
@@ -396,7 +410,7 @@
 		});
 		
 		jQuery.get('cek/level', function(result){
-			if(result=='11'){ //admin
+			if(result=='10' || result=='12'){ //admin
 				jQuery('#tambah').show();
 			}
 		});
@@ -642,6 +656,8 @@
 					jQuery('#tgjtempo').val(result.message.tgjtempo);
 					jQuery('#uraian').val(result.message.uraian);
 					jQuery('#nourut').val(result.message.nourut);
+					jQuery('#nocek').val(result.message.nocek);
+					jQuery('#tgcek').val(result.message.tgcek);
 					jQuery('#ttd1').val(result.message.ttd1);
 					jQuery('#ttd2').val(result.message.ttd2);
 					jQuery('#ttd3').val(result.message.ttd3);

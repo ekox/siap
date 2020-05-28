@@ -310,6 +310,8 @@ class TagihanRekamController extends Controller {
 	{
 		$total = str_replace(',', '', $request->input('total'));
 		
+		$nourut = (int)$request->input('nourut');
+		
 		if($total>0){
 		
 			DB::beginTransaction();
@@ -329,7 +331,7 @@ class TagihanRekamController extends Controller {
 					where a.thang=? and b.menu=1 and a.nourut=?
 				",[
 					session('tahun'),
-					str_replace('0', '', $request->input('nourut'))
+					$nourut
 				]);
 				
 				if($rows[0]->jml==0){
@@ -339,7 +341,7 @@ class TagihanRekamController extends Controller {
 						'kdunit' => $request->input('kdunit'),
 						'thang' => session('tahun'),
 						'id_alur' => $request->input('id_alur'),
-						'nourut' => str_replace('0', '', $request->input('nourut')),
+						'nourut' => $nourut,
 						'kdtran' => $request->input('kdtran'),
 						'id_proyek' => $id_proyek,
 						'id_penerima' => $request->input('id_pelanggan'),

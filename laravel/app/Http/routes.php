@@ -155,18 +155,18 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::group(['prefix' => 'rekam'], function () {
 			
 			Route::get('', 'PenerimaanRekamController@index');
-			Route::get('/pilih/{param}', 'PenerimaanRekamController@pilih')->middleware('role:04.07.11');
-			Route::get('/nomor', 'PenerimaanRekamController@nomor')->middleware('role:04.07.11');
+			Route::get('/pilih/{param}', 'PenerimaanRekamController@pilih')->middleware('role:04.07.10.12');
+			Route::get('/nomor', 'PenerimaanRekamController@nomor')->middleware('role:04.07.10.12');
 			Route::get('/tagihan/{param}', 'PenerimaanRekamController@tagihan');
 			Route::get('/detil/{param}', 'PenerimaanRekamController@detil');
 			Route::get('/download/{param}', 'PenerimaanRekamController@download');
-			Route::get('/upload/{param}', 'PenerimaanRekamController@dok')->middleware('role:04.07.11');
-			Route::post('', 'PenerimaanRekamController@simpan')->middleware('role:04.07.11');
+			Route::get('/upload/{param}', 'PenerimaanRekamController@dok')->middleware('role:04.07.10.12');
+			Route::post('', 'PenerimaanRekamController@simpan')->middleware('role:04.07.10.12');
 			Route::post('/hitung-total', 'PenerimaanRekamController@hitungTotal');
-			Route::post('/hapus', 'PenerimaanRekamController@hapus')->middleware('role:11');
-			Route::post('/upload/{param}', 'PenerimaanRekamController@upload')->middleware('role:04.07.11');
-			Route::post('/upload-simpan', 'PenerimaanRekamController@uploadSimpan')->middleware('role:04.07.11');
-			Route::post('/hapus-dok', 'PenerimaanRekamController@hapusDok')->middleware('role:11');
+			Route::post('/hapus', 'PenerimaanRekamController@hapus')->middleware('role:10.12');
+			Route::post('/upload/{param}', 'PenerimaanRekamController@upload')->middleware('role:04.07.10.12');
+			Route::post('/upload-simpan', 'PenerimaanRekamController@uploadSimpan')->middleware('role:04.07.10.12');
+			Route::post('/hapus-dok', 'PenerimaanRekamController@hapusDok')->middleware('role:10.12');
 			
 		});
 		
@@ -390,6 +390,7 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get('/uang-masuk/{param}', 'BuktiTransaksiController@uangMasuk');
 		Route::get('/uang-keluar/{param}', 'BuktiTransaksiController@uangKeluar');
 		Route::get('/tanda-terima/{param}', 'BuktiTransaksiController@tandaTerima');
+		Route::get('/kuitansi/{param}', 'BuktiTransaksiController@kuitansi');
 		
 	});
 	

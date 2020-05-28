@@ -280,6 +280,8 @@ class UMKRekamController extends Controller {
 			$request->input('id_alur')
 		]);
 		
+		$nourut = (int)$request->input('nourut');
+		
 		if(count($rows)>0){
 			
 			$nilai = (int)str_replace(',', '', $request->input('nilai'));
@@ -295,7 +297,7 @@ class UMKRekamController extends Controller {
 						where a.thang=? and b.menu=3 and a.nourut=?
 					",[
 						session('tahun'),
-						str_replace('0', '', $request->input('nourut'))
+						$nourut
 					]);
 					
 					if($rows[0]->jml==0){
