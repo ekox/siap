@@ -6,7 +6,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class Bukubesar extends Model
 {
-    //
+    public static function getSaldoAwal($tahun, $kdakun)
+	{
+		$rows = \DB::select("
+			select  a.nilai
+			from d_sawal a
+			where a.thang=? and a.kdakun='111110'
+		", [$periode, $tahun, $periode, $kdakun]);
+
+		return $rows;
+	}
+	
+	//
     /**
 	 * description 
 	 */
@@ -22,7 +33,7 @@ class Bukubesar extends Model
 					 f.nama||' | '||b.uraian AS remark,
 					 DECODE (a.kddk, 'D', a.nilai, 0) AS debet,
 					 DECODE (a.kddk, 'K', a.nilai, 0) AS kredit,
-					 SUM (a.nilai) OVER (ORDER BY b.tgdok) AS saldo
+					 SUM (decode(a.kddk,'D',a.nilai,'K',-a.nilai)) OVER (ORDER BY b.tgdok,a.id) AS saldo
 				FROM d_trans_akun a
 					 LEFT JOIN d_trans b
 						ON (a.id_trans = b.id)
@@ -40,7 +51,7 @@ class Bukubesar extends Model
 			   WHERE     b.thang = ?
 					 AND TO_CHAR (b.tgdok, 'mm') <= ?
 					 AND a.kdakun = ?
-			ORDER BY b.tgdok
+			ORDER BY b.tgdok,a.id
 		", [$periode, $tahun, $periode, $kdakun]);
 
 		return $rows;

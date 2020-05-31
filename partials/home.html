@@ -15,7 +15,7 @@
 							<h3 class="font-large-1 mb-0" id="text1">0</h3>
 							<span>Total Tagihan</span>
 							<hr>
-							<span id="nilai1"></span>
+							<span id="nilai1">0</span>
 						</div>
 						<div class="media-right white text-right">
 							<i class="icon-doc font-large-1"></i>
@@ -34,7 +34,7 @@
 							<h3 class="font-large-1 mb-0" id="text2">0</h3>
 							<span>Total Penerimaan</span>
 							<hr>
-							<span id="nilai2"></span>
+							<span id="nilai2">0</span>
 						</div>
 						<div class="media-right white text-right">
 							<i class="icon-wallet font-large-1"></i>
@@ -53,7 +53,7 @@
 							<h3 class="font-large-1 mb-0" id="text3">0</h3>
 							<span>Total UMK</span>
 							<hr>
-							<span id="nilai3"></span>
+							<span id="nilai3">0</span>
 						</div>
 						<div class="media-right white text-right">
 							<i class="icon-credit-card font-large-1"></i>
@@ -70,9 +70,9 @@
 					<div class="media">
 						<div class="media-body white text-left">
 							<h3 class="font-large-1 mb-0" id="text4">0</h3>
-							<span>Total Pengeluaran</span>
+							<span>Total BUK</span>
 							<hr>
-							<span id="nilai4"></span>
+							<span id="nilai4">0</span>
 						</div>
 						<div class="media-right white text-right">
 							<i class="icon-basket font-large-1"></i>
@@ -122,15 +122,20 @@
 	jQuery(document).ready(function(){
 		
 		function digit_grouping(nStr){
-			nStr += '';
-			x = nStr.split('.');
-			x1 = x[0];
-			x2 = x.length > 1 ? '.' + x[1] : '';
-			var rgx = /(\d+)(\d{3})/;
-			while (rgx.test(x1)) {
-				x1 = x1.replace(rgx, '$1' + ',' + '$2');
+			if(nStr!==null){
+				nStr += '';
+				x = nStr.split('.');
+				x1 = x[0];
+				x2 = x.length > 1 ? '.' + x[1] : '';
+				var rgx = /(\d+)(\d{3})/;
+				while (rgx.test(x1)) {
+					x1 = x1.replace(rgx, '$1' + ',' + '$2');
+				}
+				return x1 + x2;
 			}
-			return x1 + x2;
+			else{
+				return 0;
+			}
 		}
 		
 		jQuery.getJSON('home/total', function(result){
