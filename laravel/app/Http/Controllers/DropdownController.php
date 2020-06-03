@@ -38,11 +38,8 @@ class DropdownController extends Controller {
 			select  kdunit,
 					nmunit
 			from t_unit
-			where length(kdunit)=?
 			order by to_number(kdunit) asc
-		",[
-			$param
-		]);
+		");
 		
 		$data = '<option value="">Pilih Data</option>';
 		foreach($rows as $row){

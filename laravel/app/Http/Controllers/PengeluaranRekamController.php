@@ -725,6 +725,13 @@ class PengeluaranRekamController extends Controller {
 		if($rows[0]->jml==1){
 			
 			$delete = DB::delete("
+				delete from d_trans_histori
+				where id_trans=?
+			",[
+				$request->input('id')
+			]);
+			
+			$delete = DB::delete("
 				delete from d_trans_dok
 				where id_trans=?
 			",[
