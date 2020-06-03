@@ -22,7 +22,7 @@ class PenerimaanRekamController extends Controller {
 			$and .= " and b.kdlevel='".session('kdlevel')."' ";
 		}
 		
-		$aColumns = array('id','nourut','nama','nmtrans','pks','tgjtempo','nilai','status','lampiran','is_ubah');
+		$aColumns = array('id','nourut','nama','nmtrans','pks','tgjtempo','nilai','status','lampiran','is_ubah','is_final');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
 		/* DB table to use */
@@ -36,7 +36,8 @@ class PenerimaanRekamController extends Controller {
 							a.nilai,
 							c.nmstatus as status,
 							i.lampiran,
-							c.is_ubah
+							c.is_ubah,
+							c.is_final
 					from d_trans a
 					left outer join t_alur b on(a.id_alur=b.id)
 					left outer join t_alur_status c on(a.id_alur=c.id_alur and a.status=c.status)
@@ -154,6 +155,13 @@ class PenerimaanRekamController extends Controller {
 				
 			}
 			elseif(session('kdlevel')=='04' || session('kdlevel')=='07'){
+				
+				if($row->is_final!=='1'){
+					$ruh = '<a id="'.$row->id.'" class="dropdown-item ubah" href="javascript:;">Ubah Data</a>';
+				}
+				
+			}
+			elseif(session('kdlevel')=='00'){
 				
 				$ruh = '<a id="'.$row->id.'" class="dropdown-item ubah" href="javascript:;">Ubah Data</a>';
 				

@@ -18,7 +18,7 @@ class TagihanRekamController extends Controller {
 			$and = " and substr(a.kdunit,1,".$panjang.")='".session('kdunit')."'";
 		}
 		
-		$aColumns = array('id','nourut','unit','nama','nmtrans','pks','nilai','status','is_ubah');
+		$aColumns = array('id','nourut','unit','nama','nmtrans','pks','nilai','status','is_ubah','is_final');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
 		/* DB table to use */
@@ -32,7 +32,8 @@ class TagihanRekamController extends Controller {
 							a.uraian,
 							nvl(a.nilai,0) as nilai,
 							c.nmstatus as status,
-							c.is_ubah
+							c.is_ubah,
+							c.is_final
 					from d_trans a
 					left outer join t_alur b on(a.id_alur=b.id)
 					left outer join t_alur_status c on(a.id_alur=c.id_alur and a.status=c.status)
@@ -150,6 +151,20 @@ class TagihanRekamController extends Controller {
 				
 			}
 			elseif(session('kdlevel')=='07' || session('kdlevel')=='04'){
+				
+				if($row->is_final!=='1'){
+					
+					$aksi = '<center>
+								<button type="button" class="btn btn-raised btn-sm btn-icon btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-check"></i></button>
+								<div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+									<a id="'.$row->id.'" class="dropdown-item ubah" href="javascript:;">Ubah Data</a>
+								</div>
+							</center>';
+					
+				}
+				
+			}
+			elseif(session('kdlevel')=='00'){
 				
 				$aksi = '<center>
 							<button type="button" class="btn btn-raised btn-sm btn-icon btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-check"></i></button>

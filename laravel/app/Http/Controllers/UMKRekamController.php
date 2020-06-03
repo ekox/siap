@@ -18,7 +18,7 @@ class UMKRekamController extends Controller {
 			$and = " and substr(a.kdunit,1,".$panjang.")='".session('kdunit')."'";
 		}
 		
-		$aColumns = array('id','nourut','nmunit','nmtrans','pks','nilai','status','is_ubah');
+		$aColumns = array('id','nourut','nmunit','nmtrans','pks','nilai','status','is_ubah','is_final');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
 		/* DB table to use */
@@ -32,7 +32,8 @@ class UMKRekamController extends Controller {
 							a.uraian,
 							nvl(a.nilai,0) as nilai,
 							c.nmstatus as status,
-							c.is_ubah
+							c.is_ubah,
+							c.is_final
 					from d_trans a
 					left outer join t_alur b on(a.id_alur=b.id)
 					left outer join t_alur_status c on(a.id_alur=c.id_alur and a.status=c.status)
@@ -144,6 +145,13 @@ class UMKRekamController extends Controller {
 				
 			}
 			elseif(session('kdlevel')=='04' || session('kdlevel')=='07'){
+				
+				if($row->is_final!=='1'){
+					$ruh = '<a id="'.$row->id.'" class="dropdown-item ubah" href="javascript:;">Ubah Data</a>';
+				}
+				
+			}
+			elseif(session('kdlevel')=='00'){
 				
 				$ruh = '<a id="'.$row->id.'" class="dropdown-item ubah" href="javascript:;">Ubah Data</a>';
 				
