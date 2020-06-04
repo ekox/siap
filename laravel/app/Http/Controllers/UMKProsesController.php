@@ -414,7 +414,6 @@ class UMKProsesController extends Controller {
 								<td>'.$row->tanggal.'</td>
 								<td>'.$row->nmstatus.'</td>
 								<td>'.$row->nmlevel.'</td>
-								<td>'.$row->nama.'</td>
 								<td>'.$row->ket.'</td>
 							</tr>';
 			}
