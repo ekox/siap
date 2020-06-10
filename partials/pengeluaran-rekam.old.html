@@ -9,7 +9,7 @@
 	
 	<div class="row">
         <div class="col-sm-12">
-            <div class="content-header">BUK/ Rekam (versi Beta - Multi Akun/ COA)</div>
+            <div class="content-header">BUK/ Rekam</div>
         </div>
     </div>
 	
@@ -26,9 +26,7 @@
 							<input type="hidden" id="inp-id" name="inp-id">
 							<input type="hidden" id="_token" name="_token">
 							<input type="hidden" id="x" name="x">
-							<input type="hidden" id="x1" name="x1">
 							<input type="hidden" id="inp-akun">
-							<input type="hidden" id="inp-akun-debet">
 							<div class="form-body">
 								<legend>Transaksi</legend>
 								<div class="form-group row">
@@ -102,36 +100,61 @@
 	                            	</div>
 									<label id="warning-id_pelanggan" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
-								<legend>Rincian Akun/ Coa</legend>
-								<div class="form-group row">
-									<label class="col-md-2 label-control">BUK</label>
-									<div class="col-md-9">
-	                            		<table class="table table-bordered">
-											<thead>
-												<tr>
-													<th style="width:80%;">Jenis</th>
-													<th style="width:15%;">Nilai</th>
-													<th style="width:5%;">Hapus</th>
-												</tr>
-											</thead>
-											<tbody id="tabel-rincian1">
-												
-											</tbody>
-										</table>
+								<!--<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="kdtran">Jenis Pengeluaran </label>
+									<div class="col-md-7">
+	                            		<select id="kredit" name="kredit" class="form-control chosen">
+											<option value="" style="display:none;">Pilih Data</option>
+										</select>
 	                            	</div>
-									<div class="col-md-1">
-										<a href="javascript:;" id="tambah-detil1" class="btn btn-sm btn-success" title="Tambah BUK"><i class="fa fa-plus"></i></a>
-									</div>
+									<label id="warning-kredit" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>-->
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="kdtran">Jenis Pengeluaran</label>
+									<div class="col-md-7">
+	                            		<select id="debet" name="debet" class="form-control chosen">
+											<option value="" style="display:none;">Pilih Data</option>
+										</select>
+	                            	</div>
+									<label id="warning-debet" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
-									<label class="col-md-2 label-control">Pajak/ Lainnya</label>
-									<div class="col-md-9">
+	                            	<label class="col-md-2 label-control" for="pagu">Total Anggaran </label>
+									<div class="col-md-7">
+	                            		<input type="text" id="pagu" name="pagu" class="form-control val_num" style="text-align:right;" readonly>
+	                            	</div>
+									<label id="warning-pagu" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="realisasi">Total Realisasi </label>
+									<div class="col-md-7">
+	                            		<input type="text" id="realisasi" name="realisasi" class="form-control val_num" style="text-align:right;" readonly>
+	                            	</div>
+									<label id="warning-realisasi" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="sisa">Sisa Anggaran </label>
+									<div class="col-md-7">
+	                            		<input type="text" id="sisa" name="sisa" class="form-control val_num" style="text-align:right;" readonly>
+	                            	</div>
+									<label id="warning-sisa" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="nobukti">Nilai </label>
+									<div class="col-md-7">
+	                            		<input type="text" id="nilai" name="nilai" class="form-control val_num" style="text-align:right;" maxlength="19">
+	                            	</div>
+									<label id="warning-nilai" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="akun">Pajak</label>
+									<div class="col-md-7 table-responsive">
 	                            		<table class="table table-bordered">
 											<thead>
 												<tr>
-													<th style="width:80%;">Jenis</th>
-													<th style="width:15%;">Nilai</th>
-													<th style="width:5%;">Hapus</th>
+													<th style="width:500px;">Jenis</th>
+													<th style="width:200px;">Nilai</th>
+													<th>Hapus</th>
 												</tr>
 											</thead>
 											<tbody id="tabel-rincian">
@@ -140,21 +163,44 @@
 										</table>
 	                            	</div>
 									<div class="col-md-1">
-										<a href="javascript:;" id="tambah-detil" class="btn btn-sm btn-success" title="Tambah Pajak"><i class="fa fa-plus"></i></a>
+										<a href="javascript:;" id="tambah-detil" class="btn btn-sm btn-success" title="Hapus pajak"><i class="fa fa-plus"></i></a>
 									</div>
 		                        </div>
-								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="total">Total BUK </label>
+								<!--<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="ppn">PPN </label>
 									<div class="col-md-7">
-	                            		<input type="text" id="nilai" name="nilai" class="form-control val_num" style="text-align:right;" maxlength="19" readonly>
+	                            		<input type="text" id="ppn" name="ppn" class="form-control val_num" style="text-align:right;" maxlength="19">
 	                            	</div>
+									<label id="warning-ppn" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="total">Total Pajak/ Lainnya </label>
+	                            	<label class="col-md-2 label-control" for="pph21">PPh 21 </label>
 									<div class="col-md-7">
-	                            		<input type="text" id="pajak" name="pajak" class="form-control val_num" style="text-align:right;" maxlength="19" readonly>
+	                            		<input type="text" id="pph21" name="pph21" class="form-control val_num" style="text-align:right;" maxlength="19">
 	                            	</div>
+									<label id="warning-pph21" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="pph22">PPh 22 </label>
+									<div class="col-md-7">
+	                            		<input type="text" id="pph22" name="pph22" class="form-control val_num" style="text-align:right;" maxlength="19">
+	                            	</div>
+									<label id="warning-pph22" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="pph23">PPh 23 </label>
+									<div class="col-md-7">
+	                            		<input type="text" id="pph23" name="pph23" class="form-control val_num" style="text-align:right;" maxlength="19">
+	                            	</div>
+									<label id="warning-pph23" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="pph25">PPh 25 </label>
+									<div class="col-md-7">
+	                            		<input type="text" id="pph25" name="pph25" class="form-control val_num" style="text-align:right;" maxlength="19">
+	                            	</div>
+									<label id="warning-pph25" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>-->
 								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="total">Total </label>
 									<div class="col-md-7">
@@ -418,35 +464,6 @@
 			jQuery.get('dropdown/akun/kredit/'+kdtran, function(result){
 				jQuery('#kredit').html(result).trigger('chosen:updated');
 			});
-			jQuery.getJSON('dropdown/akun/debet/'+kdtran+'/json', function(result){
-				
-				var akun='<option value="" style="display:none;">Pilih Akun</option>';
-				jQuery.each(result, function(i,field){
-					akun+='<option value="'+field.kdakun+'">'+field.kdakun+' - '+field.nmakun+'</option>';
-				});
-				
-				jQuery('#inp-akun-debet').val(akun);
-				
-				jQuery('#x1').val(0);
-			
-				jQuery('#tabel-rincian1').html(
-					'<tr id="tr1-0">'+
-						'<td>'+
-							'<select id="chosen1-0" class="form-control akun" name="rincian1[0][\'kdakun\']" style="z-index:999999999 !important;">'+
-								jQuery('#inp-akun-debet').val()+
-							'</select>'+
-						'</td>'+
-						'<td><input id="nilai1-0" style="text-align:right;" type="text" name="rincian1[0][\'nilai\']" class="val_num"></td>'+
-						'<td>'+
-							'<center><a href="javascript:;" id="0" class="btn btn-sm btn-danger hapus-detil1"><i class="fa fa-minus"></i></a></center>'+
-						'</td>'+
-					'</tr>'
-				);
-				
-				jQuery('.val_num').mask('000,000,000,000,000', {reverse: true});
-				jQuery('#chosen1-0').chosen({width:'100%'});
-				
-			});
 			jQuery.getJSON('pengeluaran/rekam/tagihan/'+kdtran, function(result){
 				if(result.error==false){
 					jQuery('#parent_id').html(result.dropdown).trigger('chosen:updated');
@@ -457,7 +474,6 @@
 					jQuery('#div-tagihan').hide();
 				}
 			});
-			
 		});
 		
 		jQuery('#parent_id').change(function(){
@@ -516,14 +532,14 @@
 			jQuery('#div-tabel').hide();
 			jQuery('#inp-rekambaru').val('1');
 			jQuery('#div-form,#cari-nourut').show();
-			jQuery('#nilai,#ppn,#total,#pajak,#pagu,#realisasi,#sisa,#pph21,#pph22,#pph23,#pph25').val(0);
+			jQuery('#nilai,#ppn,#total,#pagu,#realisasi,#sisa,#pph21,#pph22,#pph23,#pph25').val(0);
 			cariNourut();
 			jQuery('#x').val(0);
 			
 			jQuery('#tabel-rincian').html(
 				'<tr id="tr-0">'+
 					'<td>'+
-						'<select id="chosen-0" class="form-control akun" name="rincian[0][\'kdakun\']" style="z-index:999999998 !important;">'+
+						'<select id="chosen-0" class="form-control akun" name="rincian[0][\'kdakun\']">'+
 							jQuery('#inp-akun').val()+
 						'</select>'+
 					'</td>'+
@@ -533,7 +549,6 @@
 					'</td>'+
 				'</tr>'
 			);
-			
 			jQuery('.val_num').mask('000,000,000,000,000', {reverse: true});
 			jQuery('#chosen-0').chosen({width:'100%'});
 		});
@@ -543,7 +558,7 @@
 			jQuery('#tabel-rincian').append(
 				'<tr id="tr-'+x+'">'+
 					'<td>'+
-						'<select id="chosen-'+x+'" class="form-control akun" name="rincian['+x+'][\'kdakun\']" style="z-index:999999999 !important;">'+
+						'<select id="chosen-'+x+'" class="form-control akun" name="rincian['+x+'][\'kdakun\']">'+
 							jQuery('#inp-akun').val()+
 						'</select>'+
 					'</td>'+
@@ -558,34 +573,9 @@
 			jQuery('#x').val(x);
 		});
 		
-		jQuery('#tambah-detil1').click(function(){
-			var x=parseInt(jQuery('#x1').val())+1;
-			jQuery('#tabel-rincian1').append(
-				'<tr id="tr1-'+x+'">'+
-					'<td>'+
-						'<select id="chosen1-'+x+'" class="form-control akun1" name="rincian1['+x+'][\'kdakun\']" style="z-index:999999997 !important;">'+
-							jQuery('#inp-akun-debet').val()+
-						'</select>'+
-					'</td>'+
-					'<td><input id="nilai1-'+x+'" style="text-align:right;" type="text" name="rincian1['+x+'][\'nilai\']" class="val_num"></td>'+
-					'<td>'+
-						'<center><a href="javascript:;" id="'+x+'" class="btn btn-sm btn-danger hapus-detil1"><i class="fa fa-minus"></i></a></center>'+
-					'</td>'+
-				'</tr>'
-			);
-			jQuery('#chosen1-'+x).chosen({width:'100%'});
-			jQuery('.val_num').mask('000,000,000,000,000', {reverse: true});
-			jQuery('#x1').val(x);
-		});
-		
 		jQuery('body').off('click', '.hapus-detil').on('click', '.hapus-detil', function(){
 			var id=this.id;
 			jQuery('#tr-'+id).remove();
-		});
-		
-		jQuery('body').off('click', '.hapus-detil1').on('click', '.hapus-detil1', function(){
-			var id=this.id;
-			jQuery('#tr1-'+id).remove();
 		});
 		
 		//data tabel
@@ -649,37 +639,6 @@
 						jQuery('#div-tagihan').show();
 					}
 					
-					jQuery.getJSON('dropdown/akun/debet/'+result.message.kdtran+'/json', function(result1){
-				
-						var akun='<option value="" style="display:none;">Pilih Akun</option>';
-						jQuery.each(result1, function(i,field){
-							akun+='<option value="'+field.kdakun+'">'+field.kdakun+' - '+field.nmakun+'</option>';
-						});
-						
-						jQuery('#inp-akun-debet').val(akun);
-						
-						jQuery('#tabel-rincian1').html('');
-						jQuery.each(result.akun1, function(x,row){
-							jQuery('#tabel-rincian1').append(
-								'<tr id="tr1-'+x+'">'+
-									'<td>'+
-										'<select id="chosen1-'+x+'" class="form-control akun1" name="rincian1['+x+'][\'kdakun\']">'+
-											jQuery('#inp-akun-debet').val()+
-										'</select>'+
-									'</td>'+
-									'<td><input id="nilai1-'+x+'" style="text-align:right;" type="text" name="rincian1['+x+'][\'nilai\']" class="val_num" value="'+digit_grouping(row.nilai)+'"></td>'+
-									'<td>'+
-										'<center><a href="javascript:;" id="'+x+'" class="btn btn-sm btn-danger hapus-detil1"><i class="fa fa-minus"></i></a></center>'+
-									'</td>'+
-								'</tr>'
-							);
-							jQuery('#chosen1-'+x).val(row.kdakun);
-							jQuery('#chosen1-'+x).chosen({width:'100%'});
-							jQuery('.val_num').mask('000,000,000,000,000', {reverse: true});
-						});
-						
-					});
-					
 					jQuery('#tabel-rincian').html('');
 					jQuery.each(result.akun, function(x,row){
 						jQuery('#tabel-rincian').append(
@@ -730,7 +689,6 @@
 					jQuery('#pph25').val(digit_grouping(result.message.pph25));
 					jQuery('#ppn').val(digit_grouping(result.message.ppn));
 					jQuery('#total').val(digit_grouping(result.message.total));
-					jQuery('#pajak').val(digit_grouping(result.message.pajak));
 					jQuery('.chosen').trigger('chosen:updated');
 				}
 				else{
@@ -769,7 +727,7 @@
 						jQuery('#_token').val(token);
 						var data = jQuery('#form-ruh').serialize();
 						jQuery.ajax({
-							url: 'pengeluaran/rekam/beta',
+							url: 'pengeluaran/rekam',
 							method: 'POST',
 							data: data,
 							success: function(result){
@@ -932,7 +890,7 @@
 			});
 		});
 		
-		/*jQuery('#kdsdana,#id_proyek,#debet').change(function(){
+		jQuery('#kdsdana,#id_proyek,#debet').change(function(){
 			
 			var kdsdana = jQuery('#kdsdana').val();
 			var id_proyek = jQuery('#id_proyek').val();
@@ -954,7 +912,7 @@
 				
 			}
 			
-		});*/
+		});
 		
 		/*jQuery('#nilai').keyup(function (e){
 			var nilai = jQuery('#nilai').val().replace(/,/g, '');
@@ -1034,13 +992,11 @@
 						jQuery('#_token').val(token);
 						var data = jQuery('#form-ruh').serialize();
 						jQuery.ajax({
-							url: 'pengeluaran/rekam/hitung-total',
+							url: 'penerimaan/rekam/hitung-total',
 							method: 'POST',
 							data: data,
 							success: function(result){
-								jQuery('#nilai').val(result.nilai);
-								jQuery('#pajak').val(result.pajak);
-								jQuery('#total').val(result.total);
+								jQuery('#total').val(result);
 							},
 							error: function(result){
 								jQuery('#simpan').html('<i class="fa fa-check-square-o"></i> Simpan');
@@ -1063,7 +1019,7 @@
 			}
 		});
 		
-		/*jQuery('body').off('change', '.akun').on('change', '.akun', function(){
+		jQuery('body').off('change', '.akun').on('change', '.akun', function(){
 			var arr_id = this.id.split('-');
 			var id = arr_id[1];
 			var arr_akun = jQuery(this).val().split('|');
@@ -1074,7 +1030,7 @@
 			var pajak = nilai*persen/100;
 			jQuery('#nilai-'+id).val(digit_grouping(pajak));
 			
-		});*/
+		});
 		
 	});
 	

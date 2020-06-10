@@ -567,6 +567,27 @@ class DropdownController extends Controller {
 		
 	}
 	
+	public function akun_debet_json($id_trans)
+	{
+		$rows = DB::select("
+			select  a.*
+			from t_akun a,
+			(
+				select  kdakun,
+						panjang
+				from t_trans_akun
+				where id_trans=? and kddk='D'
+			) b
+			where a.lvl=6 and substr(a.kdakun,1,b.panjang)=substr(b.kdakun,1,b.panjang)
+			order by a.kdakun asc
+		",[
+			$id_trans
+		]);
+		
+		return response()->json($rows);
+		
+	}
+	
 	public function akun_kredit($id_trans)
 	{
 		$rows = DB::select("

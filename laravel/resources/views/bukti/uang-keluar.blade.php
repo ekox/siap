@@ -79,50 +79,50 @@
 			<td colspan="4" class="bl">&nbsp;</td>
 		</tr>
 		<tr>
-			<td class="pl3">{{$kdakun}}</td>
+			<td class="pl3">{{$buk[0]['kdakun']}}</td>
 			<td class="pl3">Rp</td>
-			<td class="pl3 ar" style="text-align:right;border-right: 1px solid #000;">{{$nilai_bersih}}</td>
+			<td class="pl3 ar" style="text-align:right;border-right: 1px solid #000;">{{$buk[0]['nilai']}}</td>
 			<td rowspan="4" class="bl pl3 vt">Untuk</td>
 			<td rowspan="4" class="pl3 ar vt">:</td>
 			<td rowspan="4" colspan="2" class="pl3 vt">{{$uraian}}</td>
 		</tr>
 		<tr>
-			<td class="pl3">....................</td>
+			<td class="pl3">{{$buk[1]['kdakun']}}</td>
 			<td class="vt">Rp</td>
-			<td class="pl3 ar" style="border-right: 1px solid #000;">....................</td>
+			<td class="pl3 ar" style="text-align:right;border-right: 1px solid #000;">{{$buk[1]['nilai']}}</td>
 		</tr>
 		<tr>
-			<td class="pl3">....................</td>
+			<td class="pl3">{{$buk[2]['kdakun']}}</td>
 			<td class="vt">Rp</td>
-			<td class="pl3 ar" style="border-right: 1px solid #000;">....................</td>
+			<td class="pl3 ar" style="text-align:right;border-right: 1px solid #000;">{{$buk[2]['nilai']}}</td>
 		</tr>
 		<tr>
-			<td class="pl3">....................</td>
+			<td class="pl3">{{$buk[3]['kdakun']}}</td>
 			<td class="vt">Rp</td>
-			<td class="pl3 ar" style="border-right: 1px solid #000;">....................</td>
+			<td class="pl3 ar" style="text-align:right;border-right: 1px solid #000;">{{$buk[3]['nilai']}}</td>
 		</tr>
 		<tr>
-			<td class="pl3">....................</td>
+			<td class="pl3">{{$buk[4]['kdakun']}}</td>
 			<td class="vt">Rp</td>
-			<td class="pl3 ar" style="border-right: 1px solid #000;">....................</td>
+			<td class="pl3 ar" style="text-align:right;border-right: 1px solid #000;">{{$buk[4]['nilai']}}</td>
 			<td rowspan="4" class="bl pl3 vt">Dasar Pembayaran</td>
 			<td rowspan="4" class="pl3 ar vt">:</td>
 			<td rowspan="4" colspan="2" class="pl3 vt">Terlampir</td>
 		</tr>
 		<tr>
-			<td class="pl3 vt">....................</td>
+			<td class="pl3 vt">{{$buk[5]['kdakun']}}</td>
 			<td class="vt">Rp</td>
-			<td class="pl3 ar" style="border-right: 1px solid #000;">....................</td>
+			<td class="pl3 ar" style="text-align:right;border-right: 1px solid #000;">{{$buk[5]['nilai']}}</td>
 		</tr>
 		<tr>
-			<td class="pl3 vt">....................</td>
+			<td class="pl3 vt">{{$buk[6]['kdakun']}}</td>
 			<td class="vt">Rp</td>
-			<td class="pl3 ar" style="border-right: 1px solid #000;">....................</td>
+			<td class="pl3 ar" style="text-align:right;border-right: 1px solid #000;">{{$buk[6]['nilai']}}</td>
 		</tr>
 		<tr>
-			<td class="pl3 vt">....................</td>
+			<td class="pl3 vt">{{$buk[7]['kdakun']}}</td>
 			<td class="vt">Rp</td>
-			<td class="pl3 ar" style="border-right: 1px solid #000;">....................</td>
+			<td class="pl3 ar" style="text-align:right;border-right: 1px solid #000;">{{$buk[7]['nilai']}}</td>
 		</tr>
 		<tr>
 			<td colspan="3" style="border-right: 1px solid #000;">&nbsp;</td>

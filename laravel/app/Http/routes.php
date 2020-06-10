@@ -247,8 +247,10 @@ Route::group(['middleware' => 'auth'], function(){
 			Route::get('/tagihan/{param}', 'PengeluaranRekamController@tagihan');
 			Route::get('/detil/{param}', 'PengeluaranRekamController@detil');
 			Route::get('/download/{param}', 'PengeluaranRekamController@download');
+			Route::post('/hitung-total', 'PengeluaranRekamController@hitungTotal');
 			Route::get('/upload/{param}', 'PengeluaranRekamController@dok')->middleware('role:04.07.11');
 			Route::post('', 'PengeluaranRekamController@simpan')->middleware('role:00.04.07.11');
+			Route::post('/beta', 'PengeluaranRekamController@simpanBeta')->middleware('role:00.04.07.11');
 			Route::post('/hapus', 'PengeluaranRekamController@hapus')->middleware('role:11');
 			Route::post('/upload/{param}', 'PengeluaranRekamController@upload')->middleware('role:04.07.11');
 			Route::post('/upload-simpan', 'PengeluaranRekamController@uploadSimpan')->middleware('role:04.07.11');
@@ -440,6 +442,7 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get('/akun-pajak/json', 'DropdownController@akun_pajak_json');
 		Route::get('/akun/html/all', 'DropdownController@akun_html_all');
 		Route::get('/akun/debet/{param}', 'DropdownController@akun_debet');
+		Route::get('/akun/debet/{param}/json', 'DropdownController@akun_debet_json');
 		Route::get('/akun/kredit/{param}', 'DropdownController@akun_kredit');
 		Route::get('/akun/belanja', 'DropdownController@akun_belanja');
 		Route::get('/periode', 'DropdownController@periode');

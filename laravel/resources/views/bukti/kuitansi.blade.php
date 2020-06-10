@@ -57,7 +57,7 @@
 		</tr>
 		<tr>
 			<td style="width:5%">Jumlah Rp.</td>
-			<td style="width:2%">{{$nilai_bersih}},-</td>
+			<td style="width:2%">{{$nilai}},-</td>
 			<td style="width:20%"></td>
 			<td style="width:40%;text-align:center;">{{$nama_ttd2}}</td>
 		</tr>

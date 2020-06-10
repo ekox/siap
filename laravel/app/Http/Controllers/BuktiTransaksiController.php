@@ -307,6 +307,34 @@ class BuktiTransaksiController extends TableController
 		
 		if(count($rows)>0){
 			
+			$rows_buk = DB::select("
+				select	a.kdakun,
+						a.nilai,
+						b.kddk,
+						b.nilai as nilai1
+				from d_trans_akun a
+				left join t_akun_pajak b on(a.kdakun=b.kdakun)
+				where a.id_trans=? and b.kdakun is null and a.kddk='D'
+			",[
+				$id
+			]);
+			
+			$buk = array();
+			for($i=0;$i<8;$i++){
+				if(isset($rows_buk[$i])){
+					$buk[$i] = array(
+						'kdakun' => $rows_buk[$i]->kdakun,
+						'nilai' => number_format($rows_buk[$i]->nilai),
+					);
+				}
+				else{
+					$buk[$i] = array(
+						'kdakun' => '....................',
+						'nilai' => '....................'
+					);
+				}
+			}
+			
 			$rows_pajak = DB::select("
 				select	a.kdakun,
 						c.nmakun,
@@ -439,6 +467,7 @@ class BuktiTransaksiController extends TableController
 				'nama_ttd3' => $nama_ttd3,
 				'nip_ttd3' => $nip_ttd3,
 				'jabatan' => $jabatan,
+				'buk' => $buk
 			);
 		
 			//~ return view('bukti.uang-keluar', $data);
