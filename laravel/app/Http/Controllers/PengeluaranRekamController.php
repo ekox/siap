@@ -156,13 +156,15 @@ class PengeluaranRekamController extends Controller {
 			elseif(session('kdlevel')=='04' || session('kdlevel')=='07'){
 				
 				if($row->is_final!=='1'){
-					$ruh = '<a id="'.$row->id.'" class="dropdown-item ubah" href="javascript:;">Ubah Data</a>';
+					$ruh = '<a id="'.$row->id.'" class="dropdown-item ubah" href="javascript:;">Ubah Data</a>
+							<a id="'.$row->id.'" class="dropdown-item upload" href="javascript:;">Upload Lampiran</a>';
 				}
 				
 			}
 			elseif(session('kdlevel')=='00'){
 				
-				$ruh = '<a id="'.$row->id.'" class="dropdown-item ubah" href="javascript:;">Ubah Data</a>';
+				$ruh = '<a id="'.$row->id.'" class="dropdown-item ubah" href="javascript:;">Ubah Data</a>
+						<a id="'.$row->id.'" class="dropdown-item upload" href="javascript:;">Upload Lampiran</a>';
 				
 			}
 			
