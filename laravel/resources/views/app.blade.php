@@ -103,6 +103,7 @@
 					</a>
                   <div ngbdropdownmenu="" aria-labelledby="dropdownBasic3" class="dropdown-menu text-left dropdown-menu-right">
 					<a ui-sref="profile" class="dropdown-item py-1"><i class="ft-edit mr-2"></i><span>Edit Profile</span></a>
+					<a href="data/manual/manual.pdf" target="_blank" class="dropdown-item py-1"><i class="ft-alert-triangle mr-2"></i><span>Dokumentasi</span></a>
                     <div class="dropdown-divider"></div>
 					<a href="auth/logout" class="dropdown-item"><i class="ft-power mr-2"></i><span>Logout</span></a>
                   </div>

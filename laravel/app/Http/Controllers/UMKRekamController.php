@@ -316,7 +316,7 @@ class UMKRekamController extends Controller {
 							'id_alur' => $request->input('id_alur'),
 							'kdsdana' => $request->input('kdsdana'),
 							'id_proyek' => $request->input('id_proyek'),
-							'nourut' => str_replace('0', '', $request->input('nourut')),
+							'nourut' => $nourut,
 							'kdtran' => $request->input('kdtran'),
 							'id_penerima' => $request->input('id_pelanggan'),
 							'nodok' => $request->input('nopks'),

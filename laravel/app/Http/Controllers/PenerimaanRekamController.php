@@ -456,7 +456,7 @@ class PenerimaanRekamController extends Controller {
 					$id_trans = DB::table('d_trans')->insertGetId([
 						'kdunit' => session('kdunit'),
 						'thang' => session('tahun'),
-						'nourut' => str_replace('0', '', $request->input('nourut')),
+						'nourut' => $nourut,
 						'id_alur' => $request->input('id_alur'),
 						'kdtran' => $request->input('kdtran'),
 						'kdsdana' => $request->input('kdsdana'),

@@ -9,11 +9,12 @@ class RefProyekController extends Controller {
 
 	public function index(Request $request)
 	{
-		$aColumns = array('id','nmproyek','jenis');
+		$aColumns = array('id','kdproyek','nmproyek','jenis');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
 		/* DB table to use */
 		$sTable = "select  a.id,
+							a.kdproyek,
 							a.nmproyek,
 							decode(a.is_proyek,'1','Proyek','Non Proyek') as jenis
 					from t_proyek a
@@ -122,6 +123,7 @@ class RefProyekController extends Controller {
 			
 			$output['aaData'][] = array(
 				$row->no,
+				$row->kdproyek,
 				$row->nmproyek,
 				$row->jenis,
 				$aksi
@@ -157,7 +159,11 @@ class RefProyekController extends Controller {
 		if($request->input('inp-rekambaru')=='1'){
 				
 			$insert = DB::table('t_proyek')->insert([
+				'kdproyek' => $request->input('kdproyek'),
 				'nmproyek' => $request->input('nmproyek'),
+				'alamat' => $request->input('alamat'),
+				'deskripsi' => $request->input('deskripsi'),
+				'ket' => $request->input('ket'),
 				'is_proyek' => $request->input('is_proyek')
 			]);
 			
@@ -173,11 +179,19 @@ class RefProyekController extends Controller {
 			
 			$update = DB::update("
 				update t_proyek
-				set nmproyek=?,
+				set kdproyek=?,
+					nmproyek=?,
+					alamat=?,
+					deskripsi=?,
+					ket=?,
 					is_proyek=?
 				where id=?
 			",[
+				$request->input('kdproyek'),
 				$request->input('nmproyek'),
+				$request->input('alamat'),
+				$request->input('deskripsi'),
+				$request->input('ket'),
 				$request->input('is_proyek'),
 				$request->input('inp-id')
 			]);

@@ -560,7 +560,7 @@ class DropdownController extends Controller {
 		
 		$data = '<option value="" style="display:none;">Pilih Data</option>';
 		foreach($rows as $row){
-			$data .= '<option value="'.$row->kdakun.'"> '.$row->nmakun.'</option>';
+			$data .= '<option value="'.$row->kdakun.'">'.$row->kdakun.' - '.$row->nmakun.'</option>';
 		}
 		
 		return $data;
@@ -607,7 +607,7 @@ class DropdownController extends Controller {
 		
 		$data = '<option value="" style="display:none;">Pilih Data</option>';
 		foreach($rows as $row){
-			$data .= '<option value="'.$row->kdakun.'"> '.$row->nmakun.'</option>';
+			$data .= '<option value="'.$row->kdakun.'">'.$row->kdakun.' - '.$row->nmakun.'</option>';
 		}
 		
 		return $data;

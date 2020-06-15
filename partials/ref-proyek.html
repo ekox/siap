@@ -27,6 +27,13 @@
 							<input type="hidden" id="_token" name="_token">
 							<div class="form-body">
 								<div class="form-group row">
+	                            	<label class="col-md-3 label-control" for="nmproyek">Kode Proyek</label>
+									<div class="col-md-7">
+	                            		<input type="text" id="kdproyek" name="kdproyek" class="form-control val_num" maxlength="3">
+	                            	</div>
+									<label id="warning-kdproyek" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
 	                            	<label class="col-md-3 label-control" for="nmproyek">Nama Proyek</label>
 									<div class="col-md-7">
 	                            		<input type="text" id="nmproyek" name="nmproyek" class="form-control" maxlength="255">
@@ -43,21 +50,27 @@
 	                            	</div>
 									<label id="warning-is_proyek" class="col-md-2 label-control label-warning warning">required!</label>
 								</div>
-								<!--<div class="form-group row">
-	                            	<label class="col-md-3 label-control" for="id_penerima">Penerima </label>
+								<div class="form-group row">
+	                            	<label class="col-md-3 label-control" for="alamat">Alamat</label>
 									<div class="col-md-7">
-	                            		<select id="id_penerima" name="id_penerima" class="form-control chosen">
-										</select>
+	                            		<textarea type="text" id="alamat" name="alamat" class="form-control" maxlength="4000"></textarea>
 	                            	</div>
-									<label id="warning-id_penerima" class="col-md-2 label-control label-warning warning">required!</label>
+									<label id="warning-alamat" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
-	                            	<label class="col-md-3 label-control" for="norek">Nilai </label>
+	                            	<label class="col-md-3 label-control" for="deskripsi">Deskripsi</label>
 									<div class="col-md-7">
-	                            		<input type="text" id="nilai" name="nilai" class="form-control val_num" style="text-align:right;">
+	                            		<textarea type="text" id="deskripsi" name="deskripsi" class="form-control" maxlength="4000"></textarea>
 	                            	</div>
-									<label id="warning-nilai" class="col-md-2 label-control label-warning warning">required!</label>
-		                        </div>-->
+									<label id="warning-deskripsi" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-3 label-control" for="ket">Keterangan</label>
+									<div class="col-md-7">
+	                            		<textarea type="text" id="ket" name="ket" class="form-control" maxlength="4000"></textarea>
+	                            	</div>
+									<label id="warning-ket" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
 							</div>
 	                        <div class="form-actions">
 	                            <div class="form-group row">
@@ -96,6 +109,7 @@
                             <thead>
                                 <tr>
 									<th>No</th>
+									<th>Kode Proyek</th>
                                     <th>Nama Proyek</th>
 									<th>Jenis</th>
 									<th>Aksi</th>
@@ -214,7 +228,11 @@
 				if(result) {
 					jQuery('#inp-id').val(id);
 					jQuery('#inp-rekambaru').val('0');
+					jQuery('#kdproyek').val(result.kdproyek);
 					jQuery('#nmproyek').val(result.nmproyek);
+					jQuery('#alamat').val(result.alamat);
+					jQuery('#deskripsi').val(result.deskripsi);
+					jQuery('#ket').val(result.ket);
 					jQuery('#is_proyek').val(result.is_proyek);
 					jQuery('.chosen').trigger('chosen:updated');
 				}
