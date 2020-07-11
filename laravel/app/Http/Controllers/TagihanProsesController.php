@@ -43,7 +43,7 @@ class TagihanProsesController extends Controller {
 						left outer join t_trans h on(a.kdtran=h.id)
 						where b.menu=1 and a.thang='".session('tahun')."' and c.kdlevel='".session('kdlevel')."'
 					) a
-					where a.akses=1
+					where a.akses=1 and nvl(a.is_final,'0')<>'1'
 					order by a.id desc
 					";
 		

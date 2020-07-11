@@ -160,13 +160,13 @@ Route::group(['middleware' => 'auth'], function(){
 			Route::get('/tagihan/{param}', 'PenerimaanRekamController@tagihan');
 			Route::get('/detil/{param}', 'PenerimaanRekamController@detil');
 			Route::get('/download/{param}', 'PenerimaanRekamController@download');
-			Route::get('/upload/{param}', 'PenerimaanRekamController@dok')->middleware('role:04.07.10.12');
+			Route::get('/upload/{param}', 'PenerimaanRekamController@dok')->middleware('role:00.04.07.10.12');
 			Route::post('', 'PenerimaanRekamController@simpan')->middleware('role:00.04.07.10.12');
 			Route::post('/hitung-total', 'PenerimaanRekamController@hitungTotal');
 			Route::post('/hapus', 'PenerimaanRekamController@hapus')->middleware('role:10.12');
-			Route::post('/upload/{param}', 'PenerimaanRekamController@upload')->middleware('role:04.07.10.12');
-			Route::post('/upload-simpan', 'PenerimaanRekamController@uploadSimpan')->middleware('role:04.07.10.12');
-			Route::post('/hapus-dok', 'PenerimaanRekamController@hapusDok')->middleware('role:10.12');
+			Route::post('/upload/{param}', 'PenerimaanRekamController@upload')->middleware('role:00.04.07.10.11.12');
+			Route::post('/upload-simpan', 'PenerimaanRekamController@uploadSimpan')->middleware('role:00.04.07.10.11.12');
+			Route::post('/hapus-dok', 'PenerimaanRekamController@hapusDok')->middleware('role:00.04.07.10.11.12');
 			
 		});
 		
@@ -248,13 +248,13 @@ Route::group(['middleware' => 'auth'], function(){
 			Route::get('/detil/{param}', 'PengeluaranRekamController@detil');
 			Route::get('/download/{param}', 'PengeluaranRekamController@download');
 			Route::post('/hitung-total', 'PengeluaranRekamController@hitungTotal');
-			Route::get('/upload/{param}', 'PengeluaranRekamController@dok')->middleware('role:04.07.11');
+			Route::get('/upload/{param}', 'PengeluaranRekamController@dok')->middleware('role:00.04.07.11');
 			Route::post('', 'PengeluaranRekamController@simpan')->middleware('role:00.04.07.11');
 			Route::post('/beta', 'PengeluaranRekamController@simpanBeta')->middleware('role:00.04.07.11');
 			Route::post('/hapus', 'PengeluaranRekamController@hapus')->middleware('role:11');
-			Route::post('/upload/{param}', 'PengeluaranRekamController@upload')->middleware('role:04.07.11');
-			Route::post('/upload-simpan', 'PengeluaranRekamController@uploadSimpan')->middleware('role:04.07.11');
-			Route::post('/hapus-dok', 'PengeluaranRekamController@hapusDok')->middleware('role:11');
+			Route::post('/upload/{param}', 'PengeluaranRekamController@upload')->middleware('role:00.04.07.11');
+			Route::post('/upload-simpan', 'PengeluaranRekamController@uploadSimpan')->middleware('role:00.04.07.11');
+			Route::post('/hapus-dok', 'PengeluaranRekamController@hapusDok')->middleware('role:00.04.07.11');
 			
 		});
 		

@@ -66,7 +66,7 @@ class Neraca extends Model
 		$andWhere = self::getParam($kdakun2, $arrParam);
 		$nmakun2 = self::nmAkun2($kdakun2);
 
-		if(substr($kdakun2, 0, 1) == '1') {
+		if(substr($kdakun2, 0, 1) == '1' || substr($kdakun2, 0, 1) == '3') {
 			$dk_saldo = " debet - kredit ";
 		} else {
 			$dk_saldo = " kredit - debet ";
@@ -147,7 +147,7 @@ class Neraca extends Model
 		$kdakun2 = htmlentities($kdakun2);
 		$tahun = htmlentities($arrParam['tahun']);
 
-		if(substr($kdakun2, 0, 1) == '1') {
+		if(substr($kdakun2, 0, 1) == '1' || substr($kdakun2, 0, 1) == '3') {
 			$dk_saldo = " debet - kredit ";
 		} else {
 			$dk_saldo = " kredit - debet ";
