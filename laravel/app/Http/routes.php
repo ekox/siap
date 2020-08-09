@@ -172,6 +172,38 @@ Route::group(['middleware' => 'auth'], function(){
 		
 	});
 	
+	//kas kecil
+	Route::group(['prefix' => 'kas-kecil'], function () {
+		
+		Route::group(['prefix' => 'monitoring'], function () {
+			
+			Route::get('', 'KasKecilProsesController@monitoring');
+			
+		});
+		
+		Route::group(['prefix' => 'proses'], function () {
+			
+			Route::get('', 'KasKecilProsesController@index');
+			Route::get('/pilih/{param}', 'KasKecilProsesController@pilih');
+			Route::post('', 'KasKecilProsesController@simpan');
+			
+		});
+		
+		Route::group(['prefix' => 'rekam'], function () {
+			
+			Route::get('', 'KasKecilRekamController@index');
+			Route::get('/pilih/{param}', 'KasKecilRekamController@pilih')->middleware('role:00.04.07.10');
+			Route::get('/nomor', 'KasKecilRekamController@nomor')->middleware('role:04.07.10');
+			Route::get('/detil/{param}', 'KasKecilRekamController@detil');
+			Route::get('/download/{param}', 'KasKecilRekamController@download');
+			Route::post('', 'KasKecilRekamController@simpan')->middleware('role:00.04.07.10');
+			Route::post('/hapus', 'KasKecilRekamController@hapus')->middleware('role:10');
+			Route::post('/upload', 'KasKecilRekamController@upload')->middleware('role:04.07.10');
+			
+		});
+		
+	});
+	
 	//umk
 	Route::group(['prefix' => 'umk'], function () {
 		
@@ -432,6 +464,7 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get('/alur', 'DropdownController@alur');
 		Route::get('/alur-tagihan', 'DropdownController@alurTagihan');
 		Route::get('/alur-penerimaan', 'DropdownController@alurPenerimaan');
+		Route::get('/alur-kas-kecil', 'DropdownController@alurKasKecil');
 		Route::get('/alur-umk', 'DropdownController@alurUmk');
 		Route::get('/alur-pengeluaran', 'DropdownController@alurPengeluaran');
 		Route::get('/penerima', 'DropdownController@penerima');
@@ -454,6 +487,7 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get('/sdana', 'DropdownController@sdana');
 		Route::get('/ttd/{param}', 'DropdownController@ttd');
 		Route::get('/trans-dtl', 'DropdownController@transDtl');
+		Route::get('/saldo-kas-kecil', 'DropdownController@saldoKasKecil');
 		
 	});
 	

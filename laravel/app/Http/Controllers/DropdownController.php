@@ -346,6 +346,24 @@ class DropdownController extends Controller {
 		
 	}
 	
+	public function alurKasKecil()
+	{
+		$rows = DB::select("
+			select	*
+			from t_alur
+			where menu=6
+			order by id asc
+		");
+		
+		$data = '<option value="" style="display:none;">Pilih Data</option>';
+		foreach($rows as $row){
+			$data .= '<option value="'.$row->id.'"> '.$row->nmalur.'</option>';
+		}
+		
+		return $data;
+		
+	}
+	
 	public function alurUmk()
 	{
 		$rows = DB::select("
@@ -775,6 +793,22 @@ class DropdownController extends Controller {
 		}
 		
 		return $data;
+		
+	}
+	
+	public function saldoKasKecil()
+	{
+		$rows = DB::select("
+			select  sum(decode(a.kddk,'D',a.nilai,0))-
+					sum(decode(a.kddk,'K',a.nilai,0)) as saldo
+			from d_trans_akun a
+			left join d_trans b on(a.id_trans=b.id)
+			where b.thang=? and a.kdakun='111300'
+		",[
+			session('tahun')
+		]);
+		
+		return number_format($rows[0]->saldo);
 		
 	}
 }
