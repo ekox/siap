@@ -336,40 +336,8 @@ class UMKRekamController extends Controller {
 						
 						if($id_trans){
 							
-							$arr_insert[] = "select	".$id_trans." as id_trans,
-													'910000' as kdakun,
-													'D' as kddk,
-													".str_replace(',', '', $request->input('nilai'))." as nilai,
-													1 as grup
-											 from dual";
-											 
-							$arr_insert[] = "select	".$id_trans." as id_trans,
-													'920000' as kdakun,
-													'K' as kddk,
-													".str_replace(',', '', $request->input('nilai'))." as nilai,
-													1 as grup
-											 from dual
-											 ";
-							
-							$delete = DB::delete("
-								delete from d_trans_akun
-								where id_trans=?
-							",[
-								$id_trans
-							]);
-								
-							$insert = DB::insert("
-								insert into d_trans_akun(id_trans,kdakun,kddk,nilai,grup)
-								".implode(" union all ", $arr_insert)."
-							");
-							
-							if($insert){
-								DB::commit();
-								return 'success';
-							}
-							else{
-								return 'Simpan pajak gagal!';
-							}
+							DB::commit();
+							return 'success';
 							
 						}
 						else{
@@ -425,42 +393,8 @@ class UMKRekamController extends Controller {
 					
 					if($update){
 						
-						$id_trans = $request->input('inp-id');
-						
-						$arr_insert[] = "select	".$id_trans." as id_trans,
-												'910000' as kdakun,
-												'D' as kddk,
-												".str_replace(',', '', $request->input('nilai'))." as nilai,
-												1 as grup
-										 from dual";
-										 
-						$arr_insert[] = "select	".$id_trans." as id_trans,
-												'920000' as kdakun,
-												'K' as kddk,
-												".str_replace(',', '', $request->input('nilai'))." as nilai,
-												1 as grup
-										 from dual
-										 ";
-						
-						$delete = DB::delete("
-							delete from d_trans_akun
-							where id_trans=?
-						",[
-							$id_trans
-						]);
-							
-						$insert = DB::insert("
-							insert into d_trans_akun(id_trans,kdakun,kddk,nilai,grup)
-							".implode(" union all ", $arr_insert)."
-						");
-						
-						if($insert){
-							DB::commit();
-							return 'success';
-						}
-						else{
-							return 'Simpan pajak gagal!';
-						}
+						DB::commit();
+						return 'success';
 						
 					}
 					else{

@@ -535,8 +535,7 @@ class BuktiTransaksiController extends TableController
 			left join t_pejabat f on(a.ttd2=f.id)
 			left join t_pejabat g on(a.ttd3=g.id)
 			left join t_pejabat h on(a.ttd4=h.id)
-			left join d_trans_akun i on(a.id=i.id_trans)
-			where a.id=? and i.grup=1 and i.kddk='D'
+			where a.id=?
 		",[
 			$id
 		]);

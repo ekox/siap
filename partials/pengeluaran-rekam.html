@@ -460,14 +460,6 @@
 			
 		});
 		
-		jQuery('#parent_id').change(function(){
-			var data = jQuery(this).val().split('|');
-			jQuery('#id_pelanggan').val(data[1]).trigger('chosen:updated');
-			jQuery('#uraian').val(data[2]);
-			jQuery('#nilai').val(digit_grouping(data[3]));
-			jQuery('#id_pelanggan').prop('disabled', true).trigger('chosen:updated');
-		});
-		
 		jQuery('#id_dok').change(function(){
 			var id_dok = jQuery(this).val();
 			jQuery.get('dropdown/dokDetil/'+id_dok, function(result){
@@ -477,7 +469,6 @@
 		
 		//tampilan default
 		function form_default() {
-			jQuery('#id_pelanggan,#kredit').prop('disabled', false).trigger('chosen:updated');
 			jQuery('input,select,textarea').val('');
 			jQuery('.warning, #div-form, #div-tagihan, #div-form-detil, #cari-nourut').hide();
 			jQuery('#div-tabel').show();

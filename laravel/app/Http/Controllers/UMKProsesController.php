@@ -420,6 +420,41 @@ class UMKProsesController extends Controller {
 			
 			$data['catatan'] = $catatan;
 			
+			$rows = DB::select("
+				select	a.kdakun,
+						b.nmakun,
+						a.nilai,
+						a.kddk
+				from d_trans_akun a
+				left join t_akun b on(a.kdakun=b.kdakun)
+				where a.id_trans=?
+				order by a.kddk,a.kdakun
+			",[
+				$id
+			]);
+			
+			$akun = '';
+			foreach($rows as $row){
+				
+				if($row->kddk=='D'){
+					$debet = number_format($row->nilai);
+					$kredit = '';
+				}
+				else{
+					$kredit = number_format($row->nilai);
+					$debet = '';
+				}
+				
+				$akun .= '<tr>
+							<td>'.$row->kdakun.'</td>
+							<td>'.$row->nmakun.'</td>
+							<td style="text-align:right;">'.$debet.'</td>
+							<td style="text-align:right;">'.$kredit.'</td>
+						  </tr>';
+			}
+			
+			$data['akun'] = $akun;
+			
 		}
 		else{
 			$data['error'] = true;
@@ -432,16 +467,25 @@ class UMKProsesController extends Controller {
 	public function simpan(Request $request)
 	{
 		$rows = DB::select("
-			select	count(*) as jml
-			from d_trans
-			where id=? and id_alur=? and status=?
+			select	a.*,
+					b.kdakun
+			from d_trans a
+			left join(
+				select	id_trans,kdakun,nilai
+				from d_trans_akun
+				where kddk='D' and grup=1
+			) b on(a.id=b.id_trans)
+			where a.id=? and a.id_alur=? and a.status=?
 		",[
 			$request->input('inp-id'),
 			$request->input('id_alur'),
 			$request->input('status')
 		]);
 		
-		if($rows[0]->jml==1){
+		if(count($rows)>0){
+			
+			$kdakun = $rows[0]->kdakun;
+			$nilai = $rows[0]->nilai;
 			
 			$rows = DB::select("
 				select	*
@@ -455,15 +499,41 @@ class UMKProsesController extends Controller {
 				
 				$lanjut = true;
 				
-				if($rows[0]->is_valid=='1'){
+				if($rows[0]->is_final=='1'){
 					
-					if(count($request->input('pilih'))>0){
+					$delete = DB::delete("
+						delete from d_trans_akun
+						where id_trans=? and grup=0
+					",[
+						$request->input('inp-id')
+					]);
+					
+					$query_insert = "
+						select	".$request->input('inp-id')." as id_trans,
+								'114120' as kdakun,
+								'D' as kddk,
+								".$nilai." as nilai,
+								0 as grup
+						from dual
 						
+						union all
 						
-						
-					}
-					else{
+						select	".$request->input('inp-id')." as id_trans,
+								'111300' as kdakun,
+								'K' as kddk,
+								".$nilai." as nilai,
+								0 as grup
+						from dual
+					";
+					
+					$insert = DB::insert("
+						insert into d_trans_akun(id_trans,kdakun,kddk,nilai,grup)
+						".$query_insert."
+					");
+					
+					if(!$insert){
 						$lanjut = false;
+						$error = 'Akun kontra pos gagal disimpan!';
 					}
 					
 				}
@@ -514,7 +584,7 @@ class UMKProsesController extends Controller {
 					
 				}
 				else{
-					return 'Anda belum melakukan validasi data!';
+					return $error;
 				}
 				
 			}

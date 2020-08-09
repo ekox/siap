@@ -328,6 +328,8 @@ class PengeluaranRekamController extends Controller {
 				}
 			}
 			
+			$data['tagihan'] = $dropdown;
+			
 			$rows = DB::select("
 				select	*
 				from t_proyek
@@ -340,8 +342,6 @@ class PengeluaranRekamController extends Controller {
 			}
 			
 			$data['dropdown_p'] = $dropdown;
-			
-			$data['tagihan'] = $dropdown;
 			
 			$data['akun'] = '';
 			$data['x'] = 0;
@@ -776,6 +776,11 @@ class PengeluaranRekamController extends Controller {
 						
 						$lanjut = true;
 						
+						if($request->input('kdtran')==16 && $request->input('parent_id')==''){
+							$lanjut = false;
+							$error = 'SPJ UMK harus dipilih untuk jenis pembayaran ini!';
+						}
+						
 						if($lanjut){
 							
 							$id_proyek = '';
@@ -798,9 +803,6 @@ class PengeluaranRekamController extends Controller {
 								
 								if($rows[0]->jml==0){
 									
-									$arr_parent = explode("|", $request->input('parent_id'));
-									$parent_id = $arr_parent[0];
-									
 									$id_trans = DB::table('d_trans')->insertGetId([
 										'kdunit' => session('kdunit'),
 										'thang' => session('tahun'),
@@ -821,92 +823,237 @@ class PengeluaranRekamController extends Controller {
 										'ttd4' => $request->input('ttd4'),
 										'nilai' => str_replace(',', '', $request->input('total')),
 										'nilai_bersih' => str_replace(',', '', $request->input('nilai')),
-										'parent_id' => $parent_id,
+										'parent_id' => $request->input('parent_id'),
 										'status' => 1,
 										'id_user' => session('id_user')
 									]);
 									
 									if($id_trans){
 										
-										$arr_buk = $request->input('rincian1');
-										if(is_array($arr_buk)){
-											if(count($arr_buk)>0){
-												
-												$arr_keys = array_keys($arr_buk);
-												
-												for($j=0;$j<count($arr_keys);$j++){
+										if($request->input('kdtran')!=='16'){ //LS
+											
+											$arr_buk = $request->input('rincian1');
+											
+											/* generate akun beban */
+											if(is_array($arr_buk)){
+												if(count($arr_buk)>0){
 													
-													$kdakun = $arr_buk[$arr_keys[$j]]["'kdakun'"];
-													$nilai = str_replace(',', '', $arr_buk[$arr_keys[$j]]["'nilai'"]);
+													$arr_keys = array_keys($arr_buk);
 													
-													if($kdakun!=='' && $nilai>0){
-													
-														$arr_insert[] = "select	".$id_trans." as id_trans,
-																				'".$kdakun."' as kdakun,
-																				'D' as kddk,
-																				".$nilai." as nilai,
-																				1 as grup
-																		 from dual";
-																		 
+													for($j=0;$j<count($arr_keys);$j++){
+														
+														$kdakun = $arr_buk[$arr_keys[$j]]["'kdakun'"];
+														$nilai = str_replace(',', '', $arr_buk[$arr_keys[$j]]["'nilai'"]);
+														
+														if($kdakun!=='' && $nilai>0){
+														
+															$arr_insert[] = "select	".$id_trans." as id_trans,
+																					'".$kdakun."' as kdakun,
+																					'D' as kddk,
+																					".$nilai." as nilai,
+																					1 as grup
+																			 from dual";
+																			 
+														}
+														
 													}
 													
 												}
+											}
+											
+											/* generate akun kredit */
+											if(count($arr_insert)>0){
+												
+												$arr_insert[] = "select	".$id_trans." as id_trans,
+																		'211100' as kdakun,
+																		'K' as kddk,
+																		".str_replace(',', '', $request->input('total'))." as nilai,
+																		1 as grup
+																 from dual
+																 ";
 												
 											}
-										}
-										
-										if(count($arr_insert)>0){
 											
-											$arr_insert[] = "select	".$id_trans." as id_trans,
-																	'211100' as kdakun,
-																	'K' as kddk,
-																	".str_replace(',', '', $request->input('total'))." as nilai,
-																	1 as grup
-															 from dual
-															 ";
-											
-										}
-										
-										$lanjut = true;
-										$arr_pajak = $request->input('rincian');
-										if(is_array($arr_pajak)){
-											if(count($arr_pajak)>0){
-												
-												$arr_keys = array_keys($arr_pajak);
-												
-												for($i=0;$i<count($arr_keys);$i++){
+											/* generate akun pajak */
+											$lanjut = true;
+											$arr_pajak = $request->input('rincian');
+											if(is_array($arr_pajak)){
+												if(count($arr_pajak)>0){
 													
-													if($arr_pajak[$arr_keys[$i]]["'nilai'"]>0){
+													$arr_keys = array_keys($arr_pajak);
 													
-														$arr_akun = explode("|", $arr_pajak[$arr_keys[$i]]["'kdakun'"]);
-														$kdakun = $arr_akun[0];
-														$kddk = $arr_akun[1];
-													
-														$arr_insert[] = "select	".$id_trans." as id_trans,
-																				'".$kdakun."' as kdakun,
-																				'".$kddk."' as kddk,
-																				".str_replace(',', '', $arr_pajak[$arr_keys[$i]]["'nilai'"])." as nilai,
-																				0 as grup
-																		 from dual";
-																		 
+													for($i=0;$i<count($arr_keys);$i++){
+														
+														if($arr_pajak[$arr_keys[$i]]["'nilai'"]>0){
+														
+															$arr_akun = explode("|", $arr_pajak[$arr_keys[$i]]["'kdakun'"]);
+															$kdakun = $arr_akun[0];
+															$kddk = $arr_akun[1];
+														
+															$arr_insert[] = "select	".$id_trans." as id_trans,
+																					'".$kdakun."' as kdakun,
+																					'".$kddk."' as kddk,
+																					".str_replace(',', '', $arr_pajak[$arr_keys[$i]]["'nilai'"])." as nilai,
+																					0 as grup
+																			 from dual";
+																			 
+														}
+														
 													}
 													
 												}
+											}
+												
+											$insert = DB::insert("
+												insert into d_trans_akun(id_trans,kdakun,kddk,nilai,grup)
+												".implode(" union all ", $arr_insert)."
+											");
+											
+											if($insert){
+												DB::commit();
+												return 'success';
+											}
+											else{
+												return 'Simpan detil gagal!';
+											}
+											
+										}
+										else{ //SPJ UMK
+											
+											$arr_parent = explode("|", $request->input('parent_id'));
+											$parent_id = $arr_parent[0];
+											$umk = $arr_parent[3];
+											
+											$arr_buk = $request->input('rincian1');
+											
+											/* generate akun beban */
+											if(is_array($arr_buk)){
+												if(count($arr_buk)>0){
+													
+													$arr_keys = array_keys($arr_buk);
+													
+													for($j=0;$j<count($arr_keys);$j++){
+														
+														$kdakun = $arr_buk[$arr_keys[$j]]["'kdakun'"];
+														$nilai = str_replace(',', '', $arr_buk[$arr_keys[$j]]["'nilai'"]);
+														
+														if($kdakun!=='' && $nilai>0){
+														
+															$arr_insert[] = "select	".$id_trans." as id_trans,
+																					'".$kdakun."' as kdakun,
+																					'D' as kddk,
+																					".$nilai." as nilai,
+																					1 as grup
+																			 from dual";
+																			 
+														}
+														
+													}
+													
+												}
+											}
+											
+											/* generate akun pajak */
+											$lanjut = true;
+											$arr_pajak = $request->input('rincian');
+											if(is_array($arr_pajak)){
+												if(count($arr_pajak)>0){
+													
+													$arr_keys = array_keys($arr_pajak);
+													
+													for($i=0;$i<count($arr_keys);$i++){
+														
+														if($arr_pajak[$arr_keys[$i]]["'nilai'"]>0){
+														
+															$arr_akun = explode("|", $arr_pajak[$arr_keys[$i]]["'kdakun'"]);
+															$kdakun = $arr_akun[0];
+															$kddk = $arr_akun[1];
+														
+															$arr_insert[] = "select	".$id_trans." as id_trans,
+																					'".$kdakun."' as kdakun,
+																					'".$kddk."' as kddk,
+																					".str_replace(',', '', $arr_pajak[$arr_keys[$i]]["'nilai'"])." as nilai,
+																					0 as grup
+																			 from dual";
+																			 
+														}
+														
+													}
+													
+												}
+											}
+											
+											$total = str_replace(',', '', $request->input('total'));
+											
+											if($total>$umk){ // SPJ > UMK
+												
+												$selisih = str_replace(',', '', $request->input('total'))-$umk;
+												
+												$arr_insert[] = "select	".$id_trans." as id_trans,
+																		'114120' as kdakun,
+																		'K' as kddk,
+																		".$umk." as nilai,
+																		1 as grup
+																 from dual
+																 
+																 union all
+												
+																 select	".$id_trans." as id_trans,
+																		'111300' as kdakun,
+																		'K' as kddk,
+																		".$selisih." as nilai,
+																		1 as grup
+																 from dual
+																 ";
 												
 											}
-										}
+											elseif($total<$umk){ // SPJ < UMK
+												
+												$selisih = $umk-str_replace(',', '', $request->input('total'));
+												
+												$arr_insert[] = "select	".$id_trans." as id_trans,
+																		'114120' as kdakun,
+																		'K' as kddk,
+																		".$umk." as nilai,
+																		1 as grup
+																 from dual
+																 
+																 union all
+												
+																 select	".$id_trans." as id_trans,
+																		'111300' as kdakun,
+																		'D' as kddk,
+																		".$selisih." as nilai,
+																		1 as grup
+																 from dual
+																 ";
+												
+											}
+											else{ // SPJ = UMK
+												
+												$arr_insert[] = "select	".$id_trans." as id_trans,
+																		'114120' as kdakun,
+																		'K' as kddk,
+																		".$umk." as nilai,
+																		1 as grup
+																 from dual
+																 ";
+												
+											}
 											
-										$insert = DB::insert("
-											insert into d_trans_akun(id_trans,kdakun,kddk,nilai,grup)
-											".implode(" union all ", $arr_insert)."
-										");
-										
-										if($insert){
-											DB::commit();
-											return 'success';
-										}
-										else{
-											return 'Simpan detil gagal!';
+											$insert = DB::insert("
+												insert into d_trans_akun(id_trans,kdakun,kddk,nilai,grup)
+												".implode(" union all ", $arr_insert)."
+											");
+											
+											if($insert){
+												DB::commit();
+												return 'success';
+											}
+											else{
+												return 'Simpan detil gagal!';
+											}
+											
 										}
 										
 									}
@@ -965,92 +1112,233 @@ class PengeluaranRekamController extends Controller {
 									
 									$id_trans = $request->input('inp-id');
 									
-									$arr_buk = $request->input('rincian1');
-									if(is_array($arr_buk)){
-										if(count($arr_buk)>0){
-											
-											$arr_keys = array_keys($arr_buk);
-											
-											for($j=0;$j<count($arr_keys);$j++){
-												
-												$kdakun = $arr_buk[$arr_keys[$j]]["'kdakun'"];
-												$nilai = str_replace(',', '', $arr_buk[$arr_keys[$j]]["'nilai'"]);
-												
-												if($kdakun!=='' && $nilai>0){
-												
-													$arr_insert[] = "select	".$id_trans." as id_trans,
-																			'".$kdakun."' as kdakun,
-																			'D' as kddk,
-																			".$nilai." as nilai,
-																			1 as grup
-																	 from dual";
-																	 
-												}
-												
-											}
-											
-										}
-									}
-									
-									if(count($arr_insert)>0){
-										
-										$arr_insert[] = "select	".$id_trans." as id_trans,
-																'211100' as kdakun,
-																'K' as kddk,
-																".str_replace(',', '', $request->input('total'))." as nilai,
-																1 as grup
-														 from dual
-														 ";
-										
-									}
-									
-									$lanjut = true;
-									$arr_pajak = $request->input('rincian');
-									if(is_array($arr_pajak)){
-										if(count($arr_pajak)>0){
-											
-											$arr_keys = array_keys($arr_pajak);
-											
-											for($i=0;$i<count($arr_keys);$i++){
-												
-												if($arr_pajak[$arr_keys[$i]]["'nilai'"]>0){
-												
-													$arr_akun = explode("|", $arr_pajak[$arr_keys[$i]]["'kdakun'"]);
-													$kdakun = $arr_akun[0];
-													$kddk = $arr_akun[1];
-												
-													$arr_insert[] = "select	".$id_trans." as id_trans,
-																			'".$kdakun."' as kdakun,
-																			'".$kddk."' as kddk,
-																			".str_replace(',', '', $arr_pajak[$arr_keys[$i]]["'nilai'"])." as nilai,
-																			0 as grup
-																	 from dual";
-																	 
-												}
-												
-											}
-											
-										}
-									}
-									
 									$delete = DB::delete("
 										delete from d_trans_akun
 										where id_trans=?
 									",[
 										$id_trans
 									]);
-										
-									$insert = DB::insert("
-										insert into d_trans_akun(id_trans,kdakun,kddk,nilai,grup)
-										".implode(" union all ", $arr_insert)."
-									");
 									
-									if($insert){
-										DB::commit();
-										return 'success';
+									if($request->input('kdtran')!=='16'){ //LS
+											
+										$arr_buk = $request->input('rincian1');
+										
+										/* generate akun beban */
+										if(is_array($arr_buk)){
+											if(count($arr_buk)>0){
+												
+												$arr_keys = array_keys($arr_buk);
+												
+												for($j=0;$j<count($arr_keys);$j++){
+													
+													$kdakun = $arr_buk[$arr_keys[$j]]["'kdakun'"];
+													$nilai = str_replace(',', '', $arr_buk[$arr_keys[$j]]["'nilai'"]);
+													
+													if($kdakun!=='' && $nilai>0){
+													
+														$arr_insert[] = "select	".$id_trans." as id_trans,
+																				'".$kdakun."' as kdakun,
+																				'D' as kddk,
+																				".$nilai." as nilai,
+																				1 as grup
+																		 from dual";
+																		 
+													}
+													
+												}
+												
+											}
+										}
+										
+										/* generate akun kredit */
+										if(count($arr_insert)>0){
+											
+											$arr_insert[] = "select	".$id_trans." as id_trans,
+																	'211100' as kdakun,
+																	'K' as kddk,
+																	".str_replace(',', '', $request->input('total'))." as nilai,
+																	1 as grup
+															 from dual
+															 ";
+											
+										}
+										
+										/* generate akun pajak */
+										$lanjut = true;
+										$arr_pajak = $request->input('rincian');
+										if(is_array($arr_pajak)){
+											if(count($arr_pajak)>0){
+												
+												$arr_keys = array_keys($arr_pajak);
+												
+												for($i=0;$i<count($arr_keys);$i++){
+													
+													if($arr_pajak[$arr_keys[$i]]["'nilai'"]>0){
+													
+														$arr_akun = explode("|", $arr_pajak[$arr_keys[$i]]["'kdakun'"]);
+														$kdakun = $arr_akun[0];
+														$kddk = $arr_akun[1];
+													
+														$arr_insert[] = "select	".$id_trans." as id_trans,
+																				'".$kdakun."' as kdakun,
+																				'".$kddk."' as kddk,
+																				".str_replace(',', '', $arr_pajak[$arr_keys[$i]]["'nilai'"])." as nilai,
+																				0 as grup
+																		 from dual";
+																		 
+													}
+													
+												}
+												
+											}
+										}
+											
+										$insert = DB::insert("
+											insert into d_trans_akun(id_trans,kdakun,kddk,nilai,grup)
+											".implode(" union all ", $arr_insert)."
+										");
+										
+										if($insert){
+											DB::commit();
+											return 'success';
+										}
+										else{
+											return 'Simpan detil gagal!';
+										}
+										
 									}
-									else{
-										return 'Simpan detil gagal!';
+									else{ //SPJ UMK
+										
+										$arr_buk = $request->input('rincian1');
+										
+										/* generate akun beban */
+										if(is_array($arr_buk)){
+											if(count($arr_buk)>0){
+												
+												$arr_keys = array_keys($arr_buk);
+												
+												for($j=0;$j<count($arr_keys);$j++){
+													
+													$kdakun = $arr_buk[$arr_keys[$j]]["'kdakun'"];
+													$nilai = str_replace(',', '', $arr_buk[$arr_keys[$j]]["'nilai'"]);
+													
+													if($kdakun!=='' && $nilai>0){
+													
+														$arr_insert[] = "select	".$id_trans." as id_trans,
+																				'".$kdakun."' as kdakun,
+																				'D' as kddk,
+																				".$nilai." as nilai,
+																				1 as grup
+																		 from dual";
+																		 
+													}
+													
+												}
+												
+											}
+										}
+										
+										/* generate akun pajak */
+										$lanjut = true;
+										$arr_pajak = $request->input('rincian');
+										if(is_array($arr_pajak)){
+											if(count($arr_pajak)>0){
+												
+												$arr_keys = array_keys($arr_pajak);
+												
+												for($i=0;$i<count($arr_keys);$i++){
+													
+													if($arr_pajak[$arr_keys[$i]]["'nilai'"]>0){
+													
+														$arr_akun = explode("|", $arr_pajak[$arr_keys[$i]]["'kdakun'"]);
+														$kdakun = $arr_akun[0];
+														$kddk = $arr_akun[1];
+													
+														$arr_insert[] = "select	".$id_trans." as id_trans,
+																				'".$kdakun."' as kdakun,
+																				'".$kddk."' as kddk,
+																				".str_replace(',', '', $arr_pajak[$arr_keys[$i]]["'nilai'"])." as nilai,
+																				0 as grup
+																		 from dual";
+																		 
+													}
+													
+												}
+												
+											}
+										}
+										
+										$total = str_replace(',', '', $request->input('total'));
+										
+										if($total>$umk){ // SPJ > UMK
+											
+											$selisih = str_replace(',', '', $request->input('total'))-$umk;
+											
+											$arr_insert[] = "select	".$id_trans." as id_trans,
+																	'114120' as kdakun,
+																	'K' as kddk,
+																	".$umk." as nilai,
+																	1 as grup
+															 from dual
+															 
+															 union all
+											
+															 select	".$id_trans." as id_trans,
+																	'111300' as kdakun,
+																	'K' as kddk,
+																	".$selisih." as nilai,
+																	1 as grup
+															 from dual
+															 ";
+											
+										}
+										elseif($total<$umk){ // SPJ < UMK
+											
+											$selisih = $umk-str_replace(',', '', $request->input('total'));
+											
+											$arr_insert[] = "select	".$id_trans." as id_trans,
+																	'114120' as kdakun,
+																	'K' as kddk,
+																	".$umk." as nilai,
+																	1 as grup
+															 from dual
+															 
+															 union all
+											
+															 select	".$id_trans." as id_trans,
+																	'111300' as kdakun,
+																	'D' as kddk,
+																	".$selisih." as nilai,
+																	1 as grup
+															 from dual
+															 ";
+											
+										}
+										else{ // SPJ = UMK
+											
+											$arr_insert[] = "select	".$id_trans." as id_trans,
+																	'114120' as kdakun,
+																	'K' as kddk,
+																	".$umk." as nilai,
+																	1 as grup
+															 from dual
+															 ";
+											
+										}
+										
+										$insert = DB::insert("
+											insert into d_trans_akun(id_trans,kdakun,kddk,nilai,grup)
+											".implode(" union all ", $arr_insert)."
+										");
+										
+										if($insert){
+											DB::commit();
+											return 'success';
+										}
+										else{
+											return 'Simpan detil gagal!';
+										}
+										
 									}
 									
 								}
@@ -1061,7 +1349,7 @@ class PengeluaranRekamController extends Controller {
 							
 						}
 						else{
-							return 'Pagu tidak cukup!';
+							return $error;
 						}
 						
 					}
@@ -1164,6 +1452,15 @@ class PengeluaranRekamController extends Controller {
 	
 	public function tagihan($id)
 	{
+		$panjang = strlen(session('kdunit'));
+		
+		$arrLevel = ['03','05','08','11'];
+		
+		$and = "";
+		if(in_array(session('kdlevel'), $arrLevel)){
+			$and = " and substr(a.kdunit,1,".$panjang.")='".session('kdunit')."'";
+		}
+		
 		$data['dropdown'] = '';
 		$data['error'] = true;
 		
@@ -1182,6 +1479,7 @@ class PengeluaranRekamController extends Controller {
 			
 			$rows = DB::select("
 				select	a.id,
+						lpad(a.nourut,5,'0') as nourut,
 						a.nodok as nopks,
 						to_char(a.tgdok,'dd-mm-yyyy') as tgpks,
 						a.id_penerima as id_pelanggan,
@@ -1189,14 +1487,17 @@ class PengeluaranRekamController extends Controller {
 						nvl(a.nilai,0) as nilai,
 						a.debet as kdakun
 				from d_trans a
-				where a.kdtran=?
+				left join t_alur_status b on(a.id_alur=b.id_alur and a.status=b.status)
+				left join d_trans c on(a.id=c.parent_id)
+				where a.thang=? and a.kdtran=? and b.is_final=1 and c.id is null ".$and."
 			",[
+				session('tahun'),
 				$parent_id
 			]);
 			
 			$dropdown = '<option value="" style="display:none;">Pilih Data</option>';
 			foreach($rows as $row){
-				$dropdown .= '<option value="'.$row->id.'|'.$row->id_pelanggan.'|'.$row->uraian.'|'.$row->nilai.'|'.$row->kdakun.'"> PKS : '.$row->nopks.', '.$row->tgpks.', Rp. '.number_format($row->nilai).',-</option>';
+				$dropdown .= '<option value="'.$row->id.'|'.$row->id_pelanggan.'|'.$row->uraian.'|'.$row->nilai.'|'.$row->kdakun.'"> No.Urut UMK : '.$row->nourut.', '.$row->tgpks.', Rp. '.number_format($row->nilai).',-</option>';
 			}
 			
 			$data['dropdown'] = $dropdown;
