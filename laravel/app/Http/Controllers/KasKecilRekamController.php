@@ -152,7 +152,7 @@ class KasKecilRekamController extends Controller {
 						<button type="button" class="btn btn-raised btn-sm btn-icon btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-check"></i></button>
 						<div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(0px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
 							'.$ruh.'
-							<a class="dropdown-item" href="bukti/uang-muka/'.$row->id.'" target="_blank">Cetak Bukti</a>
+							<a class="dropdown-item" href="bukti/kas-kecil/'.$row->id.'" target="_blank">Cetak Bukti</a>
 						</div>
 					</center>';
 			

@@ -425,6 +425,7 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get('/uang-keluar/{param}', 'BuktiTransaksiController@uangKeluar');
 		Route::get('/tanda-terima/{param}', 'BuktiTransaksiController@tandaTerima');
 		Route::get('/kuitansi/{param}', 'BuktiTransaksiController@kuitansi');
+		Route::get('/kas-kecil/{param}', 'BuktiTransaksiController@kasKecil');
 		
 	});
 	

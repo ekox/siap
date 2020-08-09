@@ -148,7 +148,7 @@
 									<label id="warning-ttd2" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
-	                            	<label class="col-md-2 label-control" for="id_pelanggan">Penanggung Jawab </label>
+	                            	<label class="col-md-2 label-control" for="id_pelanggan">Junior Manajer PP </label>
 									<div class="col-md-7">
 	                            		<select id="ttd1" name="ttd1" class="form-control chosen">
 										</select>
@@ -301,7 +301,7 @@
 			jQuery('.chosen').prop('disabled', false).trigger('chosen:updated');
 			jQuery('#simpan').prop('disabled', false);
 			jQuery('#tabel-rincian').html('');
-			jQuery.get('dropdown/ttd/05', function(result){
+			jQuery.get('dropdown/ttd/06', function(result){
 				jQuery('#ttd1').html(result).trigger('chosen:updated');
 			});
 			

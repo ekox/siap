@@ -864,4 +864,159 @@ class BuktiTransaksiController extends TableController
 		
     }
 	
+	public function kasKecil($id)
+    {
+		$rows = DB::select("
+			select  a.id,
+					a.kdunit,
+					a.kdsdana,
+					a.id_proyek,
+					a.kdtran,
+					lpad(a.nourut,5,'0') as nourut,
+					a.thang,
+					a.nodok,
+					a.nobuku,
+					to_char(a.tgdok,'dd-mm-yyyy') as tgdok,
+					to_char(a.tgdok1,'dd-mm-yyyy') as tgdok1,
+					b.nama as nmpenerima,
+					a.nilai,
+					a.nilai_bersih,
+					a.uraian,
+					a.debet,
+					c.nmakun,
+					nvl(a.nocek,'....................') as nocek,
+					to_char(a.tgdok,'dd-mm-yyyy') as tgcek,
+					a.id_alur,
+					d.nmunit,
+					e.nip as nip_ttd1,
+					e.nama as nama_ttd1,
+					f.nip as nip_ttd2,
+					f.nama as nama_ttd2,
+					g.nip as nip_ttd3,
+					g.nama as nama_ttd3,
+					h.nip as nip_ttd4,
+					h.nama as nama_ttd4
+			from d_trans a
+			left join t_penerima b on(a.id_penerima=b.id)
+			left join t_akun c on(a.debet=c.kdakun)
+			left join t_unit d on(substr(a.kdunit,1,4)=d.kdunit)
+			left join t_pejabat e on(a.ttd1=e.id)
+			left join t_pejabat f on(a.ttd2=f.id)
+			left join t_pejabat g on(a.ttd3=g.id)
+			left join t_pejabat h on(a.ttd4=h.id)
+			where a.id=?
+		",[
+			$id
+		]);
+		
+		if(count($rows)>0){
+			
+			$rows = (array)$rows[0];
+			
+			if($rows['kdtran']=='62'){
+				
+				$rows1 = DB::select("
+					select	a.kdakun,
+							a.nilai,
+							b.norek,
+							b.nmrek,
+							c.nmbank
+					from d_trans_akun a
+					left join t_akun_rek b on(a.kdakun=b.kdakun)
+					left join t_bank c on(b.kdbank=c.kdbank)
+					where a.id_trans=? and a.kddk='D' and a.grup='1'
+				",[
+					$id
+				]);
+				
+				$judul = 'PENYETORAN UANG KAS KE BANK';
+				$untuk = 'MENYETOR KE';
+				$terdiri1 = 'I. Kas/ Tunai';
+				$terdiri2 = 'II. Cheque/ Giro/ DII atas nama dan nomor :';
+				$norek = $rows1[0]->norek;
+				$nmrek = $rows1[0]->nmrek;
+				$nmbank = $rows1[0]->nmbank;
+				
+			}
+			elseif($rows['kdtran']=='61'){
+				
+				$rows1 = DB::select("
+					select	a.kdakun,
+							a.nilai,
+							b.norek,
+							b.nmrek,
+							c.nmbank
+					from d_trans_akun a
+					left join t_akun_rek b on(a.kdakun=b.kdakun)
+					left join t_bank c on(b.kdbank=c.kdbank)
+					where a.id_trans=? and a.kddk='K' and a.grup='1'
+				",[
+					$id
+				]);
+				
+				$judul = 'PENGAMBILAN UANG DARI BANK UNTUK KAS';
+				$untuk = 'MENGUANGKAN CHEQUE DARI';
+				$terdiri1 = 'TERDIRI ATAS CHEQUE / GIRO NOMOR :';
+				$terdiri2 = '';
+				$norek = $rows1[0]->norek;
+				$nmrek = $rows1[0]->nmrek;
+				$nmbank = $rows1[0]->nmbank;
+				
+			}
+			
+			$data = array(
+				'nourut' => $rows['nourut'],
+				'thang' => $rows['thang'],
+				'nmunit' => $rows['nmunit'],
+				'nobuku' => $rows['nobuku'],
+				'nodok' => $rows['nodok'],
+				'tgdok' => $rows['tgdok'],
+				'tgdok1' => $rows['tgdok1'],
+				'nmpenerima' => $rows['nmpenerima'],
+				'nilai' => number_format($rows['nilai']),
+				'nilai_bersih' => number_format($rows['nilai_bersih']),
+				'sejumlah' => ucwords(KNV::terbilang($rows['nilai']).' rupiah'),
+				'uraian' => $rows['uraian'],
+				'kdakun' => $rows['debet'],
+				'nmakun' => $rows['nmakun'],
+				'nocek' => $rows['nocek'],
+				'tgcek' => $rows['tgcek'],
+				'nama_ttd1' => $rows['nama_ttd1'],
+				'nama_ttd2' => $rows['nama_ttd2'],
+				'judul' => $judul,
+				'untuk' => $untuk,
+				'terdiri1' => $terdiri1,
+				'terdiri2' => $terdiri2,
+				'norek' => $norek,
+				'nmrek' => $nmrek,
+				'nmbank' => $nmbank,
+			);
+		
+			//~ return view('bukti.uang-keluar', $data);
+			$html_out = view('bukti.kas-kecil', $data);
+
+			$mpdf = new Mpdf([
+				'mode' => 'utf-8',
+				'format' => 'A4-P',
+				'margin_left' => 8,
+				'margin_right' => 8,
+				'margin_top' => 18,
+				'margin_bottom' => 18,
+			]);
+
+			//mode portrait or landscape
+			$mpdf->AddPage('P');
+
+			//write content to PDF
+			$mpdf->writeHTML($html_out);
+			$mpdf->Output('Bukti Kas Kecil.pdf', 'I');
+			exit;
+			
+		}
+		else{
+			return 'Data tidak ditemukan!';
+		}
+		
+    }
+	
 }
