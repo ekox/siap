@@ -511,6 +511,24 @@ class DropdownController extends Controller {
 		
 	}
 	
+	public function akun_html_all_lvl()
+	{
+		$rows = DB::select("
+			select	*
+			from t_akun
+			where lvl=6
+			order by kdakun asc
+		");
+		
+		$data = '';
+		foreach($rows as $row){
+			$data .= '<option value="'.$row->kdakun.'" style="font-family: Arial; font-size:11px !important;"> '.$row->kdakun.' | '.$row->nmakun.'</option>';
+		}
+		
+		return $data;
+		
+	}
+	
 	public function akun_belanja()
 	{
 		$rows = DB::select("

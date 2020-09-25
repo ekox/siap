@@ -414,6 +414,7 @@ Route::group(['middleware' => 'auth'], function(){
 	Route::group(['prefix' => 'gl'], function () {
 		
 		Route::get('/excel', 'BukuBesarController@excel');
+		Route::get('/pdf', 'BukuBesarController@pdf');
 		
 	});
 
@@ -475,6 +476,7 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get('/akun/json', 'DropdownController@akun_json');
 		Route::get('/akun-pajak/json', 'DropdownController@akun_pajak_json');
 		Route::get('/akun/html/all', 'DropdownController@akun_html_all');
+		Route::get('/akun/html/all1', 'DropdownController@akun_html_all_lvl');
 		Route::get('/akun/debet/{param}', 'DropdownController@akun_debet');
 		Route::get('/akun/debet/{param}/json', 'DropdownController@akun_debet_json');
 		Route::get('/akun/kredit/{param}', 'DropdownController@akun_kredit');
