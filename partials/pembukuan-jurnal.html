@@ -30,10 +30,23 @@
 							<div class="form-body">
 								<div class="form-group row">
 									<label class="col-md-2 label-control" for="id_alur">Periode</label>
-									<div class="col-md-4">
-										<select class="form-control chosen" id="periode" name="periode">
-											<option value="" style="display:none;">Pilih</option>
-										</select>
+									<div class="col-md-3">
+										<input type="date" id="tgawal" name="tgawal" class="form-control" maxlength="10">
+									</div>
+									<label class="col-md-1 label-control">s.d.</label>
+									<div class="col-md-3">
+										<input type="date" id="tgakhir" name="tgakhir" class="form-control" maxlength="10">
+									</div>
+								</div>
+							</div>
+							
+							<div class="form-actions">
+								<div class="form-group row">
+									<label class="col-md-2 label-control" for="projectinput4"></label>
+									<div class="col-md-7">
+										<button id="cari" type="button" class="btn btn-raised btn-success">
+											<i class="fa fa-search"></i> Tampilkan
+										</button>
 									</div>
 								</div>
 							</div>
@@ -74,21 +87,22 @@
 
 <script>
 	jQuery(document).ready(function(){
-	
-		jQuery('.chosen').chosen();
 		
-		jQuery.get('dropdown/periode', function(result){
-			jQuery('#periode').html(result).trigger('chosen:updated');
-		});
-		
-		jQuery('#periode').change(function(){
-			
-			var periode = jQuery(this).val();
+		jQuery('#cari').click(function(){
 			
 			jQuery('#div-tabel').show();
 			jQuery('#tabel-ruh').html('<td colspan="4">Sedang proses......</td>');
-	
-			jQuery.getJSON('pembukuan/jurnal/'+periode, function(result){
+			
+			var tgawal = 'xxx';
+			if($('#tgawal').val()!==''){
+				tgawal = $('#tgawal').val();
+			}
+			var tgakhir = 'xxx';
+			if($('#tgakhir').val()!==''){
+				tgakhir = $('#tgakhir').val();
+			}
+			
+			jQuery.getJSON('pembukuan/jurnal/'+tgawal+'/'+tgakhir, function(result){
 				jQuery('#tabel-ruh').html(result.data);
 				jQuery('#total-debet').html(result.total_debet);
 				jQuery('#total-kredit').html(result.total_kredit);

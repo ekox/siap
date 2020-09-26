@@ -7,8 +7,15 @@ use Illuminate\Http\Response;
 
 class PembukuanJurnalController extends Controller {
 
-	public function index(Request $request, $periode)
+	public function index(Request $request, $tgawal, $tgakhir)
 	{
+		$where = "";
+		$where1 = "";
+		if($tgawal!=='xxx' && $tgakhir!=='xxx'){
+			$where = " and a.tgsawal between to_date('".$tgawal." 00:00:01','yyyy-mm-dd hh24:mi:ss') and to_date('".$tgakhir." 23:59:59','yyyy-mm-dd hh24:mi:ss') ";
+			$where1 = " and b.tgdok between to_date('".$tgawal." 00:00:01','yyyy-mm-dd hh24:mi:ss') and to_date('".$tgakhir." 23:59:59','yyyy-mm-dd hh24:mi:ss') ";
+		}
+		
 		$rows = DB::select("
 			select  a.kdakun,
 					b.nmakun,
@@ -22,7 +29,7 @@ class PembukuanJurnalController extends Controller {
 						a.kdakun,
 						sum(a.nilai) as nilai
 				from d_sawal a
-				where a.thang=?
+				where a.thang=? ".$where."
 				group by to_char(a.tgsawal,'YYYY'),
 						to_char(a.tgsawal,'MM'),
 						a.kdakun,
@@ -39,7 +46,7 @@ class PembukuanJurnalController extends Controller {
 				from d_trans_akun a
 				left join d_trans b on(a.id_trans=b.id)
 				left join t_alur c on(b.id_alur=c.id)
-				where b.thang=? and c.neraca1=1
+				where b.thang=? and c.neraca1=1 ".$where1."
 				group by to_char(b.tgdok,'yyyy'),
 						 to_char(b.tgdok,'mm'),
 						 a.kddk,
@@ -47,13 +54,11 @@ class PembukuanJurnalController extends Controller {
 				
 			) a
 			left join t_akun b on(a.kdakun=b.kdakun)
-			where a.periode<=?
 			group by a.kdakun,b.nmakun
 			order by a.kdakun,b.nmakun
 		",[
 			session('tahun'),
-			session('tahun'),
-			$periode
+			session('tahun')
 		]);
 		
 		$data = '';

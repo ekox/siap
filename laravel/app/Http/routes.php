@@ -338,7 +338,7 @@ Route::group(['middleware' => 'auth'], function(){
 		
 		Route::group(['prefix' => 'jurnal'], function () {
 		
-			Route::get('/{param}', 'PembukuanJurnalController@index');
+			Route::get('/{param1}/{param2}', 'PembukuanJurnalController@index');
 			
 		});
 		
