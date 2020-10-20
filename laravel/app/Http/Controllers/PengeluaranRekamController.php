@@ -803,6 +803,9 @@ class PengeluaranRekamController extends Controller {
 								
 								if($rows[0]->jml==0){
 									
+									$arr_parent = explode("|", $request->input('parent_id'));
+									$parent_id = $arr_parent[0];
+									
 									$id_trans = DB::table('d_trans')->insertGetId([
 										'kdunit' => session('kdunit'),
 										'thang' => session('tahun'),
@@ -823,7 +826,7 @@ class PengeluaranRekamController extends Controller {
 										'ttd4' => $request->input('ttd4'),
 										'nilai' => str_replace(',', '', $request->input('total')),
 										'nilai_bersih' => str_replace(',', '', $request->input('nilai')),
-										'parent_id' => $request->input('parent_id'),
+										'parent_id' => $parent_id,
 										'status' => 1,
 										'id_user' => session('id_user')
 									]);
@@ -1489,10 +1492,9 @@ class PengeluaranRekamController extends Controller {
 				from d_trans a
 				left join t_alur_status b on(a.id_alur=b.id_alur and a.status=b.status)
 				left join d_trans c on(a.id=c.parent_id)
-				where a.thang=? and a.kdtran=? and b.is_final=1 and c.id is null ".$and."
+				where a.thang=? and b.is_final=1 and c.id is null ".$and."
 			",[
-				session('tahun'),
-				$parent_id
+				session('tahun')
 			]);
 			
 			$dropdown = '<option value="" style="display:none;">Pilih Data</option>';
