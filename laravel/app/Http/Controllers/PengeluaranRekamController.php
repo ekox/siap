@@ -833,7 +833,7 @@ class PengeluaranRekamController extends Controller {
 									
 									if($id_trans){
 										
-										if($request->input('kdtran')!=='16'){ //LS
+										if($request->input('kdtran')!=='15' && $request->input('kdtran')!=='16'){ //LS
 											
 											$arr_buk = $request->input('rincian1');
 											
