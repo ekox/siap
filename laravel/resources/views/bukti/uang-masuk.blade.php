@@ -30,7 +30,7 @@
 	</tbody>
 	<thead>
 		<tr>
-			<th colspan="3"><h3>BUKTI UANG MASUK</h3></th>
+			<th colspan="3"><h3>BUKTI KAS MASUK</h3></th>
 		</tr>
 		<tr>
 			<th colspan="3">&nbsp;</th>
@@ -160,21 +160,21 @@
 			<td class="pl3">Rp</td>
 			<td class="pl3 ar" style="text-align:right;border-right: 1px solid #000;">{{$nilai_pajak3}}</td>
 			<td colspan="3" class="bl pl3">&nbsp;</td>
-			<td class="pl3 al">Jakarta, {{$tgdok}}</td>
+			<td class="pl3 al"></td>
 		</tr>
 		<tr>
 			<td class="pl3">{{$kdakun_pajak4}}</td>
 			<td class="pl3">Rp</td>
 			<td class="pl3 ar" style="text-align:right;border-right: 1px solid #000;">{{$nilai_pajak4}}</td>
 			<td colspan="3" class="bl pl3 ac"><u>PEMBERI UANG</u></td>
-			<td class="pl3 ac" style="text-align:center;">PERUMDA PEMBANGUNAN SARANA JAYA</td>
+			<td class="pl3 ac" style="text-align:center;"></td>
 		</tr>
 		<tr>
 			<td colspan="3" class="pl3" style="border-right: 1px solid #000;">&nbsp;</td>
 			<td class="bl pl3 vt">Nama</td>
 			<td class="ar vt">:</td>
 			<td class="pl3 vt">....................</td>
-			<td rowspan="4" class="pl3 ac vt" style="text-align:center;">{{$jabatan}}</td>
+			<td rowspan="4" class="pl3 ac vt" style="text-align:center;"></td>
 		</tr>
 		<tr>
 			<td rowspan="2" class="pl3 vt">Jumlah yang harus diterima</td>
@@ -200,13 +200,13 @@
 			<td colspan="3" class="pl3" style="border-right: 1px solid #000;">&nbsp;</td>
 			<td colspan="2" class="bl">&nbsp;</td>
 			<td class="">&nbsp;</td>
-			<td class="vb ac" style="text-align:center;">{{$nama_ttd3}}</td>
+			<td class="vb ac" style="text-align:center;"></td>
 		</tr>
 		<tr>
 			<td colspan="3" class="pl3" style="border-right: 1px solid #000;">&nbsp;</td>
 			<td colspan="2" class="bl pl3">&nbsp;</td>
 			<td class="pl3">&nbsp;</td>
-			<td class="pl3 ac vb" style="text-align:center;">{{$nip_ttd3}}</td>
+			<td class="pl3 ac vb" style="text-align:center;"></td>
 		</tr>
 		<tr>
 			<td colspan="3" class="bb pl3" style="border-right: 1px solid #000;">&nbsp;</td>
@@ -215,25 +215,26 @@
 			<td class="bb pl3">&nbsp;</td>
 		</tr>
 		<tr>
-			<td colspan="3" class="pl3" style="border-top: 1px solid #000;border-right: 1px solid #000;text-align:center;">Penanggung Jawab</td>
+			<td colspan="3" class="pl3" style="border-top: 1px solid #000;border-right: 1px solid #000;text-align:center;"></td>
 			<td colspan="2" class="bl pl3" style="border-top: 1px solid #000;">&nbsp;</td>
 			<td class="pl3" style="border-top: 1px solid #000;">&nbsp;</td>
 			<td class="pl3" style="border-top: 1px solid #000;">&nbsp;</td>
 		</tr>
 		<tr>
-			<td colspan="3" class="pl3 ac vt" style="border-right: 1px solid #000;text-align:center;">{{$nmunit}}</td>
+			<td colspan="3" class="pl3 ac vt" style="border-right: 1px solid #000;text-align:center;">Senior Manajer Divisi Keuangan & Akuntansi</td>
 			<td colspan="2" class="bl pl3">&nbsp;</td>
 			<td class="pl3">&nbsp;</td>
-			<td class="pl3 ac vt" style="text-align:center;">Senior Manajer Divisi Keuangan & Akuntansi</td>
+			<td class="pl3 ac vt" style="text-align:center;">Junior Manajer Perbendaharaan & Perpajakan</td>
 		</tr>
 		<tr>
 			<td colspan="3" style="padding:2em; bt" style="border-right: 1px solid #000;"></td>
-			<td rowspan="2" colspan="3" class="bl vm">Telah diperiksa dan dibukukan dalam Buku Kas Masuk dengan nomor: <br>{{$nobuku}}</td>
+			<td rowspan="2" colspan="2" class="bl vm">Telah diperiksa dan dibukukan dalam Buku Kas Masuk dengan nomor: <br>{{$nobuku}}</td>
 			<td class="pl3">&nbsp;</td>
 		</tr>
 		<tr>
-			<td colspan="3" class="pl3 ac" style="border-right: 1px solid #000;text-align:center;">({{$nama_ttd1}})</td>
-			<td class="pl3 ac vt" style="text-align:center;">({{$nama_ttd2}})</td>
+			<td colspan="3" class="pl3 ac" style="border-right: 1px solid #000;text-align:center;">({{$nama_ttd2}})</td>
+			<td class="pl3">&nbsp;</td>
+			<td class="pl3 ac vt" style="text-align:center;">({{$nama_ttd5}})</td>
 		</tr>
 		
 		<tr>
