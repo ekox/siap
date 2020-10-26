@@ -379,14 +379,14 @@ class TagihanRekamController extends Controller {
 						$arr_insert[] = "select	".$id_trans." as id_trans,
 												'".$request->input('debet')."' as kdakun,
 												'D' as kddk,
-												".str_replace(',', '', $request->input('total'))." as nilai,
+												".str_replace(',', '', $request->input('nilai'))." as nilai,
 												1 as grup
 										 from dual";
 										 
 						$arr_insert[] = "select	".$id_trans." as id_trans,
 												'".$request->input('kredit')."' as kdakun,
 												'K' as kddk,
-												".str_replace(',', '', $request->input('nilai'))." as nilai,
+												".str_replace(',', '', $request->input('total'))." as nilai,
 												1 as grup
 										 from dual
 										 ";
@@ -405,13 +405,6 @@ class TagihanRekamController extends Controller {
 										$arr_akun = explode("|", $arr_pajak[$arr_keys[$i]]["'kdakun'"]);
 										$kdakun = $arr_akun[0];
 										$kddk = $arr_akun[1];
-									
-										if($kddk=='D'){
-											$kddk='K';
-										}
-										else{
-											$kddk='D';
-										}
 									
 										$arr_insert[] = "select	".$id_trans." as id_trans,
 																'".$kdakun."' as kdakun,
@@ -458,14 +451,14 @@ class TagihanRekamController extends Controller {
 				$arr_insert[] = "select	".$id_trans." as id_trans,
 										'".$request->input('debet')."' as kdakun,
 										'D' as kddk,
-										".str_replace(',', '', $request->input('total'))." as nilai,
+										".str_replace(',', '', $request->input('nilai'))." as nilai,
 										1 as grup
 								 from dual";
 								 
 				$arr_insert[] = "select	".$id_trans." as id_trans,
 										'".$request->input('kredit')."' as kdakun,
 										'K' as kddk,
-										".str_replace(',', '', $request->input('nilai'))." as nilai,
+										".str_replace(',', '', $request->input('total'))." as nilai,
 										1 as grup
 								 from dual
 								 ";
@@ -484,13 +477,6 @@ class TagihanRekamController extends Controller {
 								$arr_akun = explode("|", $arr_pajak[$arr_keys[$i]]["'kdakun'"]);
 								$kdakun = $arr_akun[0];
 								$kddk = $arr_akun[1];
-								
-								if($kddk=='D'){
-									$kddk='K';
-								}
-								else{
-									$kddk='D';
-								}
 								
 								$arr_insert[] = "select	".$id_trans." as id_trans,
 														'".$kdakun."' as kdakun,
