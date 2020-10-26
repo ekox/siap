@@ -1480,30 +1480,39 @@ class PengeluaranRekamController extends Controller {
 			$is_parent = $rows[0]->is_parent;
 			$parent_id = $rows[0]->parent_id;
 			
-			$rows = DB::select("
-				select	a.id,
-						lpad(a.nourut,5,'0') as nourut,
-						a.nodok as nopks,
-						to_char(a.tgdok,'dd-mm-yyyy') as tgpks,
-						a.id_penerima as id_pelanggan,
-						a.uraian,
-						nvl(a.nilai,0) as nilai,
-						a.debet as kdakun
-				from d_trans a
-				left join t_alur_status b on(a.id_alur=b.id_alur and a.status=b.status)
-				left join d_trans c on(a.id=c.parent_id)
-				where a.thang=? and b.is_final=1 and c.id is null ".$and."
-			",[
-				session('tahun')
-			]);
+			if($parent_id>0){
 			
-			$dropdown = '<option value="" style="display:none;">Pilih Data</option>';
-			foreach($rows as $row){
-				$dropdown .= '<option value="'.$row->id.'|'.$row->id_pelanggan.'|'.$row->uraian.'|'.$row->nilai.'|'.$row->kdakun.'"> No.Urut UMK : '.$row->nourut.', '.$row->tgpks.', Rp. '.number_format($row->nilai).',-</option>';
+				$rows = DB::select("
+					select	a.id,
+							lpad(a.nourut,5,'0') as nourut,
+							a.nodok as nopks,
+							to_char(a.tgdok,'dd-mm-yyyy') as tgpks,
+							a.id_penerima as id_pelanggan,
+							a.uraian,
+							nvl(a.nilai,0) as nilai,
+							a.debet as kdakun
+					from d_trans a
+					left join t_alur_status b on(a.id_alur=b.id_alur and a.status=b.status)
+					left join d_trans c on(a.id=c.parent_id)
+					where a.thang=? and b.is_final=1 and c.id is null and a.kdtran=? ".$and."
+				",[
+					session('tahun'),
+					$parent_id
+				]);
+				
+				$dropdown = '<option value="" style="display:none;">Pilih Data</option>';
+				foreach($rows as $row){
+					$dropdown .= '<option value="'.$row->id.'|'.$row->id_pelanggan.'|'.$row->uraian.'|'.$row->nilai.'|'.$row->kdakun.'"> No.Urut UMK : '.$row->nourut.', '.$row->tgpks.', Rp. '.number_format($row->nilai).',-</option>';
+				}
+				
+				$data['dropdown'] = $dropdown;
+				$data['error'] = false;
+				
 			}
-			
-			$data['dropdown'] = $dropdown;
-			$data['error'] = false;
+			else{
+				$data['dropdown'] = '';
+				$data['error'] = true;
+			}
 			
 		}
 		
