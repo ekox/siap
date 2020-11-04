@@ -9,7 +9,7 @@ class PengeluaranBayarController extends Controller {
 
 	public function index(Request $request)
 	{
-		$aColumns = array('id','nourut','nmunit','nama','nmtrans','uraian','nilai','pajak','total','nocek');
+		$aColumns = array('id','nourut','nmunit','nama','nmtrans','nilai','pajak','total','bayar','nocek');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
 		/* DB table to use */
@@ -25,7 +25,8 @@ class PengeluaranBayarController extends Controller {
 							b.nmalur||'<br>'||g.nmlevel||'<br>'||c.nmstatus as status,
 							nvl(a.ppn,0)+nvl(a.pph21,0)+nvl(a.pph22,0)+nvl(a.pph23,0)+nvl(a.pph25,0) as pajak,
 							nvl(a.nilai,0)-nvl(a.ppn,0)-nvl(a.pph21,0)-nvl(a.pph22,0)-nvl(a.pph23,0)-nvl(a.pph25,0) as total,
-							nvl(a.nocek,'') as nocek
+							nvl(a.nocek,'') as nocek,
+							decode(a.nocek,null,'Belum','Sudah') as bayar
 					from d_trans a
 					left outer join t_alur b on(a.id_alur=b.id)
 					left outer join t_alur_status c on(a.id_alur=c.id_alur and a.status=c.status)
@@ -33,7 +34,7 @@ class PengeluaranBayarController extends Controller {
 					left outer join t_penerima e on(a.id_penerima=e.id)
 					left outer join t_level g on(c.kdlevel=g.kdlevel)
 					left outer join t_trans h on(a.kdtran=h.id)
-					where b.menu=4 and a.thang='".session('tahun')."' and c.is_final is null
+					where b.menu=4 and a.thang='".session('tahun')."' and c.is_final=1
 					order by a.id desc
 					";
 		
@@ -140,10 +141,10 @@ class PengeluaranBayarController extends Controller {
 				$row->nmunit,
 				$row->nama,
 				$row->nmtrans,
-				$row->uraian,
 				'<div style="text-align:right;">'.number_format($row->nilai).'</div>',
 				'<div style="text-align:right;">'.number_format($row->pajak).'</div>',
 				'<div style="text-align:right;">'.number_format($row->total).'</div>',
+				$row->bayar,
 				$aksi
 			);
 		}
