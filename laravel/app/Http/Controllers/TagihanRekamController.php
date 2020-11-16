@@ -206,7 +206,8 @@ class TagihanRekamController extends Controller {
 					to_char(a.tgdok,'yyyy-mm-dd') as tgpks,
 					to_char(a.tgdok1,'yyyy-mm-dd') as tgjtempo,
 					a.uraian,
-					nvl(a.nilai_bersih,0) as nilai,
+					a.nilai,
+					a.nilai_bersih,
 					0 as total,
 					b.kdakun as debet,
 					c.kdakun as kredit,
@@ -304,7 +305,7 @@ class TagihanRekamController extends Controller {
 				$id
 			]);
 			
-			if(count($rows)>0){
+			if(count($rows)>0){				
 				$data['akun'] = $rows;
 				$data['x'] = count($rows);
 			}
