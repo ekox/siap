@@ -92,7 +92,7 @@ class BukuBesarController extends Controller
 					SELECT a.kdakun,
 						 d.nmakun,
 						 to_char(last_day(b.tgdok),'dd')||' '||e.nmbulan as bulan,
-						 TO_CHAR (b.tgdok, 'dd-mm-yyyy') AS tanggal,
+						 TO_CHAR (nvl(b.tgcek,b.tgdok), 'dd-mm-yyyy') AS tanggal,
 						 b.nodok||' | '||c.nmunit AS no_voucher,
 						 substr(b.kdunit,1,4) as kd_pc,
 						 f.nama||' | '||b.uraian AS remark,
@@ -108,7 +108,8 @@ class BukuBesarController extends Controller
 					 LEFT JOIN t_penerima f
 						ON (b.id_penerima=f.id)
 					 LEFT JOIN t_bulan e on(to_char(b.tgdok,'mm')=e.bulan)
-				   WHERE  b.thang = '".$tahun."' and a.kdakun='".$kdakun."' ".$and."
+					 LEFT JOIN t_alur_status g on(b.id_alur=g.id_alur and b.status=g.status)
+				   WHERE g.is_final='1' and b.thang = '".$tahun."' and a.kdakun='".$kdakun."' ".$and."
 					ORDER BY b.tgdok,a.id
 				");
 
@@ -339,7 +340,7 @@ class BukuBesarController extends Controller
 				SELECT a.kdakun,
 					 d.nmakun,
 					 to_char(last_day(b.tgdok),'dd')||' '||e.nmbulan as bulan,
-					 TO_CHAR (b.tgdok, 'dd-mm-yyyy') AS tanggal,
+					 TO_CHAR (nvl(b.tgcek,b.tgdok), 'dd-mm-yyyy') AS tanggal,
 					 b.nodok||' | '||c.nmunit AS no_voucher,
 					 substr(b.kdunit,1,4) as kd_pc,
 					 f.nama||' | '||b.uraian AS remark,
@@ -355,7 +356,8 @@ class BukuBesarController extends Controller
 				 LEFT JOIN t_penerima f
 					ON (b.id_penerima=f.id)
 				 LEFT JOIN t_bulan e on(to_char(b.tgdok,'mm')=e.bulan)
-			   WHERE  b.thang = '".$tahun."' and a.kdakun='".$kdakun."' ".$and."
+				 LEFT JOIN t_alur_status g on(b.id_alur=g.id_alur and b.status=g.status)
+			   WHERE g.is_final='1' and b.thang = '".$tahun."' and a.kdakun='".$kdakun."' ".$and."
 				ORDER BY b.tgdok,a.id
 			");
 			

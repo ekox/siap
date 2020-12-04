@@ -99,7 +99,7 @@ class PenerimaanRekamController extends Controller {
 			$sSearch=$_GET['sSearch'];
 			if((isset($sSearch))&&($sSearch!='')){
 				$sWhere=" where lower(nourut) like lower('".$sSearch."%') or lower(nourut) like lower('%".$sSearch."%') or
-								lower(pks) like lower('".$sSearch."%') or lower(pks) like lower('%".$sSearch."%') ";
+								lower(pks) like lower('".$sSearch."%') or lower(pks) like lower('%".$sSearch."%') or nilai=".$sSearch." ";
 			}
 		}
 		

@@ -92,7 +92,7 @@ class PengeluaranProsesController extends Controller {
 			$sSearch=$_GET['sSearch'];
 			if((isset($sSearch))&&($sSearch!='')){
 				$sWhere=" where lower(pks) like lower('".$sSearch."%') or lower(pks) like lower('%".$sSearch."%') or
-								lower(nourut) like lower('".$sSearch."%') or lower(nourut) like lower('%".$sSearch."%')";
+								lower(nourut) like lower('".$sSearch."%') or lower(nourut) like lower('%".$sSearch."%') or nilai=".$sSearch." ";
 			}
 		}
 		
@@ -246,7 +246,7 @@ class PengeluaranProsesController extends Controller {
 			$sSearch=$_GET['sSearch'];
 			if((isset($sSearch))&&($sSearch!='')){
 				$sWhere=" where lower(pks) like lower('".$sSearch."%') or lower(pks) like lower('%".$sSearch."%') or
-								lower(nourut) like lower('".$sSearch."%') or lower(nourut) like lower('%".$sSearch."%')";
+								lower(nourut) like lower('".$sSearch."%') or lower(nourut) like lower('%".$sSearch."%') or nilai=".$sSearch." ";
 			}
 		}
 		
