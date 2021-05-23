@@ -24,6 +24,19 @@ class BukuBesarController extends Controller
 				$tahun = session('tahun');
 				$kdakun = $_GET['kdakun'][0];
 				
+				$rows = DB::select("
+					select	*
+					from t_akun
+					where kdakun=?
+				",[
+					$kdakun
+				]);
+				
+				$nmakun = '';
+				if(count($rows)>0){
+					$nmakun = $rows[0]->nmakun;
+				}
+				
 				$arr_where = array();
 				
 				$tgawal = '';
@@ -37,6 +50,15 @@ class BukuBesarController extends Controller
 						
 						$where1 = " and a.tgsawal < to_date('".$_GET['tgawal']." 00:00:01','yyyy-mm-dd hh24:mi:ss') ";
 						
+						$where4 = "";
+						if(isset($_GET['id_proyek'])){
+							if($_GET['id_proyek']!==''){
+								
+								$where4 = " and b.id_proyek=".$_GET['id_proyek']." ";
+								
+							}
+						}
+						
 						$where2 = " 
 							union all
 						
@@ -45,11 +67,21 @@ class BukuBesarController extends Controller
 									a.nilai
 							from d_trans_akun a
 							left join d_trans b on(a.id_trans=b.id)
-							where b.thang='".$tahun."' and a.KDAKUN='".$kdakun."' and b.tgdok < to_date('".$_GET['tgawal']." 00:00:01','yyyy-mm-dd hh24:mi:ss')
+							where b.thang='".$tahun."' and a.KDAKUN='".$kdakun."' and b.tgdok < to_date('".$_GET['tgawal']." 00:00:01','yyyy-mm-dd hh24:mi:ss') ".$where4."
 						";
 						
 						$tgawal = $_GET['tgawal'];
 						$tgakhir = $_GET['tgakhir'];
+						
+					}
+				}
+				
+				if(isset($_GET['id_proyek'])){
+					if($_GET['id_proyek']!==''){
+						
+						$arr_where[] = " b.id_proyek=".$_GET['id_proyek']." ";
+						
+						$where3 = " and a.id_proyek=".$_GET['id_proyek']." ";
 						
 					}
 				}
@@ -73,7 +105,7 @@ class BukuBesarController extends Controller
 								a.kddk,
 								a.nilai
 						from d_sawal a
-						where a.thang='".$tahun."' and a.KDAKUN='".$kdakun."' ".$where1."
+						where a.thang='".$tahun."' and a.KDAKUN='".$kdakun."' ".$where1." ".$where3."
 						
 						".$where2."
 						
@@ -113,77 +145,71 @@ class BukuBesarController extends Controller
 					ORDER BY b.tgdok,a.id
 				");
 
-				if(count($rows) > 0) {		
-				
-					$tot_debet = $sawal_debet;
-					$tot_kredit = $sawal_kredit;
-					$saldo = $sawal_saldo;
-					foreach($rows as $row) {
-						
-						$debet = 0;
-						$kredit = 0;
-						
-						if($row->kddk=='D'){
-							$debet = $row->nilai;
-							$saldo += $row->nilai;
-						}
-						else{
-							$kredit = $row->nilai;
-							$saldo -= $row->nilai;
-						}
-						
-						$val = (object) array(
-							'tahun' => $tahun,
-							'kdakun' => $row->kdakun,
-							'nmakun' => $row->nmakun,
-							'tanggal' => $row->tanggal,
-							'no_voucher' => $row->no_voucher,
-							'kd_pc' => $row->kd_pc,
-							'remark' => $row->remark,
-							'debet' => number_format($debet,2),
-							'kredit' => number_format($kredit,2),
-							'saldo' => number_format($saldo,2),
-						);
-
-						$values[] = $val;
-
-						$tot_debet += $debet;
-						$tot_kredit += $kredit;
-						
+				$tot_debet = $sawal_debet;
+				$tot_kredit = $sawal_kredit;
+				$saldo = $sawal_saldo;
+				$values = array();
+				foreach($rows as $row) {
+					
+					$debet = 0;
+					$kredit = 0;
+					
+					if($row->kddk=='D'){
+						$debet = $row->nilai;
+						$saldo += $row->nilai;
 					}
-
-					$param[] = array(
+					else{
+						$kredit = $row->nilai;
+						$saldo -= $row->nilai;
+					}
+					
+					$val = (object) array(
 						'tahun' => $tahun,
-						'kdakun' => $kdakun,
-						'nmakun' => $rows[0]->nmakun,
-						'tgawal'=> $tgawal,
-						'tgakhir'=> $tgakhir,
-						'debet' => number_format($tot_debet,2),
-						'kredit' => number_format($tot_kredit,2),
+						'kdakun' => $row->kdakun,
+						'nmakun' => $row->nmakun,
+						'tanggal' => $row->tanggal,
+						'no_voucher' => $row->no_voucher,
+						'kd_pc' => $row->kd_pc,
+						'remark' => $row->remark,
+						'debet' => number_format($debet,2),
+						'kredit' => number_format($kredit,2),
 						'saldo' => number_format($saldo,2),
-						'sawal_debet' => number_format($sawal_debet,2),
-						'sawal_kredit' => number_format($sawal_kredit,2),
-						'sawal_saldo' => number_format($sawal_saldo,2)
 					);
 
-					$TBS = new clsTinyButStrong();
-					$TBS->Plugin(TBS_INSTALL, OPENTBS_PLUGIN);	
-					
-					//load template in folder /doc
-					$TBS->LoadTemplate('tbs_template/'.'template_buku_besar.xlsx');
-					
-					$TBS->Plugin(OPENTBS_SELECT_SHEET,'Sheet1');
-					$TBS->MergeBlock('p', $param);
-					$TBS->MergeBlock('v', $values);
-					
-					//download file
-					header('Content-type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-					$TBS->Show(OPENTBS_DOWNLOAD,'Buku_besar_'.$kdakun.'.xlsx');
+					$values[] = $val;
+
+					$tot_debet += $debet;
+					$tot_kredit += $kredit;
 					
 				}
-				else {
-					return 'Data tidak ditemukan!';
-				}
+
+				$param[] = array(
+					'tahun' => $tahun,
+					'kdakun' => $kdakun,
+					'nmakun' => $nmakun,
+					'tgawal'=> $tgawal,
+					'tgakhir'=> $tgakhir,
+					'debet' => number_format($tot_debet,2),
+					'kredit' => number_format($tot_kredit,2),
+					'saldo' => number_format($saldo,2),
+					'sawal_debet' => number_format($sawal_debet,2),
+					'sawal_kredit' => number_format($sawal_kredit,2),
+					'sawal_saldo' => number_format($sawal_saldo,2)
+				);
+
+				$TBS = new clsTinyButStrong();
+				$TBS->Plugin(TBS_INSTALL, OPENTBS_PLUGIN);	
+				
+				//load template in folder /doc
+				$TBS->LoadTemplate('tbs_template/'.'template_buku_besar.xlsx');
+				
+				$TBS->Plugin(OPENTBS_SELECT_SHEET,'Sheet1');
+				$TBS->MergeBlock('p', $param);
+				$TBS->MergeBlock('v', $values);
+				
+				//download file
+				header('Content-type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+				$TBS->Show(OPENTBS_DOWNLOAD,'Buku_besar_'.$kdakun.'.xlsx');
 				
 			}
 			else{
@@ -194,6 +220,112 @@ class BukuBesarController extends Controller
 		else{
 			return 'Cetakan excel wajib memilih kode akun!';
 		}
+		
+	}
+	
+	public function excelAll(Request $request)
+	{		
+		$rows = DB::select("
+			/* cari informasi lainnya */
+			select  a.kdakun,
+					d.nmakun,
+					decode(a.nourut,0,'Saldo Awal',c.nmtrans) as jenis,
+					decode(d.kdlap,'NR',nvl(to_char(b.tgcek,'dd-mm-yyyy'),to_char(b.tgdok1,'dd-mm-yyyy')),to_char(b.tgdok,'dd-mm-yyyy')) as tgdok,
+					decode(a.nourut,0,'',b.kdunit||' - '||f.nmunit) as unit,
+					decode(a.nourut,0,'',e.nmproyek) as proyek,
+					b.nodok,
+					decode(a.nourut,0,'',b.thang||'/'||decode(d.kdlap,'NR',nvl(to_char(b.tgcek,'mm'),to_char(b.tgdok1,'mm')),to_char(b.tgdok,'mm'))||'/'||lpad(b.nourut,5,'0')) as novoucher,
+					decode(a.nourut,0,'',g.nama) as penerima,
+					decode(a.nourut,0,'',b.uraian) as uraian,
+					a.debet,
+					a.kredit,
+					a.saldo
+			from(
+
+				/* cari saldo */
+				select  a.*,
+						SUM(a.debet-a.kredit) OVER (PARTITION BY a.kdakun ORDER BY a.kdakun,a.nourut) as saldo
+				from(
+					
+					/* saldo awal */
+					select  0 as id_trans,
+							a.kdakun,
+							SUM(DECODE(a.kddk, 'D', a.nilai, 0)) AS debet,
+							SUM(DECODE(a.kddk, 'K', a.nilai, 0)) AS kredit,
+							0 as nourut
+					from(
+						/* saldo awal tahun ini */
+						select  a.kdakun,
+								a.kddk,
+								a.nilai
+						from d_sawal a
+						where a.thang=?
+						
+					) a
+					group by a.kdakun
+
+					union all
+
+					/* transaksi berjalan */
+					select  a.*,
+							rownum as nourut
+					from(
+						SELECT  a.id_trans,
+								a.kdakun,
+								decode(a.kddk,'D',a.nilai,0) as debet,
+								decode(a.kddk,'K',a.nilai,0) as kredit
+						FROM d_trans_akun a
+						LEFT JOIN d_trans b ON (a.id_trans = b.id)
+						WHERE b.thang = ? and to_char(b.tgdok,'yyyy')=?
+					) a
+					
+				) a
+				
+			) a
+			left join d_trans b on(a.id_trans=b.id)
+			left join t_trans c on(b.kdtran=c.id)
+			left join t_akun d on(a.kdakun=d.kdakun)
+			left join t_proyek e on(b.id_proyek=e.id)
+			left join t_unit f on(b.kdunit=f.kdunit)
+			left join t_penerima g on(b.id_penerima=g.id)
+			order by a.kdakun,a.nourut
+		",[
+			session('tahun'),
+			session('tahun'),
+			session('tahun'),
+		]);
+		
+		$values = array();
+		$tot_debet = 0;
+		$tot_kredit = 0;
+		foreach($rows as $row){
+			
+			$row = (array)$row;
+			$values[] = $row;
+			$tot_debet += $row['debet'];
+			$tot_kredit += $row['kredit'];
+			
+		}
+		
+		$param[] = array(
+			'thang' => session('tahun'),
+			'debet' => $tot_debet,
+			'kredit' => $tot_kredit
+		);
+
+		$TBS = new clsTinyButStrong();
+		$TBS->Plugin(TBS_INSTALL, OPENTBS_PLUGIN);	
+		
+		//load template in folder /doc
+		$TBS->LoadTemplate('tbs_template/'.'template_buku_besar_all.xlsx');
+		
+		$TBS->Plugin(OPENTBS_SELECT_SHEET,'Sheet1');
+		$TBS->MergeBlock('p', $param);
+		$TBS->MergeBlock('v', $values);
+		
+		//download file
+		header('Content-type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+		$TBS->Show(OPENTBS_DOWNLOAD,'Buku_besar_all.xlsx');
 		
 	}
 	

@@ -24,6 +24,14 @@
 
 							<div class="form-body">
 								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="kdunit">Proyek </label>
+		                            <div class="col-md-7">
+		                            	<select id="id_proyek" name="id_proyek" class="form-control chosen">
+										</select>
+		                            </div>
+									<label id="warning-id_proyek" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
 									<label class="col-md-2 label-control" for="id_alur">Kode Akun/ COA</label>
 									<div class="col-md-10">
 										<select class="form-control chosen" id="kdakun" name="kdakun[]" multiple>
@@ -51,6 +59,9 @@
 									<div class="col-md-7">
 										<button id="excel" type="button" class="btn btn-raised btn-success">
 											<i class="fa fa-download"></i> Excel
+										</button>
+										<button id="excel-all" type="button" class="btn btn-raised btn-success">
+											<i class="fa fa-download"></i> Excel (Semua)
 										</button>
 										<button id="pdf" type="button" class="btn btn-raised btn-danger">
 											<i class="fa fa-download"></i> PDF
@@ -95,16 +106,31 @@
 		jQuery.get('dropdown/akun/html/all1', function(result){
 			jQuery('#kdakun').html(result).trigger('chosen:updated');
 		});
+		
+		jQuery.get('dropdown/proyek', function(result){
+			jQuery('#id_proyek').html(result).trigger('chosen:updated');
+		});
 
 		form_default();
 
 		jQuery('#excel').click(function(){
+			var id_proyek = jQuery('#id_proyek').val();
 			var kdakun = jQuery('#kdakun').val();
 			var tg = jQuery('#periode').val();
 			
 			var data = jQuery('#form-ruh').serialize();
 			
 			window.open('gl/excel?'+data, '_blank');
+		});
+		
+		jQuery('#excel-all').click(function(){
+			var id_proyek = jQuery('#id_proyek').val();
+			var kdakun = jQuery('#kdakun').val();
+			var tg = jQuery('#periode').val();
+			
+			var data = jQuery('#form-ruh').serialize();
+			
+			window.open('gl/excel-all?'+data, '_blank');
 		});
 		
 		jQuery('#pdf').click(function(){

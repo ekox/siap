@@ -12,8 +12,8 @@ class PembukuanJurnalController extends Controller {
 		$where = "";
 		$where1 = "";
 		if($tgawal!=='xxx' && $tgakhir!=='xxx'){
-			$where = " and a.tgsawal between to_date('".$tgawal." 00:00:01','yyyy-mm-dd hh24:mi:ss') and to_date('".$tgakhir." 23:59:59','yyyy-mm-dd hh24:mi:ss') ";
-			$where1 = " and b.tgdok between to_date('".$tgawal." 00:00:01','yyyy-mm-dd hh24:mi:ss') and to_date('".$tgakhir." 23:59:59','yyyy-mm-dd hh24:mi:ss') ";
+			$where = " and a.tgsawal between to_date('".$tgawal." 00:00:00','yyyy-mm-dd hh24:mi:ss') and to_date('".$tgakhir." 23:59:59','yyyy-mm-dd hh24:mi:ss') ";
+			$where1 = " and b.tgdok between to_date('".$tgawal." 00:00:00','yyyy-mm-dd hh24:mi:ss') and to_date('".$tgakhir." 23:59:59','yyyy-mm-dd hh24:mi:ss') ";
 		}
 		
 		$rows = DB::select("
@@ -139,7 +139,7 @@ class PembukuanJurnalController extends Controller {
 						from d_trans_akun a
 						left join d_trans b on(a.id_trans=b.id)
 						left join t_alur c on(b.id_alur=c.id)
-						where b.thang=? and c.neraca1=1
+						where b.thang=? and to_char(b.tgdok,'yyyy')=? and c.neraca1=1
 						group by to_char(b.tgdok,'yyyy'),
 								 to_char(b.tgdok,'mm'),
 								 a.kddk,
@@ -176,6 +176,7 @@ class PembukuanJurnalController extends Controller {
 			left join t_akun b on(a.kdakun=b.kdakun)
 			order by a.kdakun
 		",[
+			session('tahun'),
 			session('tahun'),
 			session('tahun'),
 			session('tahun')

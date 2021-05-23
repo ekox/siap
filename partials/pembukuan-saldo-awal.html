@@ -27,13 +27,21 @@
 							<input type="hidden" id="_token" name="_token">
 							<div class="form-body">
 								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="kdunit">Proyek </label>
+		                            <div class="col-md-7">
+		                            	<select id="id_proyek" name="id_proyek" class="form-control chosen">
+										</select>
+		                            </div>
+									<label id="warning-id_proyek" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<!--<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="kdlap">Jenis </label>
 									<div class="col-md-7">
 	                            		<select id="kdlap" name="kdlap" class="form-control chosen">
 										</select>
 	                            	</div>
 									<label id="warning-kdlap" class="col-md-2 label-control label-warning warning">required!</label>
-		                        </div>
+		                        </div>-->
 								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="kdakun">Akun </label>
 									<div class="col-md-7">
@@ -106,7 +114,7 @@
 								<thead>
 									<tr>
 										<th>No</th>
-										<th>Jenis</th>
+										<th>Proyek</th>
 										<th>Akun</th>
 										<th>D/K</th>
 										<th>Nilai</th>
@@ -153,8 +161,12 @@
 			jQuery('#kdlap').html(result).trigger('chosen:updated');
 		});
 		
-		jQuery.get('dropdown/akun/html/level1', function(result){
+		jQuery.get('dropdown/akun/html/all?kdlap=NR', function(result){
 			jQuery('#kdakun').html(result).trigger('chosen:updated');
+		});
+		
+		jQuery.get('dropdown/proyek', function(result){
+			jQuery('#id_proyek').html(result).trigger('chosen:updated');
 		});
 		
 		jQuery('#kdlap').change(function(){
@@ -241,9 +253,9 @@
 				if(result.error==false) {
 					jQuery('#inp-id').val(id);
 					jQuery('#inp-rekambaru').val('0');
-					jQuery('#kdlap').val(result.message.kdlap);
 					jQuery('#kdakun').val(result.message.kdakun);
 					jQuery('#kddk').val(result.message.kddk);
+					jQuery('#id_proyek').val(result.message.id_proyek);
 					jQuery('#nilai').val(digit_grouping(result.message.nilai));
 					jQuery('#tgsawal').val(result.message.tgsawal);
 					jQuery('.chosen').trigger('chosen:updated');
@@ -271,7 +283,7 @@
 		jQuery('#simpan').click(function(){
 			jQuery(this).html('<span class="loading"><i class="fa fa-refresh"></i> Loading.....</span>');
 			jQuery(this).prop('disabled',true);
-			var next = form_valid('kdlap,kdakun,tgsawal,nilai');
+			var next = form_valid('kdlap,kdakun,tgsawal,nilai,id_proyek');
 			if(next==true){
 				jQuery.get('token', function(token){
 					if(token){
