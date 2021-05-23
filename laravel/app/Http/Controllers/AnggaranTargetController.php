@@ -145,108 +145,93 @@ class AnggaranTargetController extends Controller {
 	
 	public function pilih(Request $request, $id)
 	{
-		try{
-			$rows = DB::select("
-				select  id,
-						kdunit,
-						nilai
-				from d_target a
-				where a.id=?
-			",[
-				$id
-			]);
-			
-			if(count($rows)>0){
-				return response()->json($rows[0]);
-			}
-			
-		}
-		catch(\Exception $e){
-			return 'Kesalahan lainnya!';
+		$rows = DB::select("
+			select  id,
+					kdunit,
+					nilai
+			from d_target a
+			where a.id=?
+		",[
+			$id
+		]);
+		
+		if(count($rows)>0){
+			return response()->json($rows[0]);
 		}
 	}
 	
 	public function simpan(Request $request)
 	{
-		try{
-			if($request->input('inp-rekambaru')=='1'){
+		if($request->input('inp-rekambaru')=='1'){
 				
-				$rows = DB::select("
-					SELECT	count(*) AS jml
-					from d_target
-					where thang=? and kdunit=?
-				",[
-					session('tahun'),
-					$request->input('kdunit')
+			$rows = DB::select("
+				SELECT	count(*) AS jml
+				from d_target
+				where thang=? and kdunit=?
+			",[
+				session('tahun'),
+				$request->input('kdunit')
+			]);
+			
+			if($rows[0]->jml==0){
+				
+				$insert = DB::table('d_target')->insert([
+					'thang' => session('tahun'),
+					'kdunit' => $request->input('kdunit'),
+					'nilai' => str_replace(",", "", $request->input('nilai'))
 				]);
 				
-				if($rows[0]->jml==0){
-					
-					$insert = DB::table('d_target')->insert([
-						'thang' => session('tahun'),
-						'kdunit' => $request->input('kdunit'),
-						'nilai' => str_replace(",", "", $request->input('nilai'))
-					]);
-					
-					if($insert){
-						return 'success';
-					}
-					else{
-						return 'Data gagal disimpan!';
-					}
-					
+				if($insert){
+					return 'success';
 				}
 				else{
-					return 'Duplikasi data!';
+					return 'Data gagal disimpan!';
 				}
 				
 			}
 			else{
-				
-				$update = DB::update("
-					update d_target
-					set nilai=?
-					where id=?
-				",[
-					str_replace(",", "", $request->input('nilai')),
-					$request->input('inp-id')
-				]);
-				
-				if($update){
-					return 'success';
-				}
-				else{
-					return 'Data gagal diubah!';
-				}
-				
-			}			
+				return 'Duplikasi data!';
+			}
+			
 		}
-		catch(\Exception $e){
-			return 'Terdapat kesalahan lainnya, hubungi Administrator!';
-		}		
+		else{
+			
+			$update = DB::update("
+				update d_target
+				set nilai=?
+				where id=?
+			",[
+				str_replace(",", "", $request->input('nilai')),
+				$request->input('inp-id')
+			]);
+			
+			if($update){
+				return 'success';
+			}
+			else{
+				return 'Data gagal diubah!';
+			}
+			
+		}			
+			
 	}
 	
 	public function hapus(Request $request)
 	{
-		try{
-			$delete = DB::delete("
-				delete from d_target
-				where id=?
-			",[
-				$request->input('id')
-			]);
-			
-			if($delete==true) {
-				return 'success';
-			}
-			else {
-				return 'Proses hapus gagal. Hubungi Administrator.';
-			}
-			
+		$delete = DB::delete("
+			delete from d_target
+			where id=?
+		",[
+			$request->input('id')
+		]);
+		
+		if($delete==true) {
+			return 'success';
 		}
-		catch(\Exception $e){
-			return 'Terdapat kesalahan lainnya, hubungi Administrator!';
-		}		
+		else {
+			return 'Proses hapus gagal. Hubungi Administrator.';
+		}
+			
 	}
 	
 }

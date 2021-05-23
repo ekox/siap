@@ -220,7 +220,6 @@ class RefPenerimaController extends Controller {
 			}			
 		}
 		catch(\Exception $e){
-			return $e;
 			return 'Terdapat kesalahan lainnya, hubungi Administrator!';
 		}		
 	}

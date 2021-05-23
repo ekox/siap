@@ -239,7 +239,6 @@ class ProfileController extends Controller {
 						
 		}
 		catch (\Exception $e) {
-			return $e;
 			return 'Terjadi kesalahan lain. Hubungi Admin!';
 			//return $e;
 		}

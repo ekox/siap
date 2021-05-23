@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Simppel - Error</title>
+        <title>SIAP - Maintenance Mode</title>
 
         <!--link href="https://fonts.googleapis.com/css?family=Lato:100" rel="stylesheet" type="text/css">-->
 
@@ -40,8 +40,7 @@
     <body>
         <div class="container">
             <div class="content">
-                <div class="title" style="color:#000;">Koneksi server terputus!</div>
-				<div class="body" style="color:#000;"><?php echo $err; ?></div>
+                <div class="title" style="color:#000;">Sedang dalam mode maintenance</div>
             </div>
         </div>
     </body>

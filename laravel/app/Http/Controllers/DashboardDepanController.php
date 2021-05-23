@@ -484,7 +484,6 @@ class DashboardDepanController extends Controller {
 			
 		}
 		catch(\Exception $e){
-			return $e;
 			return 'Terdapat kesalahan lainnya!';
 		}
 	}
@@ -634,7 +633,6 @@ class DashboardDepanController extends Controller {
 			
 		}
 		catch(\Exception $e){
-			return $e;
 			return 'Terdapat kesalahan lainnya!';
 		}
 	}
@@ -784,7 +782,6 @@ class DashboardDepanController extends Controller {
 			
 		}
 		catch(\Exception $e){
-			return $e;
 			return 'Terdapat kesalahan lainnya!';
 		}
 	}
@@ -1645,7 +1642,6 @@ class DashboardDepanController extends Controller {
 			
 		}
 		catch(\Exception $e){
-			return $e;
 			return 'Terdapat kesalahan lainnya!';
 		}
 	}
@@ -1787,7 +1783,6 @@ class DashboardDepanController extends Controller {
 			
 		}
 		catch(\Exception $e){
-			return $e;
 			return 'Terdapat kesalahan lainnya!';
 		}
 	}
@@ -1946,7 +1941,6 @@ class DashboardDepanController extends Controller {
 			
 		}
 		catch(\Exception $e){
-			return $e;
 			return 'Terdapat kesalahan lainnya!';
 		}
 	}

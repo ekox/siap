@@ -168,123 +168,106 @@ class AnggaranPaguUnitController extends Controller {
 	
 	public function pilih(Request $request, $id)
 	{
-		try{
-			$rows = DB::select("
-				select  id,
-						kdsdana,
-						id_proyek,
-						kdunit,
-						nilai,
-						kdakun
-				from d_pagu a
-				where a.id=?
-			",[
-				$id
-			]);
-			
-			if(count($rows)>0){
-				return response()->json($rows[0]);
-			}
-			
-		}
-		catch(\Exception $e){
-			return 'Kesalahan lainnya!';
+		$rows = DB::select("
+			select  id,
+					kdsdana,
+					id_proyek,
+					kdunit,
+					nilai,
+					kdakun
+			from d_pagu a
+			where a.id=?
+		",[
+			$id
+		]);
+		
+		if(count($rows)>0){
+			return response()->json($rows[0]);
 		}
 	}
 	
 	public function simpan(Request $request)
 	{
-		try{
-			if($request->input('inp-rekambaru')=='1'){
+		if($request->input('inp-rekambaru')=='1'){
 				
-				/*$rows = DB::select("
-					SELECT	count(*) AS jml
-					from d_pagu
-					where thang=? and kdunit=? and kdakun=?
-				",[
-					session('tahun'),
-					$request->input('kdunit'),
-					$request->input('kdakun'),
+			/*$rows = DB::select("
+				SELECT	count(*) AS jml
+				from d_pagu
+				where thang=? and kdunit=? and kdakun=?
+			",[
+				session('tahun'),
+				$request->input('kdunit'),
+				$request->input('kdakun'),
+			]);
+			
+			if($rows[0]->jml==0){*/
+				
+				$insert = DB::table('d_pagu')->insert([
+					'thang' => session('tahun'),
+					'kdsdana' => $request->input('kdsdana'),
+					'id_proyek' => $request->input('id_proyek'),
+					'kdunit' => $request->input('kdunit'),
+					'kdakun' => $request->input('kdakun'),
+					'nilai' => str_replace(",", "", $request->input('nilai'))
 				]);
 				
-				if($rows[0]->jml==0){*/
-					
-					$insert = DB::table('d_pagu')->insert([
-						'thang' => session('tahun'),
-						'kdsdana' => $request->input('kdsdana'),
-						'id_proyek' => $request->input('id_proyek'),
-						'kdunit' => $request->input('kdunit'),
-						'kdakun' => $request->input('kdakun'),
-						'nilai' => str_replace(",", "", $request->input('nilai'))
-					]);
-					
-					if($insert){
-						return 'success';
-					}
-					else{
-						return 'Data gagal disimpan!';
-					}
-					
-				/*}
-				else{
-					return 'Duplikasi data!';
-				}*/
-				
-			}
-			else{
-				
-				$update = DB::update("
-					update d_pagu
-					set kdsdana=?,
-						id_proyek=?,
-						kdunit=?,
-						kdakun=?,
-						nilai=?
-					where id=?
-				",[
-					$request->input('kdsdana'),
-					$request->input('id_proyek'),
-					$request->input('kdunit'),
-					$request->input('kdakun'),
-					str_replace(",", "", $request->input('nilai')),
-					$request->input('inp-id')
-				]);
-				
-				if($update){
+				if($insert){
 					return 'success';
 				}
 				else{
-					return 'Data gagal diubah!';
+					return 'Data gagal disimpan!';
 				}
 				
-			}			
+			/*}
+			else{
+				return 'Duplikasi data!';
+			}*/
+			
 		}
-		catch(\Exception $e){
-			return $e->getMessage();
-		}		
+		else{
+			
+			$update = DB::update("
+				update d_pagu
+				set kdsdana=?,
+					id_proyek=?,
+					kdunit=?,
+					kdakun=?,
+					nilai=?
+				where id=?
+			",[
+				$request->input('kdsdana'),
+				$request->input('id_proyek'),
+				$request->input('kdunit'),
+				$request->input('kdakun'),
+				str_replace(",", "", $request->input('nilai')),
+				$request->input('inp-id')
+			]);
+			
+			if($update){
+				return 'success';
+			}
+			else{
+				return 'Data gagal diubah!';
+			}
+			
+		}
 	}
 	
 	public function hapus(Request $request)
 	{
-		try{
-			$delete = DB::delete("
-				delete from d_pagu
-				where id=?
-			",[
-				$request->input('id')
-			]);
-			
-			if($delete==true) {
-				return 'success';
-			}
-			else {
-				return 'Proses hapus gagal. Hubungi Administrator.';
-			}
-			
+		$delete = DB::delete("
+			delete from d_pagu
+			where id=?
+		",[
+			$request->input('id')
+		]);
+		
+		if($delete==true) {
+			return 'success';
 		}
-		catch(\Exception $e){
-			return 'Terdapat kesalahan lainnya, hubungi Administrator!';
-		}		
+		else {
+			return 'Proses hapus gagal. Hubungi Administrator.';
+		}
 	}
 	
 	public function sisaPagu()
@@ -335,74 +318,62 @@ class AnggaranPaguUnitController extends Controller {
 	
 	public function revisike(Request $request)
 	{
-		try{
-			$rows = DB::select("
-				select  nvl(max(revisike),0)+1 as revisike
-				from d_pagu
-				where thang=?
-			",[
-				session('tahun')
-			]);
-			
-			if(count($rows)>0){
-				return response()->json($rows[0]);
-			}
-			
-		}
-		catch(\Exception $e){
-			return 'Kesalahan lainnya!';
+		$rows = DB::select("
+			select  nvl(max(revisike),0)+1 as revisike
+			from d_pagu
+			where thang=?
+		",[
+			session('tahun')
+		]);
+		
+		if(count($rows)>0){
+			return response()->json($rows[0]);
 		}
 	}
 	
 	public function simpanRevisi(Request $request)
 	{
-		try{
-			DB::beginTransaction();
+		DB::beginTransaction();
 			
-			$insert = DB::insert("
-				insert into h_pagu(id_proyek,kdsdana,kdunit,thang,nodok,tgdok,revisike,kdakun,nilai,created_at,updated_at)
-				select  id_proyek,
-						kdsdana,
-						kdunit,
-						thang,
-						nodok,
-						tgdok,
-						nvl(revisike,0) as revisike,
-						kdakun,
-						nilai,
-						created_at,
-						updated_at
-				from d_pagu
-				where thang=?
-			",[
-				session('tahun')
-			]);
-			
-			$update = DB::update("
-				update d_pagu
-				set nodok=?,
-					tgdok=to_date(?,'yyyy-mm-dd'),
-					revisike=?
-				where thang=?
-			",[
-				$request->input('nodok'),
-				$request->input('tgdok'),
-				$request->input('revisike'),
-				session('tahun')
-			]);
-			
-			if($update) {
-				DB::commit();
-				return 'success';
-			}
-			else {
-				return 'Proses simpan revisi gagal. Hubungi Administrator.';
-			}
-			
+		$insert = DB::insert("
+			insert into h_pagu(id_proyek,kdsdana,kdunit,thang,nodok,tgdok,revisike,kdakun,nilai,created_at,updated_at)
+			select  id_proyek,
+					kdsdana,
+					kdunit,
+					thang,
+					nodok,
+					tgdok,
+					nvl(revisike,0) as revisike,
+					kdakun,
+					nilai,
+					created_at,
+					updated_at
+			from d_pagu
+			where thang=?
+		",[
+			session('tahun')
+		]);
+		
+		$update = DB::update("
+			update d_pagu
+			set nodok=?,
+				tgdok=to_date(?,'yyyy-mm-dd'),
+				revisike=?
+			where thang=?
+		",[
+			$request->input('nodok'),
+			$request->input('tgdok'),
+			$request->input('revisike'),
+			session('tahun')
+		]);
+		
+		if($update) {
+			DB::commit();
+			return 'success';
 		}
-		catch(\Exception $e){
-			return 'Terdapat kesalahan lainnya, hubungi Administrator!';
-		}		
+		else {
+			return 'Proses simpan revisi gagal. Hubungi Administrator.';
+		}
 	}
 	
 }

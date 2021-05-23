@@ -146,8 +146,7 @@ class RefUserController extends Controller {
 			return response()->json($output);
 		}
 		catch(\Exception $e){
-			return $e;
-			//return 'Terdapat kesalahan lainnya!';
+			return 'Terdapat kesalahan lainnya!';
 		}
 	}
 	
@@ -220,7 +219,7 @@ class RefUserController extends Controller {
 			
 		}
 		catch(\Exception $e){
-			return $e;
+			return 'Terdapat kesalahan lainnya!';
 		}
 	}
 	
@@ -427,8 +426,7 @@ class RefUserController extends Controller {
 						
 		}
 		catch(\Exception $e){
-			return $e;
-			return 'Koneksi terputus!';
+			return 'Terdapat kesalahan lainnya!';
 		}		
 	}
 	
@@ -468,7 +466,7 @@ class RefUserController extends Controller {
 			
 		}
 		catch(\Exception $e){
-			return $e;
+			return 'Terdapat kesalahan lainnya!';
 		}		
 	}
 	
@@ -495,7 +493,7 @@ class RefUserController extends Controller {
 			
 		}
 		catch(\Exception $e){
-			return $e;
+			return 'Terdapat kesalahan lainnya!';
 		}		
 	}
 	

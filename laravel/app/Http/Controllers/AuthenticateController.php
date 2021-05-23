@@ -41,8 +41,8 @@ class AuthenticateController extends Controller {
 			);
 		}
 		catch(\Exception $e){
-			return $e;
-			//return 'Terdapat kesalahan lainnya!';
+			//return $e;
+			return 'Terdapat kesalahan lainnya!';
 		}
 	}
 	
@@ -131,7 +131,7 @@ class AuthenticateController extends Controller {
 
 		}
 		catch(\Exception $e){
-			return $e;
+			//return $e;
 			return response()->json(['error' => true,'message' => 'Terdapat kesalahan lainnya!'], 503);
 		}
 	}
