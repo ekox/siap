@@ -414,7 +414,7 @@ Route::group(['middleware' => 'auth'], function(){
 	Route::group(['prefix' => 'gl'], function () {
 		
 		Route::get('/excel', 'BukuBesarController@excel');
-		Route::get('/excel-all', 'BukuBesarController@excel-all');
+		Route::get('/excel-all', 'BukuBesarController@excelAll');
 		Route::get('/pdf', 'BukuBesarController@pdf');
 		
 	});

@@ -317,7 +317,7 @@ class BukuBesarController extends Controller
 		$TBS->Plugin(TBS_INSTALL, OPENTBS_PLUGIN);	
 		
 		//load template in folder /doc
-		$TBS->LoadTemplate('tbs_template/'.'template_buku_besar_all.xlsx');
+		$TBS->LoadTemplate('tbs_template/'.'template_buku_besar_semua.xlsx');
 		
 		$TBS->Plugin(OPENTBS_SELECT_SHEET,'Sheet1');
 		$TBS->MergeBlock('p', $param);
