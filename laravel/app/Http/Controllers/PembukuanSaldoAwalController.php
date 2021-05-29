@@ -9,19 +9,19 @@ class PembukuanSaldoAwalController extends Controller {
 
 	public function index(Request $request)
 	{
-		$aColumns = array('id','nmlap','kdakun','kddk','nilai','tgsawal','created_at');
+		$aColumns = array('id','nmproyek','kdakun','kddk','nilai','tgsawal','created_at');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
 		/* DB table to use */
 		$sTable = "select  	a.id,
-							b.nmlap,
+							b.nmproyek,
 							a.kdakun,
 							a.kddk,
 							a.nilai,
 							to_char(a.tgsawal,'dd-mm-yyyy') as tgsawal,
 							to_char(a.created_at,'dd-mm-yyyy hh24:mi:ss') as created_at
 					from d_sawal a
-					left outer join t_lap b on(a.kdlap=b.kdlap)
+					left outer join t_proyek b on(a.id_proyek=b.id)
 					left outer join t_akun c on(a.kdakun=c.kdakun)
 					where a.thang='".session('tahun')."'
 					order by a.id desc";
@@ -69,7 +69,7 @@ class PembukuanSaldoAwalController extends Controller {
 		if(isset($_GET['sSearch'])){
 			$sSearch=$_GET['sSearch'];
 			if((isset($sSearch))&&($sSearch!='')){
-				$sWhere=" where lower(nmlap) like lower('".$sSearch."%') or lower(nmlap) like lower('%".$sSearch."%') or
+				$sWhere=" where lower(nmproyek) like lower('".$sSearch."%') or lower(nmproyek) like lower('%".$sSearch."%') or
 								lower(kdakun) like lower('".$sSearch."%') or lower(kdakun) like lower('%".$sSearch."%') ";
 			}
 		}
@@ -129,7 +129,7 @@ class PembukuanSaldoAwalController extends Controller {
 			
 			$output['aaData'][] = array(
 				$row->no,
-				$row->nmlap,
+				$row->nmproyek,
 				$row->kdakun,
 				$row->kddk,
 				'<div style="text-align:right;">'.number_format($row->nilai).'</div>',
@@ -146,7 +146,7 @@ class PembukuanSaldoAwalController extends Controller {
 	{
 		$rows = DB::select("
 			select  id,
-					kdlap,
+					id_proyek,
 					kdakun,
 					kddk,
 					nilai,
@@ -186,11 +186,11 @@ class PembukuanSaldoAwalController extends Controller {
 				
 				$insert = DB::table('d_sawal')->insert([
 					'thang' => session('tahun'),
-					'kdlap' => $request->input('kdlap'),
 					'kdakun' => $request->input('kdakun'),
 					'kddk' => $request->input('kddk'),
 					'nilai' => str_replace(",", "", $request->input('nilai')),
 					'tgsawal' => $request->input('tgsawal'),
+					'id_proyek' => $request->input('id_proyek'),
 					'id_user' => session('id_user')
 				]);
 				
@@ -211,20 +211,20 @@ class PembukuanSaldoAwalController extends Controller {
 			
 			$update = DB::update("
 				update d_sawal
-				set kdlap=?,
-					kdakun=?,
+				set kdakun=?,
 					kddk=?,
 					nilai=?,
 					tgsawal=?,
+					id_proyek=?,
 					id_user=?,
 					updated_at=sysdate
 				where id=?
 			",[
-				$request->input('kdlap'),
 				$request->input('kdakun'),
 				$request->input('kddk'),
 				str_replace(",", "", $request->input('nilai')),
 				$request->input('tgsawal'),
+				$request->input('id_proyek'),
 				session('id_user'),
 				$request->input('inp-id')
 			]);

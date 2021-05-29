@@ -495,10 +495,17 @@ class DropdownController extends Controller {
 	
 	public function akun_html_all()
 	{
+		$and = "";
+		if(isset($_GET['kdlap'])){
+			if($_GET['kdlap']!==''){
+				$and = " and kdlap='".$_GET['kdlap']."' ";
+			}
+		}
+		
 		$rows = DB::select("
 			select	*
 			from t_akun
-			where lvl=6
+			where lvl=6 ".$and."
 			order by kdakun asc
 		");
 		
