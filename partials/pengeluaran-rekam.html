@@ -176,7 +176,7 @@
 								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="tgbukti">Tgl.Bukti </label>
 									<div class="col-md-7">
-	                            		<input type="date" id="tgpks" name="tgpks" class="form-control" maxlength="10">
+	                            		<input type="date" id="tgpks" name="tgpks" class="form-control" maxlength="10" readonly>
 	                            	</div>
 									<label id="warning-tgpks" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
@@ -527,6 +527,11 @@
 			
 			jQuery('.val_num').mask('000,000,000,000,000', {reverse: true});
 			jQuery('#chosen-0').chosen({width:'100%'});
+			
+			jQuery.get('dropdown/tanggal', function(result){
+				jQuery('#tgpks').val(result);
+			});
+			
 		});
 		
 		jQuery('#tambah-detil').click(function(){

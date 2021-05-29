@@ -136,7 +136,7 @@
 		<tr>
 			<td class="bl pl3">Pada tanggal</td>
 			<td class="pl3 ar vt">:</td>
-			<td colspan="2" class="pl3">{{$tgcek}}</td>
+			<td colspan="2" class="pl3">{{$tgcek1}}</td>
 		</tr>
 		<tr>
 			<td class="pl3 vt">{{$kdakun_pajak1}}</td>

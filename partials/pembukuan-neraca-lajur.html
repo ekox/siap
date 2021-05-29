@@ -37,6 +37,17 @@
 									</div>
 								</div>
 							</div>
+							
+							<div class="form-actions">
+								<div class="form-group row">
+									<label class="col-md-2 label-control" for="projectinput4"></label>
+									<div class="col-md-7">
+										<button id="download" type="button" class="btn btn-raised btn-success">
+											<i class="fa fa-download"></i> Excel
+										</button>
+									</div>
+								</div>
+							</div>
 
 						</form>
 						
@@ -142,6 +153,15 @@
 				jQuery('#total-saldo').html(result.total_saldo);
 			});
 			
+		});
+		
+		jQuery('#download').click(function(){
+			
+			if($('#periode').val()!==''){
+				var periode = $('#periode').val();
+				window.open('pembukuan/neraca-lajur/'+periode+'/excel', '_blank');
+			}			
+		
 		});
 		
 	});

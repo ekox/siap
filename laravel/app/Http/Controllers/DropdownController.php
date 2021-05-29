@@ -836,4 +836,12 @@ class DropdownController extends Controller {
 		return number_format($rows[0]->saldo);
 		
 	}
+	
+	public function tanggal()
+	{
+		$now = date("Y-m-d");
+		
+		return $now;
+	}
+	
 }

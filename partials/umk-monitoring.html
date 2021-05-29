@@ -105,6 +105,13 @@
 									<label id="warning-tgjtempo" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="tgpks">Tgl.Bayar </label>
+									<div class="col-md-7">
+	                            		<input type="date" id="tgcek" name="tgcek" class="form-control" maxlength="10" readonly>
+	                            	</div>
+									<label id="warning-tgcek" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="uraian">Uraian </label>
 									<div class="col-md-7">
 	                            		<textarea id="uraian" name="uraian" class="form-control" maxlength="255" readonly></textarea>
@@ -294,6 +301,7 @@
 					jQuery('#tgpks').val(result.message.tgpks);
 					jQuery('#tgjtempo').val(result.message.tgjtempo);
 					jQuery('#uraian').val(result.message.uraian);
+					jQuery('#tgcek').val(result.message.tgcek);
 					jQuery('#nilai').val(digit_grouping(result.message.nilai));
 					jQuery('#div-catatan').html(result.catatan);			
 					jQuery('#div-rincian-akun').html(result.akun);						

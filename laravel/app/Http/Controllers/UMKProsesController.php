@@ -332,7 +332,8 @@ class UMKProsesController extends Controller {
 					a.debet||' : '||nvl(f.nmakun,0) as debet,
 					nvl(i.nmakun,0) as kredit,
 					a.id_alur,
-					a.status
+					a.status,
+					to_char(a.tgcek,'yyyy-mm-dd') as tgcek
 			from d_trans a
 			left outer join t_alur b on(a.id_alur=b.id)
 			left outer join t_unit c on(a.kdunit=c.kdunit)
@@ -559,12 +560,14 @@ class UMKProsesController extends Controller {
 								status=?,
 								id_user=?,
 								updated_at=sysdate,
+								tgcek=to_date(?,'yyyy-mm-dd'),
 								ket=?
 							where id=?
 						",[
 							$rows[0]->id_alur,
 							$rows[0]->status,
 							session('id_user'),
+							$request->input('tgcek'),
 							$request->input('ket'),
 							$request->input('inp-id')
 						]);

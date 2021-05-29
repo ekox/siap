@@ -224,7 +224,52 @@ class BukuBesarController extends Controller
 	}
 	
 	public function excelAll(Request $request)
-	{		
+	{
+		$arr_where = array();
+		$where = "";
+		$where1 = "";
+		$where2 = "";
+		
+		/* param akun */
+		if(isset($_GET['kdakun'])){
+			if(count($_GET['kdakun'])>0){
+				$where = " where a.kdakun in('".implode("','", $_GET['kdakun'])."') ";				
+			}
+		}
+		
+		/* param proyek */
+		if(isset($_GET['id_proyek'])){
+			if($_GET['id_proyek']!==''){
+				
+				$arr_where[] = " b.id_proyek=".$_GET['id_proyek']." ";
+				
+			}
+		}
+		
+		/* param tanggal */
+		if(isset($_GET['tgawal']) && isset($_GET['tgakhir'])){
+			if($_GET['tgawal']!=='' && $_GET['tgakhir']!==''){
+				
+				$arr_where[] = " b.tgdok between to_date('".$_GET['tgawal']." 00:00:01','yyyy-mm-dd hh24:mi:ss') and to_date('".$_GET['tgakhir']." 23:59:59','yyyy-mm-dd hh24:mi:ss') ";
+				
+				$where2 = " 
+					union all
+				
+					select  a.kdakun,
+							a.kddk,
+							a.nilai
+					from d_trans_akun a
+					left join d_trans b on(a.id_trans=b.id)
+					where b.thang='".session('tahun')."' and to_char(b.tgdok,'yyyy')='".session('tahun')."' and b.tgdok < to_date('".$_GET['tgawal']." 00:00:01','yyyy-mm-dd hh24:mi:ss')
+				";
+				
+			}
+		}
+		
+		if(count($arr_where)>0){
+			$where1 = " and ".implode(" and ", $arr_where);
+		}
+		
 		$rows = DB::select("
 			/* cari informasi lainnya */
 			select  a.kdakun,
@@ -254,12 +299,15 @@ class BukuBesarController extends Controller
 							SUM(DECODE(a.kddk, 'K', a.nilai, 0)) AS kredit,
 							0 as nourut
 					from(
+					
 						/* saldo awal tahun ini */
 						select  a.kdakun,
 								a.kddk,
 								a.nilai
 						from d_sawal a
 						where a.thang=?
+						
+						".$where2."
 						
 					) a
 					group by a.kdakun
@@ -276,7 +324,8 @@ class BukuBesarController extends Controller
 								decode(a.kddk,'K',a.nilai,0) as kredit
 						FROM d_trans_akun a
 						LEFT JOIN d_trans b ON (a.id_trans = b.id)
-						WHERE b.thang = ? and to_char(b.tgdok,'yyyy')=?
+						LEFT JOIN t_alur_status g on(b.id_alur=g.id_alur and b.status=g.status)
+						WHERE b.thang = ? and to_char(b.tgdok,'yyyy')=? and g.is_final='1' ".$where1."
 					) a
 					
 				) a
@@ -288,6 +337,7 @@ class BukuBesarController extends Controller
 			left join t_proyek e on(b.id_proyek=e.id)
 			left join t_unit f on(b.kdunit=f.kdunit)
 			left join t_penerima g on(b.id_penerima=g.id)
+			".$where."
 			order by a.kdakun,a.nourut
 		",[
 			session('tahun'),
@@ -497,6 +547,9 @@ class BukuBesarController extends Controller
 			$tot_kredit = $sawal_kredit;
 			$saldo = $sawal_saldo;
 			
+			$tot_debet1 = 0;
+			$tot_kredit1 = 0;
+			
 			foreach($rows as $row) {
 				
 				$debet = 0;
@@ -505,10 +558,12 @@ class BukuBesarController extends Controller
 				if($row->kddk=='D'){
 					$debet = $row->nilai;
 					$saldo += $row->nilai;
+					$tot_debet1 += $row->nilai;
 				}
 				else{
 					$kredit = $row->nilai;
 					$saldo -= $row->nilai;
+					$tot_kredit1 += $row->nilai;
 				}
 				
 				$data .= '<tr>
@@ -523,7 +578,17 @@ class BukuBesarController extends Controller
 								
 			}
 			
-			$data .= '</tbody></table><br><br>';
+			$data .= '		</tbody>
+							<tfoot style="">
+								<tr>
+									<td colspan="4" style="text-align:center;">Total</td>
+									<td style="text-align:right">'.number_format($tot_debet1,2).'</td>
+									<td style="text-align:right">'.number_format($tot_kredit1,2).'</td>
+									<td style="text-align:right"></td>
+								</tr>
+							</tfoot>
+						</table>
+					<br><br>';
 			
 		}
 		

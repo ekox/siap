@@ -144,6 +144,13 @@
 									<label id="warning-status1" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="tgbukti">Tgl.Bayar </label>
+									<div class="col-md-7">
+	                            		<input type="date" id="tgcek" name="tgcek" class="form-control" maxlength="10">
+	                            	</div>
+									<label id="warning-tgcek" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="ket">Keterangan </label>
 									<div class="col-md-7">
 	                            		<textarea id="ket" name="ket" class="form-control" maxlength="4000"></textarea>
@@ -323,6 +330,7 @@
 					jQuery('#nmpelanggan').val(result.message.nmpelanggan);
 					jQuery('#nopks').val(result.message.nopks);
 					jQuery('#tgpks').val(result.message.tgpks);
+					jQuery('#tgcek').val(result.message.tgcek);
 					jQuery('#tgjtempo').val(result.message.tgjtempo);
 					jQuery('#uraian').val(result.message.uraian);
 					jQuery('#nilai').val(digit_grouping(result.message.nilai));

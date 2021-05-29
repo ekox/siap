@@ -362,6 +362,7 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::group(['prefix' => 'neraca-lajur'], function () {
 		
 			Route::get('/{param}', 'PembukuanJurnalController@neracaLajur');
+			Route::get('/{param}/excel', 'PembukuanJurnalController@neracaLajurExcel');
 			
 		});
 		
@@ -493,6 +494,7 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::get('/ttd/{param}', 'DropdownController@ttd');
 		Route::get('/trans-dtl', 'DropdownController@transDtl');
 		Route::get('/saldo-kas-kecil', 'DropdownController@saldoKasKecil');
+		Route::get('/tanggal', 'DropdownController@tanggal');
 		
 	});
 	
