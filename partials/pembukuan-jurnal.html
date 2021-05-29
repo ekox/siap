@@ -44,8 +44,11 @@
 								<div class="form-group row">
 									<label class="col-md-2 label-control" for="projectinput4"></label>
 									<div class="col-md-7">
-										<button id="cari" type="button" class="btn btn-raised btn-success">
+										<button id="cari" type="button" class="btn btn-raised btn-primary">
 											<i class="fa fa-search"></i> Tampilkan
+										</button>
+										<button id="download" type="button" class="btn btn-raised btn-success">
+											<i class="fa fa-download"></i> Excel
 										</button>
 									</div>
 								</div>
@@ -107,6 +110,21 @@
 				jQuery('#total-debet').html(result.total_debet);
 				jQuery('#total-kredit').html(result.total_kredit);
 			});
+		
+		});
+		
+		jQuery('#download').click(function(){
+			
+			var tgawal = 'xxx';
+			if($('#tgawal').val()!==''){
+				tgawal = $('#tgawal').val();
+			}
+			var tgakhir = 'xxx';
+			if($('#tgakhir').val()!==''){
+				tgakhir = $('#tgakhir').val();
+			}
+			
+			window.open('pembukuan/jurnal/'+tgawal+'/'+tgakhir+'/excel', '_blank');
 		
 		});
 		

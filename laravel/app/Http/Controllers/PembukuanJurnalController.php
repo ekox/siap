@@ -4,6 +4,7 @@ use DB;
 use Session;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use clsTinyButStrong;
 
 class PembukuanJurnalController extends Controller {
 
@@ -80,6 +81,116 @@ class PembukuanJurnalController extends Controller {
 			'total_debet' => number_format($total_debet,0),
 			'total_kredit' => number_format($total_kredit,0)
 		));
+	}
+	
+	public function neracaExcel(Request $request, $tgawal, $tgakhir)
+	{
+		$where = "";
+		$where1 = "";
+		if($tgawal!=='xxx' && $tgakhir!=='xxx'){
+			$where = " and a.tgsawal between to_date('".$tgawal." 00:00:00','yyyy-mm-dd hh24:mi:ss') and to_date('".$tgakhir." 23:59:59','yyyy-mm-dd hh24:mi:ss') ";
+			$where1 = " and b.tgdok between to_date('".$tgawal." 00:00:00','yyyy-mm-dd hh24:mi:ss') and to_date('".$tgakhir." 23:59:59','yyyy-mm-dd hh24:mi:ss') ";
+		}
+		
+		$rows = DB::select("
+			select  a.kdakun,
+					b.nmakun,
+					sum(decode(a.kddk,'D',a.nilai,0)) as debet,
+					sum(decode(a.kddk,'K',a.nilai,0)) as kredit
+			from(
+				/* saldo awal */
+				select  to_char(a.tgsawal,'YYYY') as thang,
+						to_char(a.tgsawal,'MM') as periode,
+						a.kddk,
+						a.kdakun,
+						sum(a.nilai) as nilai
+				from d_sawal a
+				where a.thang=? ".$where."
+				group by to_char(a.tgsawal,'YYYY'),
+						to_char(a.tgsawal,'MM'),
+						a.kdakun,
+						a.kddk
+				
+				union all
+				
+				/* transaksi berjalan termasuk pajak */
+				select  to_char(b.tgdok,'yyyy') as thang,
+						to_char(b.tgdok,'mm') as periode,
+						a.kddk,
+						a.kdakun,
+						sum(a.nilai) as nilai
+				from d_trans_akun a
+				left join d_trans b on(a.id_trans=b.id)
+				left join t_alur c on(b.id_alur=c.id)
+				where b.thang=? and c.neraca1=1 ".$where1."
+				group by to_char(b.tgdok,'yyyy'),
+						 to_char(b.tgdok,'mm'),
+						 a.kddk,
+						 a.kdakun
+				
+			) a
+			left join t_akun b on(a.kdakun=b.kdakun)
+			group by a.kdakun,b.nmakun
+			order by a.kdakun,b.nmakun
+		",[
+			session('tahun'),
+			session('tahun')
+		]);
+		
+		$data = '';
+		$total_debet = 0;
+		$total_kredit = 0;
+		foreach($rows as $row){
+			$data .= '<tr>
+						<td>'.$row->kdakun.'</td>
+						<td>'.$row->nmakun.'</td>
+						<td style="text-align:right;">'.number_format($row->debet,0).'</td>
+						<td style="text-align:right;">'.number_format($row->kredit,0).'</td>
+					  </tr>';
+			$total_debet += $row->debet;
+			$total_kredit += $row->kredit;
+		}
+		
+		$tot_debet = 0;
+		$tot_kredit = 0;
+		$values = array();
+		foreach($rows as $row) {
+			
+			$val = (object) array(
+				'kdakun' => $row->kdakun,
+				'nmakun' => $row->nmakun,
+				'debet' => number_format($row->debet,2),
+				'kredit' => number_format($row->kredit,2)
+			);
+
+			$values[] = $val;
+
+			$tot_debet += $row->debet;
+			$tot_kredit += $row->kredit;
+			
+		}
+
+		$param[] = array(
+			'tgawal' => $tgawal,
+			'tgakhir' => $tgakhir,
+			'debet' => number_format($tot_debet,2),
+			'kredit' => number_format($tot_kredit,2),
+		);
+
+		$TBS = new clsTinyButStrong();
+		$TBS->Plugin(TBS_INSTALL, OPENTBS_PLUGIN);	
+		
+		//load template in folder /doc
+		$TBS->LoadTemplate('tbs_template/'.'template_neraca_percobaan.xlsx');
+		
+		$TBS->Plugin(OPENTBS_SELECT_SHEET,'Sheet1');
+		$TBS->MergeBlock('p', $param);
+		$TBS->MergeBlock('v', $values);
+		
+		//download file
+		header('Content-type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+		$TBS->Show(OPENTBS_DOWNLOAD,'Neraca_Percobaan.xlsx');
+		
 	}
 	
 	public function neracaPenyesuaian(Request $request)
