@@ -39,6 +39,13 @@
 									<button id="cari-nourut" class="btn btn-xs btn-raised btn-warning mr-1"><i class="fa fa-refresh"></i></button>
 		                        </div>
 								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="tgbukti">Tgl.Rekam </label>
+									<div class="col-md-7">
+	                            		<input type="date" id="tgrekam" name="tgrekam" class="form-control" readonly>
+	                            	</div>
+									<label id="warning-tgrekam" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="id_alur">Sumber Dana </label>
 									<div class="col-md-7">
 	                            		<select id="kdsdana" name="kdsdana" class="form-control chosen">
@@ -356,6 +363,9 @@
 		function cariNourut(){
 			jQuery.get('dropdown/nourut/4', function(result){
 				jQuery('#nourut').val(result);
+			});
+			jQuery.get('dropdown/tanggal', function(result){
+				jQuery('#tgrekam').val(result);
 			});
 		}
 	
@@ -711,6 +721,7 @@
 					jQuery('#nopks').val(result.message.nopks);
 					jQuery('#tgpks').val(result.message.tgpks);
 					jQuery('#tgjtempo').val(result.message.tgjtempo);
+					jQuery('#tgrekam').val(result.message.tgrekam);
 					jQuery('#uraian').val(result.message.uraian);
 					jQuery('#ttd1').val(result.message.ttd1);
 					jQuery('#ttd2').val(result.message.ttd2);

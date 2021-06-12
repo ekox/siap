@@ -354,6 +354,11 @@ class UMKProsesController extends Controller {
 			$data['error'] = false;
 			$data['message'] = $detil;
 			
+			$data['message']->bayar = 0;
+			if(session('kdlevel')=='10'){
+				$data['message']->bayar = 1;
+			}
+			
 			$rows = DB::select("
 				select  *
 				from t_alur_status_dtl

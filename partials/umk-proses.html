@@ -27,6 +27,7 @@
 							<input type="hidden" id="_token" name="_token">
 							<input type="hidden" id="id_alur" name="id_alur">
 							<input type="hidden" id="status" name="status">
+							<input type="hidden" id="bayar" name="bayar">
 							<div class="form-body">
 								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="nourut">No.Transaksi </label>
@@ -143,7 +144,7 @@
 	                            	</div>
 									<label id="warning-status1" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
-								<div class="form-group row">
+								<div class="form-group row" id="div-bayar">
 	                            	<label class="col-md-2 label-control" for="tgbukti">Tgl.Bayar </label>
 									<div class="col-md-7">
 	                            		<input type="date" id="tgcek" name="tgcek" class="form-control" maxlength="10">
@@ -316,6 +317,16 @@
 			jQuery('.chosen').val('').trigger('chosen:updated');
 			jQuery.getJSON('umk/proses/pilih/'+id, function(result){
 				if(result.error==false) {
+					
+					if(result.message.bayar==1){
+						$('#div-bayar').show();
+						$('#bayar').val(1);
+					}
+					else{
+						$('#div-bayar').hide();
+						$('#bayar').val(0);
+					}
+					
 					jQuery('#inp-id').val(id);
 					jQuery('#inp-rekambaru').val('0');
 					jQuery('#nmunit').val(result.message.nmunit);
@@ -361,6 +372,9 @@
 			jQuery(this).html('<span class="loading"><i class="fa fa-refresh"></i> Loading.....</span>');
 			jQuery(this).prop('disabled',true);
 			var next = form_valid('inp-id,id_alur,status,status1');
+			if($('#bayar').val()==1){
+				next = form_valid('inp-id,id_alur,status,status1,tgcek');
+			}
 			if(next==true){
 				jQuery.get('token', function(token){
 					if(token){

@@ -291,7 +291,8 @@ class BuktiTransaksiController extends TableController
 					g.nip as nip_ttd3,
 					g.nama as nama_ttd3,
 					h.nip as nip_ttd4,
-					h.nama as nama_ttd4
+					h.nama as nama_ttd4,
+					to_char(a.created_at,'yyyy-mm-dd') as tgrekam
 			from d_trans a
 			left join t_penerima b on(a.id_penerima=b.id)
 			left join t_akun c on(a.debet=c.kdakun)
@@ -456,6 +457,7 @@ class BuktiTransaksiController extends TableController
 				'nocek' => $rows['nocek'],
 				'tgcek' => $rows['tgcek'],
 				'tgcek1' => $rows['tgcek1'],
+				'tgrekam' => $rows['tgrekam'],
 				'kdakun_pajak1' => $kdakun_pajak1,
 				'kdakun_pajak2' => $kdakun_pajak2,
 				'kdakun_pajak3' => $kdakun_pajak3,

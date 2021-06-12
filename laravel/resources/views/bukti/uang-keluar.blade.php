@@ -160,7 +160,7 @@
 			<td class="pl3">Rp</td>
 			<td class="pl3 ar" style="text-align:right;border-right: 1px solid #000;">{{$nilai_pajak3}}</td>
 			<td colspan="3" class="bl pl3">&nbsp;</td>
-			<td class="pl3 al">Jakarta, {{$tgdok}}</td>
+			<td class="pl3 al">Jakarta, {{$tgrekam}}</td>
 		</tr>
 		<tr>
 			<td class="pl3">{{$kdakun_pajak4}}</td>

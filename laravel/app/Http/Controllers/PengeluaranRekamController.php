@@ -240,7 +240,8 @@ class PengeluaranRekamController extends Controller {
 					a.ttd2,
 					a.ttd3,
 					a.ttd4,
-					a.nilai-a.nilai_bersih as pajak
+					a.nilai-a.nilai_bersih as pajak,
+					to_char(a.created_at,'yyyy-mm-dd') as tgrekam
 			from d_trans a
 			left join d_trans_akun b on(a.id=b.id_trans)
 			where a.id=? and b.grup=1 and b.kddk='D'
