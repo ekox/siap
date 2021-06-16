@@ -789,9 +789,15 @@ class PenerimaanRekamController extends Controller {
 							a.id_penerima as id_pelanggan,
 							a.uraian,
 							nvl(a.nilai,0) as nilai,
-							a.debet as kdakun,
+							b.kdakun,
 							a.id_proyek
 					from d_trans a
+					left join(
+						select	id_trans,
+								kdakun
+						from d_trans_akun
+						where kddk='D'
+					) b on(a.id=b.id_trans)
 					where a.kdtran=?
 				",[
 					$parent_id
