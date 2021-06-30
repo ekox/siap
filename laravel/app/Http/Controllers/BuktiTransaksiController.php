@@ -292,7 +292,7 @@ class BuktiTransaksiController extends TableController
 					g.nama as nama_ttd3,
 					h.nip as nip_ttd4,
 					h.nama as nama_ttd4,
-					to_char(a.created_at,'yyyy-mm-dd') as tgrekam
+					to_char(a.tgrekam,'yyyy-mm-dd') as tgrekam
 			from d_trans a
 			left join t_penerima b on(a.id_penerima=b.id)
 			left join t_akun c on(a.debet=c.kdakun)

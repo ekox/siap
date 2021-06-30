@@ -241,7 +241,7 @@ class PengeluaranRekamController extends Controller {
 					a.ttd3,
 					a.ttd4,
 					a.nilai-a.nilai_bersih as pajak,
-					to_char(a.created_at,'yyyy-mm-dd') as tgrekam
+					to_char(a.tgrekam,'yyyy-mm-dd') as tgrekam
 			from d_trans a
 			left join d_trans_akun b on(a.id=b.id_trans)
 			where a.id=? and b.grup=1 and b.kddk='D'
@@ -517,6 +517,7 @@ class PengeluaranRekamController extends Controller {
 										'nodok' => $request->input('nopks'),
 										'tgdok' => $request->input('tgpks'),
 										'tgdok1' => $request->input('tgjtempo'),
+										'tgrekam' => DB::raw("to_date('".$request->input('tgrekam')."','yyyy-mm-dd')"),
 										'uraian' => $request->input('uraian'),
 										'ttd1' => $request->input('ttd1'),
 										'ttd2' => $request->input('ttd2'),
@@ -618,7 +619,8 @@ class PengeluaranRekamController extends Controller {
 										ttd3=?,
 										ttd4=?,
 										id_user=?,
-										updated_at=sysdate
+										updated_at=sysdate,
+										tgrekam=to_date(?,'yyyy-mm-dd')
 									where id=?
 								",[
 									$id_proyek,
@@ -637,6 +639,7 @@ class PengeluaranRekamController extends Controller {
 									$request->input('ttd3'),
 									$request->input('ttd4'),
 									session('id_user'),
+									$request->input('tgrekam'),
 									$request->input('inp-id')
 								]);
 								
@@ -819,6 +822,7 @@ class PengeluaranRekamController extends Controller {
 										'id_penerima' => $request->input('id_pelanggan'),
 										'nodok' => $request->input('nopks'),
 										'tgdok' => $request->input('tgpks'),
+										'tgrekam' => DB::raw("to_date('".$request->input('tgrekam')."','yyyy-mm-dd')"),
 										'tgdok1' => $request->input('tgjtempo'),
 										'uraian' => $request->input('uraian'),
 										'ttd1' => $request->input('ttd1'),
@@ -1090,7 +1094,8 @@ class PengeluaranRekamController extends Controller {
 										ttd3=?,
 										ttd4=?,
 										id_user=?,
-										updated_at=sysdate
+										updated_at=sysdate,
+										tgrekam=to_date(?,'yyyy-mm-dd')
 									where id=?
 								",[
 									$id_proyek,
@@ -1109,6 +1114,7 @@ class PengeluaranRekamController extends Controller {
 									$request->input('ttd3'),
 									$request->input('ttd4'),
 									session('id_user'),
+									$request->input('tgrekam'),
 									$request->input('inp-id')
 								]);
 								

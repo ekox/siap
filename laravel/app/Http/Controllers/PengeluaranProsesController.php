@@ -343,7 +343,7 @@ class PengeluaranProsesController extends Controller {
 					a.status,
 					n.kdakun,
 					o.uraian as nmtrans_dtl,
-					to_char(a.created_at,'yyyy-mm-dd') as tgrekam
+					to_char(a.tgrekam,'yyyy-mm-dd') as tgrekam
 			from d_trans a
 			left outer join t_alur b on(a.id_alur=b.id)
 			left outer join t_unit c on(a.kdunit=c.kdunit)
