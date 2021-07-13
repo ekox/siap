@@ -187,7 +187,7 @@
 			jQuery('input,select').val('');
 			jQuery('.warning, #div-form').hide();
 			jQuery('#div-tabel').show();
-			jQuery('.chosen').trigger('chosen:updated');
+			jQuery('.chosen').prop('disabled', false).trigger('chosen:updated');
 			jQuery('#simpan').prop('disabled', false);
 		}
 		
@@ -253,9 +253,9 @@
 				if(result.error==false) {
 					jQuery('#inp-id').val(id);
 					jQuery('#inp-rekambaru').val('0');
-					jQuery('#kdakun').val(result.message.kdakun);
+					jQuery('#kdakun').val(result.message.kdakun).prop('disabled', true);
 					jQuery('#kddk').val(result.message.kddk);
-					jQuery('#id_proyek').val(result.message.id_proyek);
+					jQuery('#id_proyek').val(result.message.id_proyek).prop('disabled', true);
 					jQuery('#nilai').val(digit_grouping(result.message.nilai));
 					jQuery('#tgsawal').val(result.message.tgsawal);
 					jQuery('.chosen').trigger('chosen:updated');

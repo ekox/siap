@@ -176,10 +176,11 @@ class PembukuanSaldoAwalController extends Controller {
 			$rows = DB::select("
 				SELECT	count(*) AS jml
 				from d_sawal
-				where thang=? and kdakun=?
+				where thang=? and kdakun=? and id_proyek=?
 			",[
 				session('tahun'),
 				$request->input('kdakun'),
+				$request->input('id_proyek'),
 			]);
 			
 			if($rows[0]->jml==0){
@@ -211,20 +212,16 @@ class PembukuanSaldoAwalController extends Controller {
 			
 			$update = DB::update("
 				update d_sawal
-				set kdakun=?,
-					kddk=?,
+				set kddk=?,
 					nilai=?,
 					tgsawal=?,
-					id_proyek=?,
 					id_user=?,
 					updated_at=sysdate
 				where id=?
 			",[
-				$request->input('kdakun'),
 				$request->input('kddk'),
 				str_replace(",", "", $request->input('nilai')),
 				$request->input('tgsawal'),
-				$request->input('id_proyek'),
 				session('id_user'),
 				$request->input('inp-id')
 			]);
