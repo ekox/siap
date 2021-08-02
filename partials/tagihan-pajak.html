@@ -111,19 +111,19 @@
 								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="nilai">Nilai</label>
 									<div class="col-md-7">
-	                            		<input id="nilai" name="nilai" class="form-control val_num" style="text-align:right;">
+	                            		<input id="nilai" name="nilai" class="form-control val_num" style="text-align:right;" readonly>
 	                            	</div>
 									<label id="warning-nilai" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="akun">Pajak</label>
-									<div class="col-md-7 table-responsive">
+									<div class="col-md-9 table-responsive">
 	                            		<table class="table table-bordered">
 											<thead>
 												<tr>
-													<th style="width:500px;">Jenis</th>
-													<th style="width:200px;">Nilai</th>
-													<th>Hapus</th>
+													<th style="width:60%;">Jenis</th>
+													<th style="width:35%;">Nilai</th>
+													<th style="width:5%;">Hapus</th>
 												</tr>
 											</thead>
 											<tbody id="tabel-rincian">
@@ -227,7 +227,6 @@
 										<th>Divisi</th>
 										<th>Pelanggan</th>
 										<th>Transaksi</th>
-										<th>Uraian</th>
 										<th>Nilai</th>
 										<th>Pajak</th>
 										<th>Total</th>
@@ -270,7 +269,7 @@
 		jQuery('.val_num').mask('000,000,000,000,000', {reverse: true});
 		
 		//aktivasi chosen
-		jQuery('.chosen').chosen();
+		jQuery('.chosen').chosen({ search_contains: true });
 		
 		//tampilan default
 		function form_default() {
@@ -327,7 +326,6 @@
 				{},
 				{},
 				{},
-				{},
 				{}
 			],
 			bServerSide: true,
@@ -367,7 +365,7 @@
 						jQuery('#tabel-rincian').append(
 							'<tr id="tr-'+x+'">'+
 								'<td>'+
-									'<select id="chosen-'+x+'" class="form-control akun" name="rincian['+x+'][\'kdakun\']">'+
+									'<select id="chosen-'+x+'" class="form-control akun" name="rincian['+x+'][\'kdakun\']" style="z-index:999999999 !important;">'+
 										jQuery('#inp-akun').val()+
 									'</select>'+
 								'</td>'+
@@ -378,7 +376,7 @@
 							'</tr>'
 						);
 						jQuery('#chosen-'+x).val(row.kdakun+'|'+row.kddk+'|'+row.nilai1);
-						jQuery('#chosen-'+x).chosen({width:'100%'});
+						jQuery('#chosen-'+x).chosen({width:'100%', search_contains: true});
 						jQuery('.val_num').mask('000,000,000,000,000', {reverse: true});
 					});
 					
@@ -421,7 +419,7 @@
 			jQuery('#tabel-rincian').append(
 				'<tr id="tr-'+x+'">'+
 					'<td>'+
-						'<select id="chosen-'+x+'" class="form-control akun" name="rincian['+x+'][\'kdakun\']">'+
+						'<select id="chosen-'+x+'" class="form-control akun" name="rincian['+x+'][\'kdakun\']" style="z-index:999999999 !important;">'+
 							jQuery('#inp-akun').val()+
 						'</select>'+
 					'</td>'+
@@ -431,7 +429,7 @@
 					'</td>'+
 				'</tr>'
 			);
-			jQuery('#chosen-'+x).chosen({width:'100%'});
+			jQuery('#chosen-'+x).chosen({width:'100%', search_contains: true});
 			jQuery('.val_num').mask('000,000,000,000,000', {reverse: true});
 			jQuery('#x').val(x);
 		});
@@ -613,7 +611,7 @@
 						jQuery('#_token').val(token);
 						var data = jQuery('#form-ruh').serialize();
 						jQuery.ajax({
-							url: 'penerimaan/rekam/hitung-total',
+							url: 'penerimaan/rekam/hitung-total?param=1',
 							method: 'POST',
 							data: data,
 							success: function(result){

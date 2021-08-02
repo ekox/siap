@@ -37,6 +37,13 @@
 									<button id="cari-nourut" class="btn btn-xs btn-raised btn-warning mr-1"><i class="fa fa-refresh"></i></button>
 		                        </div>
 								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="tgbukti">Tgl.Rekam </label>
+									<div class="col-md-7">
+	                            		<input type="date" id="tgrekam" name="tgrekam" class="form-control">
+	                            	</div>
+									<label id="warning-tgrekam" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
+								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="id_alur">Sumber Dana </label>
 									<div class="col-md-7">
 	                            		<select id="kdsdana" name="kdsdana" class="form-control chosen">
@@ -111,13 +118,13 @@
 		                        </div>
 								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="akun">Pajak</label>
-									<div class="col-md-7 table-responsive">
+									<div class="col-md-9 table-responsive">
 	                            		<table class="table table-bordered">
 											<thead>
 												<tr>
-													<th style="width:500px;">Jenis</th>
-													<th style="width:200px;">Nilai</th>
-													<th>Hapus</th>
+													<th style="width:60%;">Jenis</th>
+													<th style="width:35%;">Nilai</th>
+													<th style="width:5%;">Hapus</th>
 												</tr>
 											</thead>
 											<tbody id="tabel-rincian">
@@ -265,7 +272,7 @@
 
 <script>
 	jQuery(document).ready(function(){
-	
+		
 		function digit_grouping(nStr){
 			nStr += '';
 			x = nStr.split('.');
@@ -282,6 +289,9 @@
 			jQuery.get('dropdown/nourut/1', function(result){
 				jQuery('#nourut').val(result);
 			});
+			jQuery.get('dropdown/tanggal', function(result){
+				jQuery('#tgrekam').val(result);
+			});
 		}
 	
 		jQuery.fn.dataTable.ext.errMode = 'none';
@@ -289,7 +299,11 @@
 		jQuery('.val_num').mask('000,000,000,000,000', {reverse: true});
 		
 		//aktivasi chosen
-		jQuery('.chosen').chosen();
+		jQuery('.chosen').chosen({ search_contains: true });
+		
+		$('.ui-layout-toggler-north').click(function(){
+			$('#chosen_select').toggleClass('hide');
+		});
 		
 		jQuery.get('dropdown/sdana', function(result){
 			jQuery('#kdsdana').html(result).trigger('chosen:updated');
@@ -390,7 +404,7 @@
 			jQuery('#tabel-rincian').html(
 				'<tr id="tr-0">'+
 					'<td>'+
-						'<select id="chosen-0" class="form-control akun" name="rincian[0][\'kdakun\']">'+
+						'<select id="chosen-0" class="form-control akun" name="rincian[0][\'kdakun\']" style="z-index:999999999 !important;">'+
 							jQuery('#inp-akun').val()+
 						'</select>'+
 					'</td>'+
@@ -401,7 +415,7 @@
 				'</tr>'
 			);
 			jQuery('.val_num').mask('000,000,000,000,000', {reverse: true});
-			jQuery('#chosen-0').chosen({width:'100%'});
+			jQuery('#chosen-0').chosen({width:'100%', search_contains: true });
 		});
 		
 		jQuery('#tambah-detil').click(function(){
@@ -409,7 +423,7 @@
 			jQuery('#tabel-rincian').append(
 				'<tr id="tr-'+x+'">'+
 					'<td>'+
-						'<select id="chosen-'+x+'" class="form-control akun" name="rincian['+x+'][\'kdakun\']">'+
+						'<select id="chosen-'+x+'" class="form-control akun" name="rincian['+x+'][\'kdakun\']" style="z-index:999999999 !important;">'+
 							jQuery('#inp-akun').val()+
 						'</select>'+
 					'</td>'+
@@ -419,7 +433,7 @@
 					'</td>'+
 				'</tr>'
 			);
-			jQuery('#chosen-'+x).chosen({width:'100%'});
+			jQuery('#chosen-'+x).chosen({width:'100%', search_contains: true});
 			jQuery('.val_num').mask('000,000,000,000,000', {reverse: true});
 			jQuery('#x').val(x);
 		});
@@ -490,7 +504,7 @@
 						jQuery('#tabel-rincian').append(
 							'<tr id="tr-'+x+'">'+
 								'<td>'+
-									'<select id="chosen-'+x+'" class="form-control akun" name="rincian['+x+'][\'kdakun\']">'+
+									'<select id="chosen-'+x+'" class="form-control akun" name="rincian['+x+'][\'kdakun\']" style="z-index:999999999 !important;">'+
 										jQuery('#inp-akun').val()+
 									'</select>'+
 								'</td>'+
@@ -501,7 +515,7 @@
 							'</tr>'
 						);
 						jQuery('#chosen-'+x).val(row.kdakun+'|'+row.kddk+'|'+row.nilai1);
-						jQuery('#chosen-'+x).chosen({width:'100%'});
+						jQuery('#chosen-'+x).chosen({width:'100%', search_contains: true});
 						jQuery('.val_num').mask('000,000,000,000,000', {reverse: true});
 					});
 					
@@ -522,6 +536,7 @@
 					jQuery('#id_pelanggan').val(result.message.id_pelanggan);
 					jQuery('#nopks').val(result.message.nopks);
 					jQuery('#tgpks').val(result.message.tgpks);
+					jQuery('#tgrekam').val(result.message.tgrekam);
 					jQuery('#tgjtempo').val(result.message.tgjtempo);
 					jQuery('#uraian').val(result.message.uraian);
 					jQuery('#nilai').val(digit_grouping(result.message.nilai));
@@ -642,7 +657,7 @@
 						jQuery('#_token').val(token);
 						var data = jQuery('#form-ruh').serialize();
 						jQuery.ajax({
-							url: 'penerimaan/rekam/hitung-total',
+							url: 'penerimaan/rekam/hitung-total?param=1',
 							method: 'POST',
 							data: data,
 							success: function(result){

@@ -250,7 +250,7 @@ class BukuBesarController extends Controller
 		if(isset($_GET['tgawal']) && isset($_GET['tgakhir'])){
 			if($_GET['tgawal']!=='' && $_GET['tgakhir']!==''){
 				
-				$arr_where[] = " b.tgdok between to_date('".$_GET['tgawal']." 00:00:01','yyyy-mm-dd hh24:mi:ss') and to_date('".$_GET['tgakhir']." 23:59:59','yyyy-mm-dd hh24:mi:ss') ";
+				$arr_where[] = " b.tgdok between to_date('".$_GET['tgawal']."','yyyy-mm-dd') and to_date('".$_GET['tgakhir']."','yyyy-mm-dd') ";
 				
 				$where2 = " 
 					union all
@@ -260,7 +260,7 @@ class BukuBesarController extends Controller
 							a.nilai
 					from d_trans_akun a
 					left join d_trans b on(a.id_trans=b.id)
-					where b.thang='".session('tahun')."' and to_char(b.tgdok,'yyyy')='".session('tahun')."' and b.tgdok < to_date('".$_GET['tgawal']." 00:00:01','yyyy-mm-dd hh24:mi:ss')
+					where b.thang='".session('tahun')."' and to_char(b.tgdok,'yyyy')='".session('tahun')."' and b.tgdok < to_date('".$_GET['tgawal']."','yyyy-mm-dd')
 				";
 				
 			}

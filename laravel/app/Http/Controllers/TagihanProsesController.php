@@ -325,6 +325,7 @@ class TagihanProsesController extends Controller {
 					a.nodok as nopks,
 					to_char(a.tgdok,'yyyy-mm-dd') as tgpks,
 					to_char(a.tgdok1,'yyyy-mm-dd') as tgjtempo,
+					to_char(a.tgrekam,'yyyy-mm-dd') as tgrekam,
 					a.uraian,
 					nvl(a.nilai_bersih,0) as nilai,
 					nvl(a.nilai,0)-nvl(a.nilai_bersih,0) as pajak,

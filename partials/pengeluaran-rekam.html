@@ -9,7 +9,7 @@
 	
 	<div class="row">
         <div class="col-sm-12">
-            <div class="content-header">BUK/ Rekam (versi Beta - Multi Akun/ COA)</div>
+            <div class="content-header">BUK/ Rekam</div>
         </div>
     </div>
 	
@@ -109,10 +109,18 @@
 	                            	</div>
 									<label id="warning-id_pelanggan" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
+								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="id_pelanggan">Pembayaran Atas </label>
+									<div class="col-md-7">
+	                            		<select id="kredit" name="kredit" class="form-control chosen">
+										</select>
+	                            	</div>
+									<label id="warning-kredit" class="col-md-2 label-control label-warning warning">required!</label>
+		                        </div>
 								<legend>Rincian Akun/ Coa</legend>
 								<div class="form-group row">
 									<label class="col-md-2 label-control">BUK</label>
-									<div class="col-md-9">
+									<div class="col-md-9" style="min-height:200px;">
 	                            		<table class="table table-bordered">
 											<thead>
 												<tr>
@@ -132,7 +140,7 @@
 		                        </div>
 								<div class="form-group row">
 									<label class="col-md-2 label-control">Pajak/ Lainnya</label>
-									<div class="col-md-9">
+									<div class="col-md-9" style="min-height:200px;">
 	                            		<table class="table table-bordered">
 											<thead>
 												<tr>
@@ -374,7 +382,7 @@
 		jQuery('.val_num').mask('000,000,000,000,000', {reverse: true});
 		
 		//aktivasi chosen
-		jQuery('.chosen').chosen();
+		jQuery('.chosen').chosen({ search_contains: true });
 		
 		jQuery.get('dropdown/sdana', function(result){
 			jQuery('#kdsdana').html(result).trigger('chosen:updated');
@@ -427,6 +435,7 @@
 			});
 			jQuery.get('dropdown/akun/kredit/'+kdtran, function(result){
 				jQuery('#kredit').html(result).trigger('chosen:updated');
+				jQuery('#kredit').val('211100').trigger('chosen:updated');
 			});
 			jQuery.getJSON('dropdown/akun/debet/'+kdtran+'/json', function(result){
 				
@@ -454,7 +463,7 @@
 				);
 				
 				jQuery('.val_num').mask('000,000,000,000,000', {reverse: true});
-				jQuery('#chosen1-0').chosen({width:'100%'});
+				jQuery('#chosen1-0').chosen({width:'100%', search_contains: true});
 				
 			});
 			jQuery.getJSON('pengeluaran/rekam/tagihan/'+kdtran, function(result){
@@ -536,7 +545,7 @@
 			);
 			
 			jQuery('.val_num').mask('000,000,000,000,000', {reverse: true});
-			jQuery('#chosen-0').chosen({width:'100%'});
+			jQuery('#chosen-0').chosen({width:'100%', search_contains: true});
 			
 			jQuery.get('dropdown/tanggal', function(result){
 				jQuery('#tgpks').val(result);
@@ -559,7 +568,7 @@
 					'</td>'+
 				'</tr>'
 			);
-			jQuery('#chosen-'+x).chosen({width:'100%'});
+			jQuery('#chosen-'+x).chosen({width:'100%', search_contains: true});
 			jQuery('.val_num').mask('000,000,000,000,000', {reverse: true});
 			jQuery('#x').val(x);
 		});
@@ -579,7 +588,7 @@
 					'</td>'+
 				'</tr>'
 			);
-			jQuery('#chosen1-'+x).chosen({width:'100%'});
+			jQuery('#chosen1-'+x).chosen({width:'100%', search_contains: true});
 			jQuery('.val_num').mask('000,000,000,000,000', {reverse: true});
 			jQuery('#x1').val(x);
 		});
@@ -680,7 +689,7 @@
 								'</tr>'
 							);
 							jQuery('#chosen1-'+x).val(row.kdakun);
-							jQuery('#chosen1-'+x).chosen({width:'100%'});
+							jQuery('#chosen1-'+x).chosen({width:'100%', search_contains: true});
 							jQuery('.val_num').mask('000,000,000,000,000', {reverse: true});
 						});
 						
@@ -702,7 +711,7 @@
 							'</tr>'
 						);
 						jQuery('#chosen-'+x).val(row.kdakun+'|'+row.kddk+'|'+row.nilai1);
-						jQuery('#chosen-'+x).chosen({width:'100%'});
+						jQuery('#chosen-'+x).chosen({width:'100%', search_contains: true});
 						jQuery('.val_num').mask('000,000,000,000,000', {reverse: true});
 					});
 					

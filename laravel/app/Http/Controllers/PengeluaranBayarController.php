@@ -246,6 +246,7 @@ class PengeluaranBayarController extends Controller {
 				select  *
 				from t_akun
 				where lvl=6 and substr(kdakun,1,3)='111' and substr(kdakun,1,4)<>'1112'
+				order by kdakun
 			");
 			
 			$pajak = '<option value="">Pilih Data</option>';
@@ -286,16 +287,32 @@ class PengeluaranBayarController extends Controller {
 			$request->input('inp-id'),
 		]);
 		
-		$update = DB::update("
-			update d_trans_akun
-			set kdakun=?
-			where id_trans=? and kddk='K' and grup=1
+		$insert = DB::insert("
+			insert into d_trans_akun(id_trans,kdakun,nilai,kddk,grup)
+			select  id_trans,
+					kdakun,
+					nilai,
+					'D' as kddk,
+					'3' as grup
+			from d_trans_akun
+			where id_trans=? and kddk='K' and grup='1'
+
+			union all
+
+			select  id_trans,
+					? as kdakun,
+					nilai,
+					'K' as kddk,
+					'3' as grup
+			from d_trans_akun
+			where id_trans=? and kddk='K' and grup='1'
 		",[
+			$request->input('inp-id'),
 			$request->input('bayar'),
 			$request->input('inp-id')
 		]);
 		
-		if($update){
+		if($insert){
 			DB::commit();
 			return 'success';
 		}

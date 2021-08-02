@@ -111,19 +111,19 @@
 								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="nilai">Nilai</label>
 									<div class="col-md-7">
-	                            		<input id="nilai" name="nilai" class="form-control val_num" style="text-align:right;">
+	                            		<input id="nilai" name="nilai" class="form-control val_num" style="text-align:right;" readonly>
 	                            	</div>
 									<label id="warning-nilai" class="col-md-2 label-control label-warning warning">required!</label>
 		                        </div>
 								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="akun">Pajak</label>
-									<div class="col-md-7 table-responsive">
+									<div class="col-md-9 table-responsive">
 	                            		<table class="table table-bordered">
 											<thead>
 												<tr>
-													<th style="width:500px;">Jenis</th>
-													<th style="width:200px;">Nilai</th>
-													<th>Hapus</th>
+													<th style="width:80%;">Jenis</th>
+													<th style="width:15%;">Nilai</th>
+													<th style="width:5%;">Hapus</th>
 												</tr>
 											</thead>
 											<tbody id="tabel-rincian">
@@ -227,7 +227,6 @@
 										<th>Divisi</th>
 										<th>Pelanggan</th>
 										<th>Transaksi</th>
-										<th>Uraian</th>
 										<th>Nilai</th>
 										<th>Pajak</th>
 										<th>Total</th>
@@ -319,7 +318,6 @@
 			    }
 			},
 			"columns": [
-				{},
 				{},
 				{},
 				{},
@@ -581,11 +579,13 @@
 						jQuery('#_token').val(token);
 						var data = jQuery('#form-ruh').serialize();
 						jQuery.ajax({
-							url: 'penerimaan/rekam/hitung-total',
+							url: 'pengeluaran/rekam/hitung-total?param=1',
 							method: 'POST',
 							data: data,
 							success: function(result){
-								jQuery('#total').val(result);
+								jQuery('#nilai').val(result.nilai);
+								jQuery('#pajak').val(result.pajak);
+								jQuery('#total').val(result.total);
 							},
 							error: function(result){
 								jQuery('#simpan').html('<i class="fa fa-check-square-o"></i> Simpan');

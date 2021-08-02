@@ -9,7 +9,7 @@ class PenerimaanPajakController extends Controller {
 
 	public function index(Request $request)
 	{
-		$aColumns = array('id','nourut','nmunit','nama','nmtrans','uraian','nilai','pajak','total');
+		$aColumns = array('id','nourut','nmunit','nama','nmtrans','nilai','pajak','total');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
 		/* DB table to use */
@@ -139,7 +139,6 @@ class PenerimaanPajakController extends Controller {
 				$row->nmunit,
 				$row->nama,
 				$row->nmtrans,
-				$row->uraian,
 				'<div style="text-align:right;">'.number_format($row->nilai).'</div>',
 				'<div style="text-align:right;">'.number_format($row->pajak).'</div>',
 				'<div style="text-align:right;">'.number_format($row->total).'</div>',
@@ -163,13 +162,13 @@ class PenerimaanPajakController extends Controller {
 					to_char(a.tgdok,'yyyy-mm-dd') as tgpks,
 					to_char(a.tgdok1,'yyyy-mm-dd') as tgjtempo,
 					a.uraian,
-					nvl(a.nilai_bersih,0) as nilai,
+					nvl(j.nilai,0) as nilai,
 					nvl(a.ppn,0) as ppn,
 					nvl(a.pph21,0) as pph21,
 					nvl(a.pph22,0) as pph22,
 					nvl(a.pph23,0) as pph23,
 					nvl(a.pph25,0) as pph25,
-					0 as total,
+					nvl(h.nilai,0) as total,
 					h.kdakun as kdakun_d,
 					nvl(h.nmakun,0) as debet,
 					j.kdakun as kdakun_k,
@@ -187,7 +186,8 @@ class PenerimaanPajakController extends Controller {
 			left outer join(
 				select  a.id_trans,
 						a.kdakun,
-						b.nmakun
+						b.nmakun,
+						a.nilai
 				from d_trans_akun a
 				left join t_akun b on(a.kdakun=b.kdakun)
 				where a.grup=1 and a.kddk='D'
@@ -195,7 +195,8 @@ class PenerimaanPajakController extends Controller {
 			left outer join(
 				select  a.id_trans,
 						a.kdakun,
-						b.nmakun
+						b.nmakun,
+						a.nilai
 				from d_trans_akun a
 				left join t_akun b on(a.kdakun=b.kdakun)
 				where a.grup=1 and a.kddk='K'
@@ -334,13 +335,6 @@ class PenerimaanPajakController extends Controller {
 								$kdakun = $arr_akun[0];
 								$kddk = $arr_akun[1];
 								
-								if($kddk=='D'){
-									$kddk='K';
-								}
-								else{
-									$kddk='D';
-								}
-							
 								$arr_insert[] = "select	".$id_trans." as id_trans,
 														'".$kdakun."' as kdakun,
 														'".$kddk."' as kddk,

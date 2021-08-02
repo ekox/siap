@@ -9,7 +9,7 @@ class PengeluaranPajakController extends Controller {
 
 	public function index(Request $request)
 	{
-		$aColumns = array('id','nourut','nmunit','nama','nmtrans','uraian','nilai','pajak','total');
+		$aColumns = array('id','nourut','nmunit','nama','nmtrans','nilai','pajak','total');
 		/* Indexed column (used for fast and accurate table cardinality) */
 		$sIndexColumn = "id";
 		/* DB table to use */
@@ -139,7 +139,6 @@ class PengeluaranPajakController extends Controller {
 				$row->nmunit,
 				$row->nama,
 				$row->nmtrans,
-				$row->uraian,
 				'<div style="text-align:right;">'.number_format($row->nilai).'</div>',
 				'<div style="text-align:right;">'.number_format($row->pajak).'</div>',
 				'<div style="text-align:right;">'.number_format($row->total).'</div>',
@@ -170,7 +169,7 @@ class PengeluaranPajakController extends Controller {
 					nvl(a.pph22,0) as pph22,
 					nvl(a.pph23,0) as pph23,
 					nvl(a.pph25,0) as pph25,
-					0 as total,
+					a.nilai as total,
 					k.kdakun as kdakun_d,
 					nvl(k.nmakun,0) as debet,
 					l.kdakun as kdakun_k,
@@ -189,7 +188,8 @@ class PengeluaranPajakController extends Controller {
 			left outer join(
 				select  a.id_trans,
 						a.kdakun,
-						b.nmakun
+						b.nmakun,
+						a.nilai
 				from d_trans_akun a
 				left join t_akun b on(a.kdakun=b.kdakun)
 				where a.grup=1 and a.kddk='D'
@@ -197,7 +197,8 @@ class PengeluaranPajakController extends Controller {
 			left outer join(
 				select  a.id_trans,
 						a.kdakun,
-						b.nmakun
+						b.nmakun,
+						a.nilai
 				from d_trans_akun a
 				left join t_akun b on(a.kdakun=b.kdakun)
 				where a.grup=1 and a.kddk='K'
@@ -305,21 +306,6 @@ class PengeluaranPajakController extends Controller {
 				
 				$id_trans = $request->input('inp-id');
 				
-				$arr_insert[] = "select	".$id_trans." as id_trans,
-										'".$request->input('kdakun_d')."' as kdakun,
-										'D' as kddk,
-										".str_replace(',', '', $request->input('nilai'))." as nilai,
-										1 as grup
-								 from dual";
-								 
-				$arr_insert[] = "select	".$id_trans." as id_trans,
-										'".$request->input('kdakun_k')."' as kdakun,
-										'K' as kddk,
-										".str_replace(',', '', $request->input('total'))." as nilai,
-										1 as grup
-								 from dual
-								 ";
-				
 				$lanjut = true;
 				$arr_pajak = $request->input('rincian');
 				$id_trans = $request->input('inp-id');
@@ -352,7 +338,7 @@ class PengeluaranPajakController extends Controller {
 				
 				$delete = DB::delete("
 					delete from d_trans_akun
-					where id_trans=?
+					where id_trans=? and grup=0
 				",[
 					$id_trans
 				]);

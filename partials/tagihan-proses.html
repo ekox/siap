@@ -35,6 +35,12 @@
 	                            	</div>
 		                        </div>
 								<div class="form-group row">
+	                            	<label class="col-md-2 label-control" for="tgbukti">Tgl.Rekam </label>
+									<div class="col-md-7">
+	                            		<input type="date" id="tgrekam" name="tgrekam" class="form-control" readonly>
+	                            	</div>
+		                        </div>
+								<div class="form-group row">
 	                            	<label class="col-md-2 label-control" for="nmunit">Sumber Dana </label>
 									<div class="col-md-7">
 	                            		<input id="nmsdana" name="nmsdana" class="form-control" readonly>
@@ -363,6 +369,7 @@
 					jQuery('#nmpelanggan').val(result.message.nmpelanggan);
 					jQuery('#nopks').val(result.message.nopks);
 					jQuery('#tgpks').val(result.message.tgpks);
+					jQuery('#tgrekam').val(result.message.tgrekam);
 					jQuery('#tgjtempo').val(result.message.tgjtempo);
 					jQuery('#uraian').val(result.message.uraian);
 					jQuery('#nilai').val(digit_grouping(result.message.nilai));
