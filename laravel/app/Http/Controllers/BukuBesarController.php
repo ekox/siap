@@ -611,4 +611,250 @@ class BukuBesarController extends Controller
 		
 	}
 	
+	public function excelBaru(Request $request)
+	{
+		$tabel = "
+			select	a.*
+			from(
+				select  a.id_trans,
+						b.nourut,
+						b.id_alur,
+						b.id_proyek,
+						b.id_penerima,
+						b.kdunit,
+						b.kdtran,
+						b.uraian,
+						a.kdakun,
+						a.kddk,
+						b.nodok,
+						a.nilai,
+						case
+							when c.menu=1 /* tagihan */
+								then b.tgrekam
+							when c.menu in(2,3) /* penerimaan dan umk */
+								then b.tgcek
+							when c.menu=4 and a.grup in('0','1','2') /* buk rekam */
+								then b.tgrekam
+							when c.menu=4 and a.grup='3' /* buk bayar */
+								then b.tgcek
+							else /* kas kecil dan penyesuaian */
+								nvl(b.tgdok,b.tgrekam)
+						end as tgdok
+				from d_trans_akun a
+				left join d_trans b on(a.id_trans=b.id)
+				left join t_alur c on(b.id_alur=c.id)
+				where b.thang='".session('tahun')."'
+			) a
+		";
+		
+		$arr_where = array();
+		$arr_where1 = array();
+		$arr_where2 = array();
+		$sawal = "";
+		$sawal1 = "";
+		
+		/* param akun */
+		if(isset($_GET['kdakun'])){
+			if(count($_GET['kdakun'])>0){
+				$arr_where[] = " a.kdakun in('".implode("','", $_GET['kdakun'])."') ";
+				$arr_where1[] = " a.kdakun in('".implode("','", $_GET['kdakun'])."') ";
+				$arr_where2[] = " a.kdakun in('".implode("','", $_GET['kdakun'])."') ";
+			}
+		}
+		
+		/* param proyek */
+		if(isset($_GET['id_proyek'])){
+			if($_GET['id_proyek']!==''){
+				$arr_where[] = " a.id_proyek in('".implode("','", $_GET['id_proyek'])."') ";
+				$arr_where1[] = " a.id_proyek in('".implode("','", $_GET['id_proyek'])."') ";
+				$arr_where2[] = " a.id_proyek in('".implode("','", $_GET['id_proyek'])."') ";
+			}
+		}
+		
+		/* param alur */
+		if(isset($_GET['id_alur'])){
+			if($_GET['id_alur']!==''){
+				$arr_where[] = " a.id_alur in(".implode(",", $_GET['id_alur']).") ";
+				$arr_where1[] = " a.id_alur in(".implode(",", $_GET['id_alur']).") ";
+				$arr_where2[] = " a.id_alur in(".implode(",", $_GET['id_alur']).") ";
+			}
+		}
+		
+		/* param transaksi */
+		if(isset($_GET['nourut'])){
+			if($_GET['nourut']!==''){
+				$arr_nourut = explode(",", $_GET['nourut']);
+				if(count($arr_nourut)>0){
+					$arr_where[] = " a.nourut in('".implode("','", $arr_nourut)."') ";
+				}
+			}
+		}
+		
+		$tanggal = session('tahun').'-01-01';
+		/* param tanggal */
+		if(isset($_GET['tgawal']) && isset($_GET['tgakhir'])){
+			if($_GET['tgawal']!=='' && $_GET['tgakhir']!==''){
+				
+				$arr_where[] = " a.tgdok between to_date('".$_GET['tgawal']."','yyyy-mm-dd') and to_date('".$_GET['tgakhir']."','yyyy-mm-dd') ";
+				
+				$where2 = "";
+				if(count($arr_where2)>0){
+					$where2 = " and ".implode(" and ", $arr_where2);
+				}
+				
+				$tanggal = $_GET['tgawal'];
+				$sawal1 = " 
+					union all
+				
+					select  a.kdakun,
+							a.kddk,
+							a.nilai
+					from(
+						".$tabel."
+					) a
+					where a.tgdok < to_date('".$_GET['tgawal']."','yyyy-mm-dd') ".$where2."
+				";
+				
+			}
+		}
+		
+		$where = "";
+		if(count($arr_where)>0){
+			$where = "where ".implode(" and ", $arr_where);
+		}
+		
+		$where1 = "";
+		if(count($arr_where1)>0){
+			$where1 = "and ".implode(" and ", $arr_where1);
+		}
+		
+		/* param saldo awal */
+		if(isset($_GET['sawal'])){
+			if($_GET['sawal']=='1'){
+				
+				$sawal = "
+					select  0 as id_trans,
+							0 as nourut,
+							0 as id_proyek,
+							0 as id_penerima,
+							'Saldo Awal' as uraian,
+							'' as kdunit,
+							0 as kdtran,
+							'' as nodok,
+							to_date('".$tanggal."','yyyy-mm-dd') as tgdok,
+							a.kdakun,
+							SUM(DECODE(a.kddk, 'D', a.nilai, 0)) AS debet,
+							SUM(DECODE(a.kddk, 'K', a.nilai, 0)) AS kredit,
+							0 as urutan
+					from(
+					
+						/* saldo awal tahun ini */
+						select  a.kdakun,
+								a.kddk,
+								a.nilai
+						from d_sawal a
+						where a.thang='".session('tahun')."' ".$where1."
+						
+						".$sawal1."
+						
+					) a
+					group by a.kdakun
+					
+					union all
+					
+				";
+				
+			}
+		}
+		
+		$query = "
+			/* cari informasi lainnya */
+			select  a.id_trans,
+					a.kdakun,
+					d.nmakun,
+					decode(a.nourut,0,'Saldo Awal',c.nmtrans) as jenis,
+					to_char(a.tgdok,'dd-mm-yyyy') as tgdok,
+					decode(a.nourut,0,'',a.kdunit||' - '||f.nmunit) as unit,
+					decode(a.nourut,0,'',e.nmproyek) as proyek,
+					a.nodok,
+					decode(a.nourut,0,'',to_char(a.tgdok,'yyyy')||'/'||to_char(a.tgdok,'mm')||'/'||lpad(a.nourut,5,'0')) as novoucher,
+					decode(a.nourut,0,'',g.nama) as penerima,
+					decode(a.nourut,0,'',a.uraian) as uraian,
+					a.debet,
+					a.kredit,
+					a.saldo
+			from(
+			
+				select	a.*,
+						SUM(a.debet-a.kredit) OVER (PARTITION BY a.kdakun ORDER BY a.kdakun,a.urutan) as saldo
+				from(
+					
+					".$sawal."
+					
+					/* transaksi berjalan */
+					select	a.id_trans,
+							a.nourut,
+							a.id_proyek,
+							a.id_penerima,
+							a.uraian,
+							a.kdunit,
+							a.kdtran,
+							a.nodok,
+							a.tgdok,
+							a.kdakun,
+							decode(a.kddk,'D',a.nilai,0) as debet,
+							decode(a.kddk,'K',a.nilai,0) as kredit,
+							rownum as urutan
+					from(
+						".$tabel."
+					) a
+					".$where."
+					
+				) a
+				
+			) a
+			left join t_trans c on(a.kdtran=c.id)
+			left join t_akun d on(a.kdakun=d.kdakun)
+			left join t_proyek e on(a.id_proyek=e.id)
+			left join t_unit f on(a.kdunit=f.kdunit)
+			left join t_penerima g on(a.id_penerima=g.id)
+			order by a.kdakun,a.tgdok
+		";
+		
+		$rows = DB::select($query);
+		
+		$values = array();
+		$tot_debet = 0;
+		$tot_kredit = 0;
+		foreach($rows as $row){
+			
+			$row = (array)$row;
+			$values[] = $row;
+			$tot_debet += $row['debet'];
+			$tot_kredit += $row['kredit'];
+			
+		}
+		
+		$param[] = array(
+			'thang' => session('tahun'),
+			'debet' => $tot_debet,
+			'kredit' => $tot_kredit
+		);
+
+		$TBS = new clsTinyButStrong();
+		$TBS->Plugin(TBS_INSTALL, OPENTBS_PLUGIN);	
+		
+		//load template in folder /doc
+		$TBS->LoadTemplate('tbs_template/'.'template_buku_besar_semua.xlsx');
+		
+		$TBS->Plugin(OPENTBS_SELECT_SHEET,'Sheet1');
+		$TBS->MergeBlock('p', $param);
+		$TBS->MergeBlock('v', $values);
+		
+		//download file
+		header('Content-type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+		$TBS->Show(OPENTBS_DOWNLOAD,'Buku_besar_all.xlsx');
+		
+	}
+	
 }

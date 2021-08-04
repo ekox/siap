@@ -381,7 +381,7 @@ class PengeluaranRekamController extends Controller {
 						b.nilai as nilai1
 				from d_trans_akun a
 				left join t_akun_pajak b on(a.kdakun=b.kdakun)
-				where a.id_trans=? and b.kdakun is null and a.kddk='D'
+				where a.id_trans=? and b.kdakun is null and a.kddk='D' and a.grup='1'
 			",[
 				$id
 			]);
@@ -1045,7 +1045,7 @@ class PengeluaranRekamController extends Controller {
 																			'111300' as kdakun,
 																			'D' as kddk,
 																			".$selisih." as nilai,
-																			2 as grup
+																			3 as grup
 																	 from dual
 																	 ";
 													
@@ -1335,7 +1335,7 @@ class PengeluaranRekamController extends Controller {
 																		'111300' as kdakun,
 																		'D' as kddk,
 																		".$selisih." as nilai,
-																		2 as grup
+																		3 as grup
 																 from dual
 																 ";
 												

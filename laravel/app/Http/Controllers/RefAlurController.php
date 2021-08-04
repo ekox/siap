@@ -24,7 +24,7 @@ class RefAlurController extends Controller {
 					left outer join t_level c on(a.kdlevel=c.kdlevel)
 					left outer join(
 						select  a.id_alur_status,
-							   wm_concat(b.nmstatus) as proses
+							   listagg(b.nmstatus, ',') within group(order by b.nmstatus) as proses
 						from t_alur_status_dtl a
 						left join t_alur_status b on(a.id_alur_status_lanjut=b.id)
 						group by a.id_alur_status

@@ -170,17 +170,34 @@ class PembukuanPostingController extends Controller {
 					union all
 					
 					/* transaksi berjalan termasuk pajak dan penyesuaian */
-					select  to_char(b.tgdok,'yyyy') as thang,
-							to_char(b.tgdok,'mm') as periode,
+					select  to_char(a.tgdok,'yyyy') as thang,
+							to_char(a.tgdok,'mm') as periode,
 							a.kddk,
 							a.kdakun,
 							sum(a.nilai) as nilai
-					from d_trans_akun a
-					left join d_trans b on(a.id_trans=b.id)
-					left join t_alur c on(b.id_alur=c.id)
-					where b.thang=?
-					group by to_char(b.tgdok,'yyyy'),
-							 to_char(b.tgdok,'mm'),
+					from(
+						select  a.kdakun,
+								a.kddk,
+								a.nilai,
+								case
+									when c.menu=1 /* tagihan */
+										then b.tgrekam
+									when c.menu in(2,3) /* penerimaan dan umk */
+										then b.tgcek
+									when c.menu=4 and a.grup in('0','1','2') /* buk rekam */
+										then b.tgrekam
+									when c.menu=4 and a.grup='3' /* buk bayar */
+										then b.tgcek
+									else /* kas kecil dan penyesuaian */
+										nvl(b.tgdok,b.tgrekam)
+								end as tgdok
+						from d_trans_akun a
+						left join d_trans b on(a.id_trans=b.id)
+						left join t_alur c on(b.id_alur=c.id)
+						where b.thang=?
+					) a
+					group by to_char(a.tgdok,'yyyy'),
+							 to_char(a.tgdok,'mm'),
 							 a.kddk,
 							 a.kdakun
 					
