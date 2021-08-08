@@ -829,6 +829,9 @@ class BukuBesarController extends Controller
 		foreach($rows as $row){
 			
 			$row = (array)$row;
+			$row['debet1'] = number_format($row['debet']);
+			$row['kredit1'] = number_format($row['kredit']);
+			$row['saldo1'] = number_format($row['saldo']);
 			$values[] = $row;
 			$tot_debet += $row['debet'];
 			$tot_kredit += $row['kredit'];
@@ -837,8 +840,8 @@ class BukuBesarController extends Controller
 		
 		$param[] = array(
 			'thang' => session('tahun'),
-			'debet' => $tot_debet,
-			'kredit' => $tot_kredit
+			'debet' => number_format($tot_debet),
+			'kredit' => number_format($tot_kredit)
 		);
 
 		$TBS = new clsTinyButStrong();
